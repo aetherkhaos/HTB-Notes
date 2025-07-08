@@ -510,3 +510,1209 @@ We can poke around in `Shares`, `Sessions`, and `Open Files` to get an idea of w
 ![[event_viewer.webp]]
 
 
+---
+What protocol discussed in this section is used to share resources on the network using Windows? (Format: case sensitive)
+
+SMB
+
+What is the name of the utility that can be used to view logs made by a Windows system? (Format: 2 words, 1 space, not case sensitive)
+
+Event Viewer
+
+What is the full directory path to the Company Data share we created?
+
+C:\Users\htb-student\Desktop\Company Data
+
+---
+
+# Windows Services & Processes
+
+## Windows Services
+
+Services are a major component of the Windows operating system. They allow for the creation and management of long-running processes. Windows services can be started automatically at system boot without user intervention. These services can continue to run in the background even after the user logs out of their account on the system.
+
+Applications can also be created to install as a service, such as a network monitoring application installed on a server. Services on Windows are responsible for many functions within the Windows operating system, such as networking functions, performing system diagnostics, managing user credentials, controlling Windows updates, and more.
+
+Windows services are managed via the Service Control Manager (SCM) system, accessible via the `services.msc` MMC add-in.
+
+This add-in provides a GUI interface for interacting with and managing services and displays information about each installed service. This information includes the service Name, Description, Status, Startup Type, and the user that the service runs under.
+
+It is also possible to query and manage services via the command line using `sc.exe` using [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7) cmdlets such as `Get-Service`.
+
+```powershell-session
+PS C:\htb> Get-Service | ? {$_.Status -eq "Running"} | select -First 2 |fl
+
+
+Name                : AdobeARMservice
+DisplayName         : Adobe Acrobat Update Service
+Status              : Running
+DependentServices   : {}
+ServicesDependedOn  : {}
+CanPauseAndContinue : False
+CanShutdown         : False
+CanStop             : True
+ServiceType         : Win32OwnProcess
+
+Name                : Appinfo
+DisplayName         : Application Information
+Status              : Running
+DependentServices   : {}
+ServicesDependedOn  : {RpcSs, ProfSvc}
+CanPauseAndContinue : False
+CanShutdown         : False
+CanStop             : True
+ServiceType         : Win32OwnProcess, Win32ShareProcess
+```
+
+Service statuses can appear as Running, Stopped, or Paused, and they can be set to start manually, automatically, or on a delay at system boot. Services can also be shown in the state of Starting or Stopping if some action has triggered them to either start or stop. Windows has three categories of services: Local Services, Network Services, and System Services. Services can usually only be created, modified, and deleted by users with administrative privileges. Misconfigurations around service permissions are a common privilege escalation vector on Windows systems.
+
+In Windows, we have some [critical system services](https://docs.microsoft.com/en-us/windows/win32/rstmgr/critical-system-services) that cannot be stopped and restarted without a system restart. If we update any file or resource in use by one of these services, we must restart the system.
+
+|Service|Description|
+|---|---|
+|smss.exe|Session Manager SubSystem. Responsible for handling sessions on the system.|
+|csrss.exe|Client Server Runtime Process. The user-mode portion of the Windows subsystem.|
+|wininit.exe|Starts the Wininit file .ini file that lists all of the changes to be made to Windows when the computer is restarted after installing a program.|
+|logonui.exe|Used for facilitating user login into a PC|
+|lsass.exe|The Local Security Authentication Server verifies the validity of user logons to a PC or server. It generates the process responsible for authenticating users for the Winlogon service.|
+|services.exe|Manages the operation of starting and stopping services.|
+|winlogon.exe|Responsible for handling the secure attention sequence, loading a user profile on logon, and locking the computer when a screensaver is running.|
+|System|A background system process that runs the Windows kernel.|
+|svchost.exe with RPCSS|Manages system services that run from dynamic-link libraries (files with the extension .dll) such as "Automatic Updates," "Windows Firewall," and "Plug and Play." Uses the Remote Procedure Call (RPC) Service (RPCSS).|
+|svchost.exe with Dcom/PnP|Manages system services that run from dynamic-link libraries (files with the extension .dll) such as "Automatic Updates," "Windows Firewall," and "Plug and Play." Uses the Distributed Component Object Model (DCOM) and Plug and Play (PnP) services.|
+
+This [link](https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_components#Services) has a list of Windows components, including key services.
+
+## Processes
+
+Processes run in the background on Windows systems. They either run automatically as part of the Windows operating system or are started by other installed applications.
+
+Processes associated with installed applications can often be terminated without causing a severe impact on the operating system. Certain processes are critical and, if terminated, will stop certain components of the operating system from running properly. Some examples include the Windows Logon Application, System, System Idle Process, Windows Start-Up Application, Client Server Runtime, Windows Session Manager, Service Host, and Local Security Authority Subsystem Service (LSASS) process.
+
+## Local Security Authority Subsystem Service (LSASS)
+
+`lsass.exe` is the process that is responsible for enforcing the security policy on Windows systems. When a user attempts to log on to the system, this process verifies their log on attempt and creates access tokens based on the user's permission levels. LSASS is also responsible for user account password changes. All events associated with this process (logon/logoff attempts, etc.) are logged within the Windows Security Log. LSASS is an extremely high-value target as several tools exist to extract both cleartext and hashed credentials stored in memory by this process.
+
+## Sysinternals Tools
+
+The [SysInternals Tools suite](https://docs.microsoft.com/en-us/sysinternals) is a set of portable Windows applications that can be used to administer Windows systems (for the most part without requiring installation). The tools can be either downloaded from the Microsoft website or by loading them directly from an internet-accessible file share by typing `\\live.sysinternals.com\tools` into a Windows Explorer window.
+
+For example, we can run procdump.exe directly from this share without downloading it directly to disk.
+
+```cmd-session
+C:\htb> \\live.sysinternals.com\tools\procdump.exe -accepteula
+
+ProcDump v9.0 - Sysinternals process dump utility
+Copyright (C) 2009-2017 Mark Russinovich and Andrew Richards
+Sysinternals - www.sysinternals.com
+
+Monitors a process and writes a dump file when the process exceeds the
+specified criteria or has an exception.
+
+Capture Usage:
+   procdump.exe [-mm] [-ma] [-mp] [-mc Mask] [-md Callback_DLL] [-mk]
+                [-n Count]
+                [-s Seconds]
+                [-c|-cl CPU_Usage [-u]]
+                [-m|-ml Commit_Usage]
+                [-p|-pl Counter_Threshold]
+                [-h]
+                [-e [1 [-g] [-b]]]
+                [-l]
+                [-t]
+                [-f  Include_Filter, ...]
+                [-fx Exclude_Filter, ...]
+                [-o]
+                [-r [1..5] [-a]]
+                [-wer]
+                [-64]
+                {
+                 {{[-w] Process_Name | Service_Name | PID} [Dump_File | Dump_Folder]}
+                |
+                 {-x Dump_Folder Image_File [Argument, ...]}
+                }
+				
+<SNIP>
+
+```
+
+The suite includes tools such as `Process Explorer`, an enhanced version of `Task Manager`, and `Process Monitor`, which can be used to monitor file system, registry, and network activity related to any process running on the system. Some additional tools are TCPView, which is used to monitor internet activity, and PSExec, which can be used to manage/connect to systems via the SMB protocol remotely.
+
+These tools can be useful for penetration testers to, for example, discover interesting processes and possible privilege escalation paths as well as for lateral movement.
+
+## Task Manager
+
+Windows Task Manager is a powerful tool for managing Windows systems. It provides information about running processes, system performance, running services, startup programs, logged-in users/logged in user processes, and services. Task Manager can be opened by right-clicking on the taskbar and selecting `Task Manager`, pressing ctrl + shift + Esc, pressing ctrl + alt + del and selecting `Task Manager`, opening the start menu and typing `Task Manager`, or typing `taskmgr` from a CMD or PowerShell console.
+
+![[taskmgr.webp]]
+
+|Tab|Description|
+|---|---|
+|Processes tab|Shows a list of running applications and background processes along with the CPU, memory, disk, network, and power usage for each.|
+|Performance tab|Shows graphs and data such as CPU utilization, system uptime, memory usage, disk and, networking, and GPU usage. We can also open the `Resource Monitor`, which gives us a much more in-depth view of the current CPU, Memory, Disk, and Network resource usage.|
+
+![[resource_monitor.webp]]
+
+|Tab|Description|
+|---|---|
+|App history tab|Shows resource usage for the current user account for each application for a period of time.|
+|Startup tab|Shows which applications are configured to start at boot as well as the impact on the startup process.|
+|Users tab|Shows logged in users and the processes/resource usage associated with their session.|
+|Details tab|Shows the name, process ID (PID), status, associated username, CPU, and memory usage for each running application.|
+|Services tab|Shows the name, PID, description, and status of each installed service. The Services add-in can be accessed from this tab as well.|
+
+## Process Explorer
+
+[Process Explorer](https://docs.microsoft.com/en-us/sysinternals/downloads/process-explorer) is a part of the Sysinternals tool suite. This tool can show which handles and DLL processes are loaded when a program runs. Process Explorer shows a list of currently running processes, and from there, we can see what handles the process has selected in one view or the DLLs and memory-swapped files that have been loaded in another view. We can also search within the tool to show which processes tie back to a specific handle or DLL. The tool can also be used to analyze parent-child process relationships to see what child processes are spawned by an application and help troubleshoot any issues such as orphaned processed that can be left behind when a process is terminated.
+
+---
+Identify one of the non-standard update services running on the host. Submit the full name of the service executable (not the DisplayName) as your answer.
+
+foxitreaderupdateservice.exe
+
+---
+
+# Service Permissions
+
+Recall that services allow for the management of long-running processes and are a critical part of Windows operating systems. Sysadmins often overlook them as potential threat vectors that can be used to load malicious DLLs, execute applications without access to an admin account, escalate privileges and even maintain persistence. These threat vectors in Windows services often come into existence through service permissions misconfigurations put in place by 3rd party software and easy to make mistakes by admins during install processes.
+
+The first step in realizing the importance of service permissions is simply understanding that they exist and being mindful of them. On server operating systems, critical network services like DHCP and Active Directory Domain Services commonly get installed using the account assigned to the admin performing the install. Part of the install process includes assigning a specific service to run using the credentials and privileges of a designated user, which by default is set within the currently logged-on user context.
+
+For example, if we are logged on as Bob on a server during DHCP install, then that service will be configured to run as Bob unless specified otherwise. What bad things could come of this? Well, what if Bob leaves the organization or gets fired? The typical business practice would be to disable Bob’s account as part of his exit process. In this case, what would happen to DHCP and other services running using Bob’s account? Those services would fail to start. DHCP or Dynamic Host Configuration Protocol is responsible for leasing IP addresses to computers on the network. If this service stops on a Windows DHCP server, clients requesting an IP address will not receive one. This means a service misconfiguration could lead to downtime and loss of productivity. It is highly recommended to create an individual user account to run critical network services. These are referred to as service accounts.
+
+We should also be mindful of service permissions and the permissions of the directories they execute from because it is possible to replace the path to an executable with a malicious DLL or executable file. Let's examine the permissions of services running on Windows 10 to get an even better understanding of this.
+
+## Examining Services using services.msc
+
+As discussed in the processes and services section, we can use `services.msc` to view and manage just about every detail regarding all services. Let's take a closer look at the service associated with `Windows Update` (`wuauserv`).
+
+![[service_properties.webp]]
+
+Make a note of the different properties available for viewing and configuration. Knowing the service name is especially useful when using command-line tools to examine and manage services. Path to the executable is the full path to the program and command to execute when the service starts. If the NTFS permissions of the destination directory are configured with weak permissions, an attacker could replace the original executable with one created for malicious purposes. We discuss NTFS permissions more in the NTFS vs. Share permissions section of this module.
+
+![[logon.webp]]
+
+Most services run with LocalSystem privileges by default which is the highest level of access allowed on an individual Windows OS. Not all applications need Local System account-level permissions, so it is beneficial to perform research on a case-by-case basis when considering installing new applications in a Windows environment. It is a good practice to identify applications that can run with the least privileges possible to align with the principle of least privilege.
+
+[Here is one breakdown of the principle of least privilege](https://www.cloudflare.com/learning/access-management/principle-of-least-privilege/)
+
+Notable built-in service accounts in Windows:
+
+- LocalService
+    
+- NetworkService
+    
+- LocalSystem
+    
+
+Note: We can also create new accounts and use them for the sole purpose of running a service.
+
+![[recovery_screen.webp]]
+
+The recovery tab allows steps to be configured should a service fail. Notice how this service can be set to run a program after the first failure. This is yet another vector that an attacker could use to run malicious programs by utilizing a legitimate service.
+
+## Examining services using sc
+
+Sc can also be used to configure and manage services. Let's experiment with a few commands.
+
+```cmd-session
+C:\Users\htb-student>sc qc wuauserv
+[SC] QueryServiceConfig SUCCESS
+
+SERVICE_NAME: wuauserv
+        TYPE               : 20  WIN32_SHARE_PROCESS
+        START_TYPE         : 3   DEMAND_START
+        ERROR_CONTROL      : 1   NORMAL
+        BINARY_PATH_NAME   : C:\WINDOWS\system32\svchost.exe -k netsvcs -p
+        LOAD_ORDER_GROUP   :
+        TAG                : 0
+        DISPLAY_NAME       : Windows Update
+        DEPENDENCIES       : rpcss
+        SERVICE_START_NAME : LocalSystem
+```
+
+The `sc qc` command is used to query the service. This is where knowing the names of services can come in handy. If we wanted to query a service on a device over the network, we could specify the hostname or IP address immediately after `sc`.
+
+```cmd-session
+C:\Users\htb-student>sc //hostname or ip of box query ServiceName
+
+```
+
+We can also use sc to start and stop services.
+
+```cmd-session
+C:\Users\htb-student> sc stop wuauserv
+
+[SC] OpenService FAILED 5:
+
+Access is denied.
+```
+
+Notice how we are denied access from performing this action without running it within an administrative context. If we run a command prompt with `elevated privileges`, we will be permitted to complete this action.
+
+```cmd-session
+C:\WINDOWS\system32> sc config wuauserv binPath=C:\Winbows\Perfectlylegitprogram.exe
+
+[SC] ChangeServiceConfig SUCCESS
+
+C:\WINDOWS\system32> sc qc wuauserv
+
+[SC] QueryServiceConfig SUCCESS
+
+SERVICE_NAME: wuauserv
+        TYPE               : 20  WIN32_SHARE_PROCESS
+        START_TYPE         : 3   DEMAND_START
+        ERROR_CONTROL      : 1   NORMAL
+        BINARY_PATH_NAME   : C:\Winbows\Perfectlylegitprogram.exe
+        LOAD_ORDER_GROUP   :
+        TAG                : 0
+        DISPLAY_NAME       : Windows Update
+        DEPENDENCIES       : rpcss
+        SERVICE_START_NAME : LocalSystem
+```
+
+If we were investigating a situation where we suspected that the system had malware, sc would give us the ability to quickly search and analyze commonly targeted services and newly created services. It’s also much more script-friendly than utilizing GUI tools like `services.msc`.
+
+Another helpful way we can examine service permissions using `sc` is through the `sdshow` command.
+
+```cmd-session
+C:\WINDOWS\system32> sc sdshow wuauserv
+
+D:(A;;CCLCSWRPLORC;;;AU)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;SY)S:(AU;FA;CCDCLCSWRPWPDTLOSDRCWDWO;;;WD)
+```
+
+At an initial glance, the output looks crazy. It almost seems that we have done something wrong in our command, but there is a meaning to this madness. Every named object in Windows is a [securable object](https://docs.microsoft.com/en-us/windows/win32/secauthz/securable-objects), and even some unnamed objects are securable. If it's securable in a Windows OS, it will have a [security descriptor](https://docs.microsoft.com/en-us/windows/win32/secauthz/security-descriptors). Security descriptors identify the object’s owner and a primary group containing a `Discretionary Access Control List` (`DACL`) and a `System Access Control List` (`SACL`).
+
+Generally, a DACL is used for controlling access to an object, and a SACL is used to account for and log access attempts. This section will examine the DACL, but the same concepts would apply to a SACL.
+
+```
+D:(A;;CCLCSWRPLORC;;;AU)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;SY)
+```
+
+This amalgamation of characters crunched together and delimited by opened and closed parentheses is in a format known as the `Security Descriptor Definition Language` (`SDDL`).
+
+We may be tempted to read from left to right because that is how the English language is typically written, but it can be much different when interacting with computers. Read the entire security descriptor for the `Windows Update` (`wuauserv`) service in this order starting with the first letter and set of parentheses:
+
+`D: (A;;CCLCSWRPLORC;;;AU)`
+
+1. D: - the proceeding characters are DACL permissions
+2. AU: - defines the security principal Authenticated Users
+3. A;; - access is allowed
+4. CC - SERVICE_QUERY_CONFIG is the full name, and it is a query to the service control manager (SCM) for the service configuration
+5. LC - SERVICE_QUERY_STATUS is the full name, and it is a query to the service control manager (SCM) for the current status of the service
+6. SW - SERVICE_ENUMERATE_DEPENDENTS is the full name, and it will enumerate a list of dependent services
+7. RP - SERVICE_START is the full name, and it will start the service
+8. LO - SERVICE_INTERROGATE is the full name, and it will query the service for its current status
+9. RC - READ_CONTROL is the full name, and it will query the security descriptor of the service
+
+As we read the security descriptor, it can be easy to get lost in the seemingly random order of characters, but recall that we are essentially viewing access control entries in an access control list. Each set of 2 characters in between the semi-colons represents actions allowed to be performed by a specific user or group.
+
+`;;CCLCSWRPLORC;;;`
+
+After the last set of semi-colons, the characters specify the security principal (User and/or Group) that is permitted to perform those actions.
+
+`;;;AU`
+
+The character immediately after the opening parentheses and before the first set of semi-colons defines whether the actions are Allowed or Denied.
+
+`A;;`
+
+This entire security descriptor associated with the `Windows Update` (`wuauserv`) service has three sets of access control entries because there are three different security principals. Each security principal has specific permissions applied.
+
+## Examine service permissions using PowerShell
+
+Using the `Get-Acl` PowerShell cmdlet, we can examine service permissions by targeting the path of a specific service in the registry.
+
+```powershell-session
+PS C:\Users\htb-student> Get-ACL -Path HKLM:\System\CurrentControlSet\Services\wuauserv | Format-List
+
+Path   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\wuauserv
+Owner  : NT AUTHORITY\SYSTEM
+Group  : NT AUTHORITY\SYSTEM
+Access : BUILTIN\Users Allow  ReadKey
+         BUILTIN\Users Allow  -2147483648
+         BUILTIN\Administrators Allow  FullControl
+         BUILTIN\Administrators Allow  268435456
+         NT AUTHORITY\SYSTEM Allow  FullControl
+         NT AUTHORITY\SYSTEM Allow  268435456
+         CREATOR OWNER Allow  268435456
+         APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES Allow  ReadKey
+         APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES Allow  -2147483648
+         S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681 Allow
+         ReadKey
+         S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681 Allow
+         -2147483648
+Audit  :
+Sddl   : O:SYG:SYD:AI(A;ID;KR;;;BU)(A;CIIOID;GR;;;BU)(A;ID;KA;;;BA)(A;CIIOID;GA;;;BA)(A;ID;KA;;;SY)(A;CIIOID;GA;;;SY)(A
+         ;CIIOID;GA;;;CO)(A;ID;KR;;;AC)(A;CIIOID;GR;;;AC)(A;ID;KR;;;S-1-15-3-1024-1065365936-1281604716-3511738428-1654
+         721687-432734479-3232135806-4053264122-3456934681)(A;CIIOID;GR;;;S-1-15-3-1024-1065365936-1281604716-351173842
+         8-1654721687-432734479-3232135806-4053264122-3456934681)
+```
+
+Notice how this command returns specific account permissions in an easy-to-read format and in SDDL. Also, the SID that represents each security principal (User and/or Group) is present in the SDDL. This is something we do not get when running `sc` from the command prompt.
+
+Knowing how to interact with services and their associated permissions from the command line makes it easier to script out these tasks. While it is good to know how to perform these tasks from the GUI, it does not scale well as we start getting into larger network environments and Domains.
+
+# Windows Sessions
+
+#### Interactive
+
+An interactive, or local logon session, is initiated by a user authenticating to a local or domain system by entering their credentials. An interactive logon can be initiated by logging directly into the system, by requesting a secondary logon session using the `runas` command via the command line, or through a Remote Desktop connection.
+
+#### Non-interactive
+
+Non-interactive accounts in Windows differ from standard user accounts as they do not require login credentials. There are 3 types of non-interactive accounts: the Local System Account, Local Service Account, and the Network Service Account. Non-interactive accounts are generally used by the Windows operating system to automatically start services and applications without requiring user interaction. These accounts have no password associated with them and are usually used to start services when the system boots or to run scheduled tasks.
+
+There are differences between the three types of accounts:
+
+|Account|Description|
+|---|---|
+|Local System Account|Also known as the `NT AUTHORITY\SYSTEM` account, this is the most powerful account in Windows systems. It is used for a variety of OS-related tasks, such as starting Windows services. This account is more powerful than accounts in the local administrators group.|
+|Local Service Account|Known as the `NT AUTHORITY\LocalService` account, this is a less privileged version of the SYSTEM account and has similar privileges to a local user account. It is granted limited functionality and can start some services.|
+|Network Service Account|This is known as the `NT AUTHORITY\NetworkService` account and is similar to a standard domain user account. It has similar privileges to the Local Service Account on the local machine. It can establish authenticated sessions for certain network services.|
+
+# Interacting with the Windows Operating System
+
+#### Graphical User Interface
+
+The concept of a graphical user interface (GUI) was introduced in the late 1970s by the Xerox Palo Alto research laboratory. It was added to Apple and Microsoft operating systems to address usability concerns for everyday users that would likely have difficulty navigating the command line. Most casual Windows computer users do not ever need to interact with the operating system via the command line. As the name alludes to, a GUI provides users with an interactive point and click interface for interacting with the operating system and installed applications and services.
+
+The introduction of the GUI opened up widespread appeal and access to computers across many demographics since users would be able to interact with their computer without having to memorize commands or know any programming language. Systems administrators commonly use GUI-based systems for administering Active Directory, configuring IIS, or interacting with databases.
+
+## Remote Desktop Protocol (RDP)
+
+[RDP](https://support.microsoft.com/en-us/help/186607/understanding-the-remote-desktop-protocol-rdp) is a proprietary Microsoft protocol which allows a user to connect to a remote system over a network connection and obtain a graphical user interface. The user connects using RDP client software to a target system running RDP server software. RDP uses port 3389 to open a dedicated network channel for sending data back and forth. When connecting via RDP, a user can access the GUI as if they were actually sitting at the computer and logging into it locally. RDP is often used by system administrators to administer remote systems quickly. It can also allow users to access their work computers when traveling or working from home after connecting to a Virtual Private Network (VPN).
+
+## Windows Command Line
+
+Command-line interfaces give users greater control over their systems and can be used to perform a wide variety of day-to-day, administrative, and troubleshooting tasks. It can be leveraged to introduce automation to perform certain tasks quickly (such as adding many users to a domain at once). In Windows operating systems, the main two ways to interact with the system from the command line are via the Command Prompt (CMD) and PowerShell.
+
+The [Windows Command Reference](https://download.microsoft.com/download/5/8/9/58911986-D4AD-4695-BF63-F734CD4DF8F2/ws-commands.pdf) from Microsoft is a comprehensive A-Z command reference which includes an overview, usage examples, and command syntax for most Windows commands, and familiarity with it is recommended.
+
+## CMD
+
+The Command Prompt (cmd.exe) is used to enter and execute commands. A user can enter one-off commands such as `ipconfig` to view IP address information or perform more advanced tasks such as setting up scheduled tasks or creating scripts and batch files. The Command prompt can be opened from the Start Menu, by typing `cmd` in the run dialogue box, or by directly launching the binary from `C:\Windows\system32\cmd.exe`.
+
+After launching `cmd.exe` we can type `help` to see a listing of available commands.
+
+```cmd-session
+C:\htb> help
+For more information on a specific command, type HELP command-name
+ASSOC          Displays or modifies file extension associations.
+ATTRIB         Displays or changes file attributes.
+BREAK          Sets or clears extended CTRL+C checking.
+BCDEDIT        Sets properties in boot database to control boot loading.
+CACLS          Displays or modifies access control lists (ACLs) of files.
+CALL           Calls one batch program from another.
+CD             Displays the name of or changes the current directory.
+CHCP           Displays or sets the active code page number.
+CHDIR          Displays the name of or changes the current directory.
+CHKDSK         Checks a disk and displays a status report.
+CHKNTFS        Displays or modifies the checking of disk at boot time.
+CLS            Clears the screen.
+CMD            Starts a new instance of the Windows command interpreter.
+COLOR          Sets the default console foreground and background colors.
+COMP           Compares the contents of two files or sets of files.
+COMPACT        Displays or alters the compression of files on NTFS partitions.
+CONVERT        Converts FAT volumes to NTFS.  You cannot convert the
+               current drive.
+COPY           Copies one or more files to another location.
+
+<SNIP>
+```
+
+For more information about a specific command, we can type `help <command name>`.
+
+```cmd-session
+C:\htb> help schtasks
+
+SCHTASKS /parameter [arguments]
+
+Description:
+    Enables an administrator to create, delete, query, change, run and
+    end scheduled tasks on a local or remote system.
+
+Parameter List:
+    /Create         Creates a new scheduled task.
+
+    /Delete         Deletes the scheduled task(s).
+
+    /Query          Displays all scheduled tasks.
+
+    /Change         Changes the properties of scheduled task.
+
+    /Run            Runs the scheduled task on demand.
+
+    /End            Stops the currently running scheduled task.
+
+    /ShowSid        Shows the security identifier corresponding to a scheduled task name.
+
+    /?              Displays this help message.
+
+Examples:
+    SCHTASKS
+    SCHTASKS /?
+    SCHTASKS /Run /?
+    SCHTASKS /End /?
+    SCHTASKS /Create /?
+    SCHTASKS /Delete /?
+    SCHTASKS /Query  /?
+    SCHTASKS /Change /?
+    SCHTASKS /ShowSid /?
+```
+
+Note that certain commands have their own help menus, which can be accessed by typing `<command> /?`. For example, information about the `ipconfig` command can be seen below.
+
+```cmd-session
+C:\htb> ipconfig /?
+
+USAGE:
+    ipconfig [/allcompartments] [/? | /all |
+                                 /renew [adapter] | /release [adapter] |
+                                 /renew6 [adapter] | /release6 [adapter] |
+                                 /flushdns | /displaydns | /registerdns |
+                                 /showclassid adapter |
+                                 /setclassid adapter [classid] |
+                                 /showclassid6 adapter |
+                                 /setclassid6 adapter [classid] ]
+
+where
+    adapter             Connection name
+                       (wildcard characters * and ? allowed, see examples)
+
+    Options:
+       /?               Display this help message
+       /all             Display full configuration information.
+       /release         Release the IPv4 address for the specified adapter.
+       /release6        Release the IPv6 address for the specified adapter.
+       /renew           Renew the IPv4 address for the specified adapter.
+       /renew6          Renew the IPv6 address for the specified adapter.
+       /flushdns        Purges the DNS Resolver cache.
+       /registerdns     Refreshes all DHCP leases and re-registers DNS names
+       /displaydns      Display the contents of the DNS Resolver Cache.
+       /showclassid     Displays all the dhcp class IDs allowed for adapter.
+       /setclassid      Modifies the dhcp class id.
+       /showclassid6    Displays all the IPv6 DHCP class IDs allowed for adapter.
+       /setclassid6     Modifies the IPv6 DHCP class id.
+
+<SNIP
+```
+
+## PowerShell
+
+Windows PowerShell is a command shell that was designed by Microsoft to be more geared towards system administrators. PowerShell, like the Windows command line, has an interactive command prompt as well as a powerful scripting environment. PowerShell is built on top of the .NET Framework, which is used for building and running applications on Windows. This makes it a very powerful tool for interfacing directly with the operating system.
+
+Like the command prompt, PowerShell gives us direct access to the file system, and we run the majority of the same commands that we can within a cmd shell.
+
+## Cmdlets
+
+PowerShell utilizes [cmdlets](https://docs.microsoft.com/en-us/powershell/scripting/developer/cmdlet/cmdlet-overview?view=powershell-7), which are small single-function tools built into the shell. There are more than 100 core cmdlets, and many additional ones have been written, or we can author our own to perform more complex tasks. PowerShell also supports both simple and complex scripts used for system administration tasks, automation, and more.
+
+Cmdlets are in the form of `Verb-Noun`. For example, the command `Get-ChildItem` can be used to list our current directory. Cmdlets also take arguments or flags. We can type `Get-ChildItem -` and hit the tab key to iterate through the arguments. A command such as `Get-ChildItem -Recurse` will show us the contents of our current working directory and all subdirectories. Another example would be `Get-ChildItem -Path C:\Users\Administrator\Documents` to get the contents of another directory. Finally, we can combine arguments such as this to list all subdirectories' contents within another directory recursively: `Get-ChildItem -Path C:\Users\Administrator\Downloads -Recurse`.
+
+## Aliases
+
+Many cmdlets in PowerShell also have aliases. For example, the aliases for the cmdlet `Set-Location`, to change directories, is either `cd` or `sl`. Meanwhile, the aliases for `Get-ChildItem` are `ls` and `gci`. We can view all available aliases by typing `Get-Alias`.
+
+```powershell-session
+PS C:\htb> get-alias
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           % -> ForEach-Object
+Alias           ? -> Where-Object
+Alias           ac -> Add-Content
+Alias           asnp -> Add-PSSnapin
+Alias           cat -> Get-Content
+Alias           cd -> Set-Location
+Alias           CFS -> ConvertFrom-String                          3.1.0.0    Microsoft.PowerShell.Utility
+Alias           chdir -> Set-Location
+Alias           clc -> Clear-Content
+Alias           clear -> Clear-Host
+Alias           clhy -> Clear-History
+Alias           cli -> Clear-Item
+Alias           clp -> Clear-ItemProperty
+```
+
+We can also set up our own aliases with `New-Alias` and get the alias for any cmdlet with `Get-Alias -Name`.
+
+```powershell-session
+PS C:\htb> New-Alias -Name "Show-Files" Get-ChildItem
+PS C:\> Get-Alias -Name "Show-Files"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           Show-Files
+```
+
+PowerShell has a help system for cmdlets, functions, scripts, and concepts. This is not installed by default, but we can either run the `Get-Help <cmdlet-name> -Online` command to open the online help for a cmdlet or function in our web browser. We can type `Update-Help` to download and install help files locally.
+
+```powershell-session
+PS C:\htb> help
+
+TOPIC
+    Windows PowerShell Help System
+
+SHORT DESCRIPTION
+    Displays help about Windows PowerShell cmdlets and concepts.
+
+LONG DESCRIPTION
+    Windows PowerShell Help describes Windows PowerShell cmdlets,
+    functions, scripts, and modules, and explains concepts, including
+    the elements of the Windows PowerShell language.
+
+    Windows PowerShell does not include help files, but you can read the
+    help topics online, or use the Update-Help cmdlet to download help files
+    to your computer and then use the Get-Help cmdlet to display the help
+    topics at the command line.
+
+    You can also use the Update-Help cmdlet to download updated help files
+    as they are released so that your local help content is never obsolete.
+
+    Without help files, Get-Help displays auto-generated help for cmdlets,
+    functions, and scripts.
+
+
+  ONLINE HELP
+    You can find help for Windows PowerShell online in the TechNet Library
+    beginning at http://go.microsoft.com/fwlink/?LinkID=108518.
+
+    To open online help for any cmdlet or function, type:
+
+        Get-Help <cmdlet-name> -Online
+		
+<SNIP>
+```
+
+Typing a command such as `Get-Help Get-AppPackage` will return just the partial help unless the Help files are installed.
+
+```powershell-session
+PS C:\htb>  Get-Help Get-AppPackage
+
+NAME
+    Get-AppxPackage
+
+SYNTAX
+    Get-AppxPackage [[-Name] <string>] [[-Publisher] <string>] [-AllUsers] [-PackageTypeFilter {None | Main |
+    Framework | Resource | Bundle | Xap | Optional | All}] [-User <string>] [-Volume <AppxVolume>]
+    [<CommonParameters>]
+
+
+ALIASES
+    Get-AppPackage
+
+
+REMARKS
+    Get-Help cannot find the Help files for this cmdlet on this computer. It is displaying only partial help.
+        -- To download and install Help files for the module that includes this cmdlet, use Update-Help.
+```
+
+## Running Scripts
+
+The PowerShell ISE (Integrated Scripting Environment) allows users to write PowerShell scripts on the fly. It also has an autocomplete/lookup function for PowerShell commands. The PowerShell ISE allows us to write and run scripts in the same console, which allows for quick debugging.
+
+We can run PowerShell scripts in a variety of ways. If we know the functions, we can run the script either locally or after loading into memory with a download cradle like the below example.
+
+```powershell-session
+PS C:\htb> .\PowerView.ps1;Get-LocalGroup |fl
+
+Description     : Users of Docker Desktop
+Name            : docker-users
+SID             : S-1-5-21-674899381-4069889467-2080702030-1004
+PrincipalSource : Local
+ObjectClass     : Group
+
+Description     : VMware User Group
+Name            : __vmware__
+SID             : S-1-5-21-674899381-4069889467-2080702030-1003
+PrincipalSource : Local
+ObjectClass     : Group
+
+Description     : Members of this group can remotely query authorization attributes and permissions for resources on
+                  this computer.
+Name            : Access Control Assistance Operators
+SID             : S-1-5-32-579
+PrincipalSource : Local
+ObjectClass     : Group
+
+Description     : Administrators have complete and unrestricted access to the computer/domain
+Name            : Administrators
+SID             : S-1-5-32-544
+PrincipalSource : Local
+
+<SNIP>
+```
+
+One common way to work with a script in PowerShell is to import it so that all functions are then available within our current PowerShell console session: `Import-Module .\PowerView.ps1`. We can then either start a command and cycle through the options or type `Get-Module` to list all loaded modules and their associated commands.
+
+```powershell-session
+PS C:\htb> Get-Module | select Name,ExportedCommands | fl
+
+
+Name             : Appx
+ExportedCommands : {[Add-AppxPackage, Add-AppxPackage], [Add-AppxVolume, Add-AppxVolume], [Dismount-AppxVolume,
+                   Dismount-AppxVolume], [Get-AppxDefaultVolume, Get-AppxDefaultVolume]...}
+
+Name             : Microsoft.PowerShell.LocalAccounts
+ExportedCommands : {[Add-LocalGroupMember, Add-LocalGroupMember], [Disable-LocalUser, Disable-LocalUser],
+                   [Enable-LocalUser, Enable-LocalUser], [Get-LocalGroup, Get-LocalGroup]...}
+
+Name             : Microsoft.PowerShell.Management
+ExportedCommands : {[Add-Computer, Add-Computer], [Add-Content, Add-Content], [Checkpoint-Computer,
+                   Checkpoint-Computer], [Clear-Content, Clear-Content]...}
+
+Name             : Microsoft.PowerShell.Utility
+ExportedCommands : {[Add-Member, Add-Member], [Add-Type, Add-Type], [Clear-Variable, Clear-Variable], [Compare-Object,
+                   Compare-Object]...}
+
+Name             : PSReadline
+ExportedCommands : {[Get-PSReadLineKeyHandler, Get-PSReadLineKeyHandler], [Get-PSReadLineOption,
+                   Get-PSReadLineOption], [Remove-PSReadLineKeyHandler, Remove-PSReadLineKeyHandler],
+                   [Set-PSReadLineKeyHandler, Set-PSReadLineKeyHandler]...}
+```
+
+## Execution Policy
+
+Sometimes we will find that we are unable to run scripts on a system. This is due to a security feature called the `execution policy`, which attempts to prevent the execution of malicious scripts. The possible policies are:
+
+|**Policy**|**Description**|
+|---|---|
+|`AllSigned`|All scripts can run, but a trusted publisher must sign scripts and configuration files. This includes both remote and local scripts. We receive a prompt before running scripts signed by publishers that we have not yet listed as either trusted or untrusted.|
+|`Bypass`|No scripts or configuration files are blocked, and the user receives no warnings or prompts.|
+|`Default`|This sets the default execution policy, `Restricted` for Windows desktop machines and `RemoteSigned` for Windows servers.|
+|`RemoteSigned`|Scripts can run but requires a digital signature on scripts that are downloaded from the internet. Digital signatures are not required for scripts that are written locally.|
+|`Restricted`|This allows individual commands but does not allow scripts to be run. All script file types, including configuration files (`.ps1xml`), module script files (`.psm1`), and PowerShell profiles (`.ps1`) are blocked.|
+|`Undefined`|No execution policy is set for the current scope. If the execution policy for ALL scopes is set to undefined, then the default execution policy of `Restricted` will be used.|
+|`Unrestricted`|This is the default execution policy for non-Windows computers, and it cannot be changed. This policy allows for unsigned scripts to be run but warns the user before running scripts that are not from the local intranet zone.|
+
+Below is an example of the current execution policy for all scopes.
+
+```powershell-session
+PS C:\htb> Get-ExecutionPolicy -List
+
+        Scope ExecutionPolicy
+        ----- ---------------
+MachinePolicy       Undefined
+   UserPolicy       Undefined
+      Process       Undefined
+  CurrentUser       Undefined
+ LocalMachine    RemoteSigned
+```
+
+The execution policy is not meant to be a security control that restricts user actions. A user can easily bypass the policy by either typing the script contents directly into the PowerShell window, downloading and invoking the script, or specifying the script as an encoded command. It can also be bypassed by adjusting the execution policy (if the user has the proper rights) or setting the execution policy for the current process scope (which can be done by almost any user as it does not require a configuration change and will only be set for the duration of the user's session).
+
+Below is an example of changing the execution policy for the current process (session).
+
+```powershell-session
+PS C:\htb> Set-ExecutionPolicy Bypass -Scope Process
+
+Execution Policy Change
+The execution policy helps protect you from scripts that you do not trust. Changing the execution policy might expose
+you to the security risks described in the about_Execution_Policies help topic at
+https:/go.microsoft.com/fwlink/?LinkID=135170. Do you want to change the execution policy?
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "N"): Y
+```
+
+We can now see that the execution policy has been changed.
+
+```powershell-session
+PS C:\htb>  Get-ExecutionPolicy -List
+
+        Scope ExecutionPolicy
+        ----- ---------------
+MachinePolicy       Undefined
+   UserPolicy       Undefined
+      Process          Bypass
+  CurrentUser       Undefined
+ LocalMachine    RemoteSigned
+```
+
+---
+What is the alias set for the ipconfig.exe command?
+
+ifconfig
+
+Find the Execution Policy set for the LocalMachine scope.
+
+unrestricted
+
+---
+
+# Windows Management Instrumentation (WMI)
+
+WMI is a subsystem of PowerShell that provides system administrators with powerful tools for system monitoring. The goal of WMI is to consolidate device and application management across corporate networks. WMI is a core part of the Windows operating system and has come pre-installed since Windows 2000. It is made up of the following components:
+
+|**Component Name**|**Description**|
+|---|---|
+|WMI service|The Windows Management Instrumentation process, which runs automatically at boot and acts as an intermediary between WMI providers, the WMI repository, and managing applications.|
+|Managed objects|Any logical or physical components that can be managed by WMI.|
+|WMI providers|Objects that monitor events/data related to a specific object.|
+|Classes|These are used by the WMI providers to pass data to the WMI service.|
+|Methods|These are attached to classes and allow actions to be performed. For example, methods can be used to start/stop processes on remote machines.|
+|WMI repository|A database that stores all static data related to WMI.|
+|CIM Object Manager|The system that requests data from WMI providers and returns it to the application requesting it.|
+|WMI API|Enables applications to access the WMI infrastructure.|
+|WMI Consumer|Sends queries to objects via the CIM Object Manager.|
+
+Some of the uses for WMI are:
+
+- Status information for local/remote systems
+- Configuring security settings on remote machines/applications
+- Setting and changing user and group permissions
+- Setting/modifying system properties
+- Code execution
+- Scheduling processes
+- Setting up logging
+
+These tasks can all be performed using a combination of PowerShell and the WMI Command-Line Interface (WMIC). WMI can be run via the Windows command prompt by typing `WMIC` to open an interactive shell or by running a command directly such as `wmic computersystem get name` to get the hostname. We can view a listing of WMIC commands and aliases by typing `WMIC /?`.
+
+```cmd-session
+C:\htb> wmic /?
+
+WMIC is deprecated.
+
+[global switches] <command>
+
+The following global switches are available:
+/NAMESPACE           Path for the namespace the alias operate against.
+/ROLE                Path for the role containing the alias definitions.
+/NODE                Servers the alias will operate against.
+/IMPLEVEL            Client impersonation level.
+/AUTHLEVEL           Client authentication level.
+/LOCALE              Language id the client should use.
+/PRIVILEGES          Enable or disable all privileges.
+/TRACE               Outputs debugging information to stderr.
+/RECORD              Logs all input commands and output.
+/INTERACTIVE         Sets or resets the interactive mode.
+/FAILFAST            Sets or resets the FailFast mode.
+/USER                User to be used during the session.
+/PASSWORD            Password to be used for session login.
+/OUTPUT              Specifies the mode for output redirection.
+/APPEND              Specifies the mode for output redirection.
+/AGGREGATE           Sets or resets aggregate mode.
+/AUTHORITY           Specifies the <authority type> for the connection.
+/?[:<BRIEF|FULL>]    Usage information.
+
+For more information on a specific global switch, type: switch-name /?
+
+Press any key to continue, or press the ESCAPE key to stop
+```
+
+The following command example lists information about the operating system.
+
+```cmd-session
+C:\htb> wmic os list brief
+
+BuildNumber  Organization  RegisteredUser  SerialNumber             SystemDirectory      Version
+19041                      Owner           00123-00123-00123-AAOEM  C:\Windows\system32  10.0.19041
+```
+
+WMIC uses aliases and associated verbs, adverbs, and switches. The above command example uses `LIST` to show data and the adverb `BRIEF` to provide just the core set of properties. An in-depth listing of verbs, switches, and adverbs is available [here](https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmic). WMI can be used with PowerShell by using the `Get-WmiObject` [module](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-wmiobject?view=powershell-5.1). This module is used to get instances of WMI classes or information about available classes. This module can be used against local or remote machines.
+
+Here we can get information about the operating system.
+
+```powershell-session
+PS C:\htb> Get-WmiObject -Class Win32_OperatingSystem | select SystemDirectory,BuildNumber,SerialNumber,Version | ft
+
+SystemDirectory     BuildNumber SerialNumber            Version
+---------------     ----------- ------------            -------
+C:\Windows\system32 19041       00123-00123-00123-AAOEM 10.0.19041
+```
+
+We can also use the `Invoke-WmiMethod` [module](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/invoke-wmimethod?view=powershell-5.1), which is used to call the methods of WMI objects. A simple example is renaming a file. We can see that the command completed properly because the `ReturnValue` is set to 0.
+
+```powershell-session
+PS C:\htb> Invoke-WmiMethod -Path "CIM_DataFile.Name='C:\users\public\spns.csv'" -Name Rename -ArgumentList "C:\Users\Public\kerberoasted_users.csv"
+
+
+__GENUS          : 2
+__CLASS          : __PARAMETERS
+__SUPERCLASS     :
+__DYNASTY        : __PARAMETERS
+__RELPATH        :
+__PROPERTY_COUNT : 1
+__DERIVATION     : {}
+__SERVER         :
+__NAMESPACE      :
+__PATH           :
+ReturnValue      : 0
+PSComputerName   :
+```
+
+This section provides a brief overview of `WMI`, `WMIC`, and combining `WMIC` and `PowerShell`. `WMI` has a wide variety of uses for both blue team and red team operators. Later sections of this course will show some ways that `WMI` can be leveraged offensively for both enumeration and lateral movement.
+
+---
+Use WMI to find the serial number of the system.
+
+00329-10280-00000-AA938
+
+---
+# Microsoft Management Console (MMC)
+
+The MMC can be used to group snap-ins, or administrative tools, to manage hardware, software, and network components within a Windows host. It has been around since Windows Server 2000 and runs on all Windows versions. We can also use MMC to create custom tools and distribute them to users. MMC works with the concept of snap-ins, allowing administrators to create a customized console with only the administrative tools needed to manage several services. These snap-ins can be added to manage both local and remote systems.
+
+We can open MMC by just typing `mmc` in the Start menu. When we open MMC for the first time, it will be blank.
+
+![[MMC.webp]]
+
+From here, we can browse to File --> `Add or Remove Snap-ins`, and begin customizing our administrative console.
+
+![[MMC_add_remove.webp]]
+
+As we begin adding snap-ins, we will be asked if we want to add the snap-in to manage just the local computer or if it will be used to manage another computer on the network.
+
+![[MMC_services.webp]]
+
+Once we have finished adding snap-ins, they will appear on the left-hand side of MMC. From here, we can save the set of snap-ins as a .msc file, so they will all be loaded the next time we open MMC. By default, they are saved in the Windows Administrative Tools directory under the Start menu. Next time we open MMC, we can choose to load any of the views that we have created.
+
+![[saved_msc.webp]]
+
+# Windows Subsystem for Linux (WSL)
+
+[WSL](https://docs.microsoft.com/en-us/windows/wsl/) is a feature that allows Linux binaries to be run natively on Windows 10 and Windows Server 2019. It was originally intended for developers who needed to run Bash, Ruby, and native Linux command-line tools such as `sed`, `awk`, `grep`, etc., directly on their Windows workstation. The second version of WSL, released in May 2019, introduced a real Linux kernel utilizing a subset of Hyper-V features.
+
+WSL can be installed by running the PowerShell command `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux` as an Administrator. Once this feature is enabled, we can either download a Linux distro from the Microsoft Store and install it or manually download the Linux distro of our choice and unpack and install it from the command line.
+
+WSL installs an application called `Bash.exe`, which can be run by merely typing `bash` into a Windows console to spawn a Bash shell. We have the full look and feel of a Linux host from this shell, including the standard Linux directory structure.
+
+```powershell-session
+PS C:\htb> ls /
+
+bin dev home lib lLib64 media opt root sbin srv tmp var
+boot etc init 1lib32 Libx32 mnt proc run Snap sys usr
+```
+
+We can access the C$ volume and other volumes on the host operating system via the `mnt` directory, making the transition from the WSL host and the Windows host OS seamless. Once in this bash shell, we can interact with WSL as we would interact with any Linux-based operating system: running commands, installing updates/packages, etc.
+
+```powershell-session
+PS C:\htb> uname -a
+
+Linux WS01 4.4.0-18362-Microsoft #476-Microsoft Frit Nov 01 16:53:00
+PST 2019 x86_64 x86 _64 x86_64 GNU/Linux
+```
+
+# Desktop Experience vs. Server Core
+
+[Windows Server Core](https://docs.microsoft.com/en-us/windows-server/administration/server-core/what-is-server-core) was first released with Windows Server 2008 as a minimalistic Server environment only containing key Server functionality. As a result, Server Core has lower management requirements, a smaller attack surface, and uses less disk space and memory than its Desktop Experience (GUI) counterpart. In Server Core, all configuration and maintenance tasks are performed via the command-line, PowerShell, or remote management with MMC or Remote Server Administration Tools (RSAT).
+
+While Server Core aims to have a smaller footprint by lacking a GUI, some graphical programs are still supported, such as Registry Editor, Notepad, System Information, Windows Installer, Task Manager, and PowerShell. It also supports some Sysinternals suite tools such as Active Directory Explorer, Process Explorer, Process Monitor, and TCPView.
+
+As of Windows Server 2019, Server Core or Desktop Experience must be selected at installation, and neither can be rolled back (i.e., converting Server Core to Desktop Experience). Once installed, the initial setup for Server Core can be done via `Sconfig`, which is a text-based interface (actually a VBScript executed by WScript). `Sconfig` is used for performing a variety of common commands such as configuring networking, checking for/installing Windows updates, account management, configuring remote management, activating Windows, and more.
+
+![[sconfig.webp]]
+
+Certain server applications cannot run on Server Core, including Microsoft Server Virtual Machine Manager 2019 (SCVMM), System Center Data Protection Manager 2019, SharePoint Server 2019, Project Server 2019.
+
+In summary, Server Core is lighter weight and less resource-intensive but has a steeper learning curve and can be more difficult to manage. It also has some limitations, such as performing management tasks using certain GUI programs.
+
+In any environment, the determination between using Desktop Experience or Server Core for a server installation should be made by both the business need and intended use of the server and the skill level of the administrators responsible for maintaining it. The following table shows some of the applications available on Server Core vs. Desktop Experience. This is a list of common applications and not an exhaustive list.
+
+|**Application**|**Server Core**|**Desktop Experience**|
+|---|---|---|
+|Command prompt|Available|Available|
+|Windows PowerShell/ Microsoft .NET|Available|Available|
+|Regedit|Available|Available|
+|Diskmgmt.msc|Not Available|Available|
+|Server Manager|Not Available|Available|
+|Mmc.exe|Not Available|Available|
+|Eventvwr|Not Available|Available|
+|Services.msc|Not Available|Available|
+|Control Panel|Not Available|Available|
+|Windows Explorer|Not Available|Available|
+|Taskmgr|Available|Available|
+|Internet Explorer or Edge|Not Available|Available|
+|Remote Desktop Services|Available|Available|
+
+# Windows Security
+
+Security is a critical topic in Windows operating systems. Windows systems have many moving parts that present a vast attack surface. Due to the many built-in applications, features, and layers of settings, Windows systems can be easily misconfigured, thus opening them up to attack even if they are fully patched.
+
+It has many built-in features that can be abused and has suffered from a wide variety of critical vulnerabilities, resulting in widely used and very effective remote and local exploits.
+
+Microsoft has improved upon Windows security over the years. As our world's interconnectedness continues to expand and attackers become more sophisticated, Microsoft has continued to add new features that can be used by systems administrators to harden systems and actively block and detect attempts at intrusion and misuse.
+
+Windows follows certain security principles to control access and authentication within the system. These principles apply to various entities, such as users, networked computers, threads, and processes, which can be authorized for specific actions. The security model is designed to minimize the risk of unauthorized access, making it more challenging for attackers or malicious software to exploit the system.
+
+## Security Identifier (SID)
+
+Each of the security principals on the system has a unique security identifier (SID). The system automatically generates SIDs. This means that even if, for example, we have two identical users on the system, Windows can distinguish the two and their rights based on their SIDs. SIDs are string values with different lengths, which are stored in the security database. These SIDs are added to the user's access token to identify all actions that the user is authorized to take.
+
+A SID consists of the Identifier Authority and the Relative ID (RID). In an Active Directory (AD) domain environment, the SID also includes the domain SID.
+
+```powershell-session
+PS C:\htb> whoami /user
+
+USER INFORMATION
+----------------
+
+User Name           SID
+=================== =============================================
+ws01\bob S-1-5-21-674899381-4069889467-2080702030-1002
+```
+
+The SID is broken down into this pattern.
+
+```powershell-session
+(SID)-(revision level)-(identifier-authority)-(subauthority1)-(subauthority2)-(etc)
+```
+
+Let's break down the SID piece by piece.
+
+|**Number**|**Meaning**|**Description**|
+|---|---|---|
+|S|SID|Identifies the string as a SID.|
+|1|Revision Level|To date, this has never changed and has always been `1`.|
+|5|Identifier-authority|A 48-bit string that identifies the authority (the computer or network) that created the SID.|
+|21|Subauthority1|This is a variable number that identifies the user's relation or group described by the SID to the authority that created it. It tells us in what order this authority created the user's account.|
+|674899381-4069889467-2080702030|Subauthority2|Tells us which computer (or domain) created the number|
+|1002|Subauthority3|The RID that distinguishes one account from another. Tells us whether this user is a normal user, a guest, an administrator, or part of some other group|
+
+## Security Accounts Manager (SAM) and Access Control Entries (ACE)
+
+SAM grants rights to a network to execute specific processes.
+
+The access rights themselves are managed by Access Control Entries (ACE) in Access Control Lists (ACL). The ACLs contain ACEs that define which users, groups, or processes have access to a file or to execute a process, for example.
+
+The permissions to access a securable object are given by the security descriptor, classified into two types of ACLs: the `Discretionary Access Control List (DACL)` or `System Access Control List (SACL)`. Every thread and process started or initiated by a user goes through an authorization process. An integral part of this process is access tokens, validated by the Local Security Authority (LSA). In addition to the SID, these access tokens contain other security-relevant information. Understanding these functionalities is an essential part of learning how to use and work around these security mechanisms during the privilege escalation phase.
+
+## User Account Control (UAC)
+
+[User Account Control (UAC)](https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works) is a security feature in Windows to prevent malware from running or manipulating processes that could damage the computer or its contents. There is the Admin Approval Mode in UAC, which is designed to prevent unwanted software from being installed without the administrator's knowledge or to prevent system-wide changes from being made. Surely you have already seen the consent prompt if you have installed a specific software, and your system has asked for confirmation if you want to have it installed. Since the installation requires administrator rights, a window pops up, asking you if you want to confirm the installation. With a standard user who has no rights for the installation, execution will be denied, or you will be asked for the administrator password. This consent prompt interrupts the execution of scripts or binaries that malware or attackers try to execute until the user enters the password or confirms execution. To understand how UAC works, we need to know how it is structured and how it works, and what triggers the consent prompt. The following diagram, adapted from the source [here](https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works), illustrates how UAC works.
+
+![[uacarchitecture1.png]]
+
+## Registry
+
+The [Registry](https://en.wikipedia.org/wiki/Windows_Registry) is a hierarchical database in Windows critical for the operating system. It stores low-level settings for the Windows operating system and applications that choose to use it. It is divided into computer-specific and user-specific data. We can open the Registry Editor by typing `regedit` from the command line or Windows search bar.
+
+![[regedit.webp]]
+
+The tree-structure consists of main folders (root keys) in which subfolders (subkeys) with their entries/files (values) are located. There are 11 different types of values that can be entered in a subkey.
+
+|**Value**|**Type**|
+|---|---|
+|REG_BINARY|Binary data in any form.|
+|REG_DWORD|A 32-bit number.|
+|REG_DWORD_LITTLE_ENDIAN|A 32-bit number in little-endian format. Windows is designed to run on little-endian computer architectures. Therefore, this value is defined as REG_DWORD in the Windows header files.|
+|REG_DWORD_BIG_ENDIAN|A 32-bit number in big-endian format. Some UNIX systems support big-endian architectures.|
+|REG_EXPAND_SZ|A null-terminated string that contains unexpanded references to environment variables (for example, "%PATH%"). It will be a Unicode or ANSI string depending on whether you use the Unicode or ANSI functions. To expand the environment variable references, use the [**ExpandEnvironmentStrings**](https://docs.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-expandenvironmentstringsa) function.|
+|REG_LINK|A null-terminated Unicode string containing the target path of a symbolic link created by calling the [**RegCreateKeyEx**](https://docs.microsoft.com/en-us/windows/desktop/api/Winreg/nf-winreg-regcreatekeyexa) function with REG_OPTION_CREATE_LINK.|
+|REG_MULTI_SZ|A sequence of null-terminated strings, terminated by an empty string (\0). The following is an example: _String1_\0_String2_\0_String3_\0_LastString_\0\0 The first \0 terminates the first string, the second to the last \0 terminates the last string, and the final \0 terminates the sequence. Note that the final terminator must be factored into the length of the string.|
+|REG_NONE|No defined value type.|
+|REG_QWORD|A 64-bit number.|
+|REG_QWORD_LITTLE_ENDIAN|A 64-bit number in little-endian format. Windows is designed to run on little-endian computer architectures. Therefore, this value is defined as REG_QWORD in the Windows header files.|
+|REG_SZ|A null-terminated string. This will be either a Unicode or an ANSI string, depending on whether you use the Unicode or ANSI functions.|
+
+Source: [https://docs.microsoft.com/en-us/windows/win32/sysinfo/registry-value-types](https://docs.microsoft.com/en-us/windows/win32/sysinfo/registry-value-types)
+
+Each folder under `Computer` is a key. The root keys all start with `HKEY`. A key such as `HKEY-LOCAL-MACHINE` is abbreviated to `HKLM`. HKLM contains all settings that are relevant to the local system. This root key contains six subkeys like `SAM`, `SECURITY`, `SYSTEM`, `SOFTWARE`, `HARDWARE`, and `BCD`, loaded into memory at boot time (except `HARDWARE` which is dynamically loaded).
+
+![[regedit2.webp]]
+
+The entire system registry is stored in several files on the operating system. You can find these under `C:\Windows\System32\Config\`.
+
+```powershell-session
+PS C:\htb> ls
+
+    Directory: C:\Windows\system32\config
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----         12/7/2019   4:14 AM                Journal
+d-----         12/7/2019   4:14 AM                RegBack
+d-----         12/7/2019   4:14 AM                systemprofile
+d-----         8/12/2020   1:43 AM                TxR
+-a----         8/13/2020   6:02 PM        1048576 BBI
+-a----         6/25/2020   4:36 PM          28672 BCD-Template
+-a----         8/30/2020  12:17 PM       33816576 COMPONENTS
+-a----         8/13/2020   6:02 PM         524288 DEFAULT
+-a----         8/26/2020   7:51 PM        4603904 DRIVERS
+-a----         6/25/2020   3:37 PM          32768 ELAM
+-a----         8/13/2020   6:02 PM          65536 SAM
+-a----         8/13/2020   6:02 PM          65536 SECURITY
+-a----         8/13/2020   6:02 PM       87818240 SOFTWARE
+-a----         8/13/2020   6:02 PM       17039360 SYSTEM
+```
+
+The user-specific registry hive (HKCU) is stored in the user folder (i.e., `C:\Users\<USERNAME>\Ntuser.dat`).
+
+```powershell-session
+PS C:\htb> gci -Hidden
+
+    Directory: C:\Users\bob
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d--h--         6/25/2020   5:12 PM                AppData
+d--hsl         6/25/2020   5:12 PM                Application Data
+d--hsl         6/25/2020   5:12 PM                Cookies
+d--hsl         6/25/2020   5:12 PM                Local Settings
+d--h--         6/25/2020   5:12 PM                MicrosoftEdgeBackups
+d--hsl         6/25/2020   5:12 PM                My Documents
+d--hsl         6/25/2020   5:12 PM                NetHood
+d--hsl         6/25/2020   5:12 PM                PrintHood
+d--hsl         6/25/2020   5:12 PM                Recent
+d--hsl         6/25/2020   5:12 PM                SendTo
+d--hsl         6/25/2020   5:12 PM                Start Menu
+d--hsl         6/25/2020   5:12 PM                Templates
+-a-h--         8/13/2020   6:01 PM        2883584 NTUSER.DAT
+-a-hs-         6/25/2020   5:12 PM         524288 ntuser.dat.LOG1
+-a-hs-         6/25/2020   5:12 PM        1011712 ntuser.dat.LOG2
+-a-hs-         8/17/2020   5:46 PM        1048576 NTUSER.DAT{53b39e87-18c4-11ea-a811-000d3aa4692b}.TxR.0.regtrans-ms
+-a-hs-         8/17/2020  12:13 PM        1048576 NTUSER.DAT{53b39e87-18c4-11ea-a811-000d3aa4692b}.TxR.1.regtrans-ms
+-a-hs-         8/17/2020  12:13 PM        1048576 NTUSER.DAT{53b39e87-18c4-11ea-a811-000d3aa4692b}.TxR.2.regtrans-ms
+-a-hs-         8/17/2020   5:46 PM          65536 NTUSER.DAT{53b39e87-18c4-11ea-a811-000d3aa4692b}.TxR.blf
+-a-hs-         6/25/2020   5:15 PM          65536 NTUSER.DAT{53b39e88-18c4-11ea-a811-000d3aa4692b}.TM.blf
+-a-hs-         6/25/2020   5:12 PM         524288 NTUSER.DAT{53b39e88-18c4-11ea-a811-000d3aa4692b}.TMContainer000000000
+                                                  00000000001.regtrans-ms
+-a-hs-         6/25/2020   5:12 PM         524288 NTUSER.DAT{53b39e88-18c4-11ea-a811-000d3aa4692b}.TMContainer000000000
+                                                  00000000002.regtrans-ms
+---hs-         6/25/2020   5:12 PM             20 ntuser.ini
+```
+
+## Run and RunOnce Registry Keys
+
+There are also so-called registry hives, which contain a logical group of keys, subkeys, and values to support software and files loaded into memory when the operating system is started or a user logs in. These hives are useful for maintaining access to the system. These are called [Run and RunOnce registry keys](https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys).
+
+The Windows registry includes the following four keys:
+
+```powershell-session
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunOnce
+```
+
+Here is an example of the `HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run` key while logged in to a system.
+
+```powershell-session
+PS C:\htb> reg query HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
+    SecurityHealth    REG_EXPAND_SZ    %windir%\system32\SecurityHealthSystray.exe
+    RTHDVCPL    REG_SZ    "C:\Program Files\Realtek\Audio\HDA\RtkNGUI64.exe" -s
+    Greenshot    REG_SZ    C:\Program Files\Greenshot\Greenshot.exe
+```
+
+Here is an example of the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` showing applications running under the current user while logged in to a system.
+
+```powershell-session
+PS C:\htb> reg query HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
+
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
+    OneDrive    REG_SZ    "C:\Users\bob\AppData\Local\Microsoft\OneDrive\OneDrive.exe" /background
+    OPENVPN-GUI    REG_SZ    C:\Program Files\OpenVPN\bin\openvpn-gui.exe
+    Docker Desktop    REG_SZ    C:\Program Files\Docker\Docker\Docker Desktop.exe
+```
+
+## Application Whitelisting
+
+An application whitelist is a list of approved software applications or executables allowed to be present and run on a system. The goal is to protect the environment from harmful malware and unapproved software that does not align with the specific business needs of an organization. Implementing an enforced whitelist can be a challenge, especially in a large network. An organization should implement a whitelist in audit mode initially to make sure that all necessary applications are whitelisted and not blocked by an error of omission, which can cause more problems than it fixes.
+
+Blacklisting, in contrast, specifies a list of harmful or disallowed software/applications to block, and all others are allowed to run/be installed. Whitelisting is based on a "zero trust" principle in which all software/applications are deemed "bad" except for those specifically allowed. Maintaining a whitelist generally has less overhead as a system administrator will only need to specify what is allowed and not constantly update a "blacklist" with new malicious applications.
+
+Whitelisting is recommended by organizations such as [NIST](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-167.pdf), especially in high-security environments.
+
+## AppLocker
+
+[AppLocker](https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/applocker/applocker-overview) is Microsoft's application whitelisting solution and was first introduced in Windows 7. AppLocker gives system administrators control over which applications and files users can run. It gives granular control over executables, scripts, Windows installer files, DLLs, packaged apps, and packed app installers.
+
+It allows for creating rules based on file attributes such as the publisher's name (which can be derived from the digital signature), product name, file name, and version. Rules can also be set up based on file paths and hashes. Rules can be applied to either security groups or individual users, based on the business need. AppLocker can be deployed in audit mode first to test the impact before enforcing all of the rules.
+
+## Local Group Policy
+
+Group Policy allows administrators to set, configure, and adjust a variety of settings. In a domain environment, group policies are pushed down from a Domain Controller onto all domain-joined machines that Group Policy objects (GPOs) are linked to. These settings can also be defined on individual machines using Local Group Policy.
+
+Group Policy can be configured locally, in both domain environments and non-domain environments. Local Group Policy can be used to tweak certain graphical and network settings that are otherwise not accessible via the Control Panel. It can also be used to lock down an individual computer policy with stringent security settings, such as only allowing certain programs to be installed/run or enforcing strict user account password requirements.
+
+We can open the Local Group Policy Editor by opening the Start menu and typing `gpedit.msc`. The editor is split into two categories under Local Computer Policy - `Computer Configuration` and `User Configuration`.
+
+![[Local_GP.webp]]
+
+For example, we can open the Local Computer Policy to enable Credential Guard by enabling the setting `Turn On Virtualization Based Security`. Credential Guard is a feature in Windows 10 that protects against credential theft attacks by isolating the operating system's LSA process.
+
+![[credguard.webp]]
+
+We can also enable fine-tuned account auditing and configure AppLocker from the Local Group Policy Editor. It is worth exploring Local Group Policy and learning about the wide variety of ways it can be used to lock down a Windows system.
+
+## Windows Defender Antivirus
+
+Windows Defender Antivirus (Defender), formerly known as Windows Defender, is built-in antivirus that ships for free with Windows operating systems. It was first released as a downloadable anti-spyware tool for Windows XP and Server 2003. Defender started coming prepackaged as part of the operating system with Windows Vista/Server 2008. The program was renamed to Windows Defender Antivirus with the Windows 10 Creators Update.
+
+Defender comes with several features such as real-time protection, which protects the device from known threats in real-time and cloud-delivered protection, which works in conjunction with automatic sample submission to upload suspicious files for analysis. When files are submitted to the cloud protection service, they are "locked" to prevent any potentially malicious behavior until the analysis is complete. Another feature is Tamper Protection, which prevents security settings from being changed through the Registry, PowerShell cmdlets, or group policy.
+
+Windows Defender is managed from the Security Center, from which a variety of additional security features and settings can be enabled and managed.
+
+![[Defender_sec_center.webp]]
+
+Real-time protection settings can be tweaked to add files, folders, and memory areas to controlled folder access to prevent unauthorized changes. We can also add files or folders to an exclusion list, so they are not scanned. An example would be excluding a folder of tools used for penetration testing from scanning as they will be flagged malicious and quarantined or removed from the system. Controlled folder access is Defender's built-in Ransomware protection.
+
+We can use the PowerShell cmdlet `Get-MpComputerStatus` to check which protection settings are enabled.
+
+```powershell-session
+PS C:\htb> Get-MpComputerStatus | findstr "True"
+AMServiceEnabled                : True
+AntispywareEnabled              : True
+AntivirusEnabled                : True
+BehaviorMonitorEnabled          : True
+IoavProtectionEnabled           : True
+IsTamperProtected               : True
+NISEnabled                      : True
+OnAccessProtectionEnabled       : True
+RealTimeProtectionEnabled       : True
+```
+
+While no antivirus solution is perfect, Windows Defender does very well in monthly detection rate tests compared to other solutions, even paid ones. Also, since it comes preinstalled as part of the operating system, it does not introduce "bloat" to the system, such as other programs that add browser extensions and trackers. Other products are known to slow down the system due to the way they hook into the operating system.
+
+Windows Defender is not without its flaws and should be part of a defense-in-depth strategy built around core principles of configuration and patch management, not treated as a silver bullet for protecting our systems. Definitions are updated constantly, and new versions of Windows Defender are built-in to major operating releases such as Windows 10, version 1909, which is the most recent version at the time of writing.
+
+Windows Defender will pick up payloads from common open-source frameworks such as Metasploit or unaltered versions of tools such as Mimikatz.
+
+![[meterp_caught.webp]]
+
+Though it is becoming increasingly difficult, it is still possible to fully bypass Windows Defender protections enforced by the latest version with the most up-to-date definitions installed.
+
+---
+Find the SID for the bob.smith user.
+
+S-1-5-21-2614195641-1726409526-3792725429-1003
+
+What 3rd party security application is disabled at startup for the current user? (The answer is case sensitive).
+
+NordVPN
+
+---
+# Skills Assessment - Windows Fundamentals
+
+Inlanefreight recently had an incident where a disgruntled employee in marketing accessed an internally hosted HR share and deleted several confidential files & folders. Thankfully, the IT team had good backups and restored all of the deleted data. There are now concerns that this disgruntled employee was able to access the HR share in the first place. After performing a security assessment, you have found that the IT team may not fully understand how permissions work in Windows. You are conducting training and a demonstration to show the department good security practices with file sharing in a Windows environment as well as viewing services from the command line to check for any potential tampering.
+
+Note: It is important that each step is completed in the order they are presented. Starting with step 1 and working your way through step 8, including all associated specifications with each step. Please know that each step is designed to give you the opportunity to apply the skills & concepts taught throughout this module. Take your time, have fun and feel free to reach out if you get stuck.
+
+In this demonstration, you are:
+
+## 1. Creating a shared folder called Company Data
+
+## 2. Creating a subfolder called HR inside of the Company Data folder
+
+## 3. Creating a user called Jim
+
+- `Uncheck: User must change password at logon`
+
+## 4. Creating a security group called HR
+
+## 5. Adding Jim to the HR security group
+
+## 6. Adding the HR security group to the shared Company Data folder and NTFS permissions list
+
+- `Remove the default group that is present`
+- `Share Permissions: Allow Change & Read`
+- `Disable Inheritance before issuing specific NTFS permissions`
+- `NTFS permissions: Modify, Read & Execute, List folder contents, Read, Write`
+
+## 7. Adding the HR security group to the NTFS permissions list of the HR subfolder
+
+- `Remove the default group that is present`
+- `Disable Inheritance before issuing specific NTFS permissions`
+- `NTFS permissions: Modify, Read & Execute, List folder contents, Read, and Write`
+
+## 8. Using PowerShell to list details about a service
