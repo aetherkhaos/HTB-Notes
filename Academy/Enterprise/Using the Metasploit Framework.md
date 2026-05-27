@@ -4425,11 +4425,10 @@ From this point, if the machine was connected to a more extensive network, we co
 Answer the question(s) below to complete the section
 
 Find the existing exploit in MSF and use it to get a shell on the target. What is the username of the user you obtained a shell with?
-
  - NT AUTHORITY\SYSTEM
 
-
-
+Retrieve the NTLM password hash for the "htb-student" user. Submit the hash as the answer.
+- cf3a5525ee9414229e66279623ed5c58
 
 
 ```
@@ -4872,3 +4871,6 @@ WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:4b4ba140ac0767077aee1958
 (Meterpreter 1)(C:\Windows\system32) > 
 
 ```
+
+---
+
