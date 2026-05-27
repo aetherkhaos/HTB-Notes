@@ -184,7 +184,7 @@ Now that we know all of these locations, it will be easy for us to reference the
 Answer the question(s) below to complete the section
 
 Which version of Metasploit comes equipped with a GUI interface?
-- 
+- metasploit pro
 
 What command do you use to interact with the free version of Metasploit?
-- 
+- msfconsole
