@@ -177,3 +177,5 @@ Command-line utilities that can be called directly from the `msfconsole` menu.
 crimsonguard@htb[/htb]`$ ls /usr/share/metasploit-framework/tools/  context  docs     hardware  modules   payloads dev      exploit  memdump   password  recon`
 
 Now that we know all of these locations, it will be easy for us to reference them in the future when we decide to import new modules or even create new ones from scratch.
+
+---
