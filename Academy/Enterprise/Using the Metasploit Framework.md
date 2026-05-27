@@ -179,3 +179,14 @@ crimsonguard@htb[/htb]`$ ls /usr/share/metasploit-framework/tools/  context  doc
 Now that we know all of these locations, it will be easy for us to reference them in the future when we decide to import new modules or even create new ones from scratch.
 
 ---
+## Questions
+
+Answer the question(s) below to complete the section
+
+Which version of Metasploit comes equipped with a GUI interface?
+
+Submit task answer
+
+What command do you use to interact with the free version of Metasploit?
+
+Submit task answer
