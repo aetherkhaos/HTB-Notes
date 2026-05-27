@@ -1893,3 +1893,10 @@ Other critical payloads that are heavily used by penetration testers during secu
 
 Besides these, of course, there are a plethora of other payloads out there. Some are for specific device vendors, such as Cisco, Apple, or PLCs. Some we can generate ourselves using `msfvenom`. However, next up, we will look at `Encoders` and how they can be used to influence the attack outcome.
 
+---
+
+## Questions
+
+Answer the question(s) below to complete the section
+
+Exploit the Apache Druid service and find the flag.txt file. Submit the contents of this file as the answer.
