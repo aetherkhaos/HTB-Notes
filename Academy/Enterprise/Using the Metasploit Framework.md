@@ -4426,32 +4426,6 @@ From this point, if the machine was connected to a more extensive network, we co
 
 ```
 ┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
-└──╼ [★]$ sudo nmap -sV -sS -p- 10.129.1.11
-Starting Nmap 7.95 ( https://nmap.org ) at 2026-05-27 18:47 EDT
-Nmap scan report for 10.129.1.11
-Host is up (0.0088s latency).
-Not shown: 65520 closed tcp ports (reset)
-PORT      STATE SERVICE       VERSION
-135/tcp   open  msrpc         Microsoft Windows RPC
-139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
-445/tcp   open  microsoft-ds?
-3389/tcp  open  ms-wbt-server Microsoft Terminal Services
-5000/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
-5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
-47001/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
-49664/tcp open  msrpc         Microsoft Windows RPC
-49665/tcp open  msrpc         Microsoft Windows RPC
-49666/tcp open  msrpc         Microsoft Windows RPC
-49667/tcp open  msrpc         Microsoft Windows RPC
-49668/tcp open  msrpc         Microsoft Windows RPC
-49669/tcp open  msrpc         Microsoft Windows RPC
-49670/tcp open  msrpc         Microsoft Windows RPC
-49671/tcp open  msrpc         Microsoft Windows RPC
-Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
-
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 69.11 seconds
-┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-4yleykfxye]─[~]
 └──╼ [★]$ msfconsole -q
 
 [msf](Jobs:0 Agents:0) >> nmap -sV -p- -T5 -A 10.129.1.11
