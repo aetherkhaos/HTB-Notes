@@ -42,13 +42,13 @@ A firm grasp of the following modules can be considered prerequisites for succes
 - Linux Fundamentals
 - Introduction to Web Applications
 - Web Requests
-![[Pasted image 20260528093044.png]]
+![[Screenshots/Pasted image 20260528093044.png]]
 
 # Introduction
 
 Most modern web applications utilize a database structure on the back-end. Such databases are used to store and retrieve data related to the web application, from actual web content to user information and content, and so on. To make the web applications dynamic, the web application has to interact with the database in real-time. As HTTP(S) requests arrive from the user, the web application's back-end will issue queries to the database to build the response. These queries can include information from the HTTP(S) request or other relevant information.
 
-![[Pasted image 20260528093200.png]]
+![[Screenshots/Pasted image 20260528093200.png]]
 When user-supplied information is used to construct the query to the database, malicious users can trick the query into being used for something other than what the original programmer intended, providing the user access to query the database using an attack known as SQL injection (SQLi).
 
 SQL injection refers to attacks against relational databases such as `MySQL` (whereas injections against non-relational databases, such as MongoDB, are NoSQL injection). This module will focus on `MySQL` to introduce SQL Injection concepts.
@@ -97,7 +97,7 @@ There are multiple ways to interact with a DBMS, such as command-line tools, gra
 
 The diagram below details a two-tiered architecture.
 
-![[Pasted image 20260528093232.png]]
+![[Screenshots/Pasted image 20260528093232.png]]
 
 `Tier I` usually consists of client-side applications such as websites or GUI programs. These applications consist of high-level interactions such as user login or commenting. The data from these interactions is passed to `Tier II` through API calls or other requests.
 
@@ -119,7 +119,7 @@ However, when processing an integrated database, a concept is required to link o
 
 For example, we can have a `users` table in a relational database containing columns like `id`, `username`, `first_name`, `last_name`, and others. The `id` can be used as the table key. Another table, `posts`, may contain posts made by all users, with columns like `id`, `user_id`, `date`, `content`, and so on.
 
-![[Pasted image 20260528093300.png]]
+![[Screenshots/Pasted image 20260528093300.png]]
 
 We can link the `id` from the `users` table to the `user_id` in the `posts` table to retrieve the user details for each post without storing all user details with each post. A table can have more than one key, as another column can be used as a key to link with another table. So, for example, the `id` column can be used as a key to link the `posts` table to another table containing comments, each of which belongs to a particular post, and so on.
 
@@ -138,7 +138,7 @@ A non-relational database (also called a `NoSQL` database) does not use tables
 
 Each of the above models has a different way of storing data. For example, the `Key-Value` model usually stores data in JSON or XML, and have a key for each pair, and stores all of its data as its value:
 
-![[Pasted image 20260528093323.png]]
+![[Screenshots/Pasted image 20260528093323.png]]
 
 The above example can be represented using JSON as:
 
@@ -1055,7 +1055,7 @@ Now that we understand SQL injections' basics let us start learning some practic
 
 SQL Injections are categorized based on how and where we retrieve their output.
 
-![[Pasted image 20260528093741.png]]
+![[Screenshots/Pasted image 20260528093741.png]]
 
 In simple cases, the output of both the intended and the new query may be printed directly on the front end, and we can directly read it. This is known as `In-band` SQL injection, and it has two types: `Union Based` and `Error Based`.
 
@@ -1077,11 +1077,11 @@ Now that we have a basic idea about how SQL statements work let us get started w
 
 Consider the following administrator login page.
 
-![[Pasted image 20260528093814.png]]
+![[Screenshots/Pasted image 20260528093814.png]]
 
 We can log in with the administrator credentials `admin / p@ssw0rd`.
 
-![[Pasted image 20260528093829.png]]
+![[Screenshots/Pasted image 20260528093829.png]]
 
 The page also displays the SQL query being executed to understand better how we will subvert the query logic. Our goal is to log in as the admin user without using the existing password. As we can see, the current SQL query being executed is:
 
@@ -1093,7 +1093,7 @@ SELECT * FROM logins WHERE username='admin' AND password = 'p@ssw0rd';
 
 The page takes in the credentials, then uses the `AND` operator to select records matching the given username and password. If the `MySQL` database returns matched records, the credentials are valid, so the `PHP` code would evaluate the login attempt condition as `true`. If the condition evaluates to `true`, the admin record is returned, and our login is validated. Let us see what happens when we enter incorrect credentials.
 
-![[Pasted image 20260528093846.png]]
+![[Screenshots/Pasted image 20260528093846.png]]
 
 As expected, the login failed due to the wrong password leading to a `false` result from the `AND` operation.
 
@@ -1113,7 +1113,7 @@ Note: In some cases, we may have to use the URL encoded version of the payload. 
 
 So, let us start by injecting a single quote:
 
-![[Pasted image 20260528093906.png]]
+![[Screenshots/Pasted image 20260528093906.png]]
 
 We see that a SQL error was thrown instead of the `Login Failed` message. The page threw an error because the resulting query was:
 
@@ -1156,7 +1156,7 @@ This means the following:
 - If `1=1` return `true` 'which always returns `true`'  
     `AND`
 - If password is `something`
-![[Pasted image 20260528093927.png]]
+![[Screenshots/Pasted image 20260528093927.png]]
 
 Let us break it down:
 
@@ -1178,22 +1178,22 @@ Note: The payload we used above is one of many auth bypass payloads we can use t
 ## Auth Bypass with OR operator
 
 Let us try this as the username and see the response.
-![[Pasted image 20260528093943.png]]
+![[Screenshots/Pasted image 20260528093943.png]]
 
 We were able to log in successfully as admin. However, what if we did not know a valid username? Let us try the same request with a different username this time.
 
-![[Pasted image 20260528094008.png]]
+![[Screenshots/Pasted image 20260528094008.png]]
 
 The login failed because `notAdmin` does not exist in the table and resulted in a false query overall.
 
-![[Pasted image 20260528094023.png]]
+![[Screenshots/Pasted image 20260528094023.png]]
 
 To successfully log in once again, we will need an overall `true` query. This can be achieved by injecting an `OR` condition into the password field, so it will always return `true`. Let us try `something' or '1'='1` as the password.
 
-![[Pasted image 20260528094040.png]]
+![[Screenshots/Pasted image 20260528094040.png]]
 
 The additional `OR` condition resulted in a `true` query overall, as the `WHERE` clause returns everything in the table, and the user present in the first row is logged in. In this case, as both conditions will return `true`, we do not have to provide a test username and password and can directly start with the `'` injection and log in with just `' or '1' = '1`.
-![[Pasted image 20260528094056.png]]This works since the query evaluate to `true` irrespective of the username or password.
+![[Screenshots/Pasted image 20260528094056.png]]This works since the query evaluate to `true` irrespective of the username or password.
 
 ---
 ## Questions
@@ -1258,29 +1258,29 @@ As we can see from the syntax highlighting, the username is now `admin`, and th
 
 Let us try using these on the login page, and log in with the username `admin'--` and anything as the password:
 
-![[Pasted image 20260528094155.png]]
+![[Screenshots/Pasted image 20260528094155.png]]
 
 As we see, we were able to bypass the authentication, as the new modified query checks for the username, with no other conditions.
 
 ## Another Example
 
 SQL supports the usage of parenthesis if the application needs to check for particular conditions before others. Expressions within the parenthesis take precedence over other operators and are evaluated first. Let us look at a scenario like this:
-![[Pasted image 20260528094217.png]]
+![[Screenshots/Pasted image 20260528094217.png]]
 
 The above query ensures that the user's id is always greater than 1, which will prevent anyone from logging in as admin. Additionally, we also see that the password was hashed before being used in the query. This will prevent us from injecting through the password field because the input is changed to a hash.
 
 Let us try logging in with valid credentials `admin / p@ssw0rd` to see the response.
 
-![[Pasted image 20260528094256.png]]As expected, the login failed even though we supplied valid credentials because the admin’s ID equals 1. So let us try logging in with the credentials of another user, such as `tom`.
+![[Screenshots/Pasted image 20260528094256.png]]As expected, the login failed even though we supplied valid credentials because the admin’s ID equals 1. So let us try logging in with the credentials of another user, such as `tom`.
 
-![[Pasted image 20260528094315.png]]
+![[Screenshots/Pasted image 20260528094315.png]]
 
 Logging in as the user with an id not equal to 1 was successful. So, how can we log in as the admin? We know from the previous section on comments that we can use them to comment out the rest of the query. So, let us try using `admin'--` as the username.
 
-![[Pasted image 20260528094407.png]]
+![[Screenshots/Pasted image 20260528094407.png]]
 
 The login failed due to a syntax error, as a closed one did not balance the open parenthesis. To execute the query successfully, we will have to add a closing parenthesis. Let us try using the username `admin')--` to close and comment out the rest.
-![[Pasted image 20260528094431.png]]
+![[Screenshots/Pasted image 20260528094431.png]]
 
 The query was successful, and we logged in as admin. The final query as a result of our input is:
 
