@@ -4882,4 +4882,3 @@ However, if we need only a specific module and do not want to perform a full upg
 
 [ExploitDB](https://www.exploit-db.com) is a great choice when searching for a custom exploit. We can use tags to search through the different exploitation scenarios for each available script. One of these tags is [Metasploit Framework (MSF)](https://www.exploit-db.com/?tag=3), which, if selected, will display only scripts that are also available in Metasploit module format. These can be directly downloaded from ExploitDB and installed in our local Metasploit Framework directory, from where they can be searched and called from within the `msfconsole`.
 
-![https://academy.hackthebox.com/storage/modules/39/exploit-db.png](https://academy.hackthebox.com/storage/modules/39/exploit-db.png)
