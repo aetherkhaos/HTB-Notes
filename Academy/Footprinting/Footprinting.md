@@ -1576,10 +1576,482 @@ Completed after 0.61 seconds
 We need to use more than two tools for enumeration. Because it can happen that due to the programming of the tools, we get different information that we have to check manually. Therefore, we should never rely only on automated tools where we do not know precisely how they were written.
 
 ---
+## Questions
+
+Answer the question(s) below to complete the section
+
+
+---
 Questions:
 target:
 
 what is the version of the SMB server is running on the target system? Submit the entire banner as the answer.
+- Samba smbd 4
+What is the name of the accessible share on the target?
+- sambashare
+Connect to the discovered share and find the flag.txt file. Submit the contents as the answer.
+- HTB{o873nz4xdo873n4zo873zn4fksuhldsf}
+Find out which domain the server belongs to.
+- devops
+Find additional information about the specific share we found previously and submit the customized version of that specific share as the answer.
+- InFreight SMB v3.1
+What is the full system path of that specific share? (format: "/directory/names")
+- /home/sambauser
+---
+
+# NFS
+
+`Network File System` (`NFS`) is a network file system developed by Sun Microsystems and has the same purpose as SMB. Its purpose is to access file systems over a network as if they were local. However, it uses an entirely different protocol. [NFS](https://en.wikipedia.org/wiki/Network_File_System) is used between Linux and Unix systems. This means that NFS clients cannot communicate directly with SMB servers. NFS is an Internet standard that governs the procedures in a distributed file system. While NFS protocol version 3.0 (`NFSv3`), which has been in use for many years, authenticates the client computer, this changes with `NFSv4`. Here, as with the Windows SMB protocol, the user must authenticate.
+
+|**Version**|**Features**|
+|---|---|
+|`NFSv2`|It is older but is supported by many systems and was initially operated entirely over UDP.|
+|`NFSv3`|It has more features, including variable file size and better error reporting, but is not fully compatible with NFSv2 clients.|
+|`NFSv4`|It includes Kerberos, works through firewalls and on the Internet, no longer requires portmappers, supports ACLs, applies state-based operations, and provides performance improvements and high security. It is also the first version to have a stateful protocol.|
+
+NFS version 4.1 ([RFC 8881](https://datatracker.ietf.org/doc/html/rfc8881)) aims to provide protocol support to leverage cluster server deployments, including the ability to provide scalable parallel access to files distributed across multiple servers (pNFS extension). In addition, NFSv4.1 includes a session trunking mechanism, also known as NFS multipathing. A significant advantage of NFSv4 over its predecessors is that only one UDP or TCP port `2049` is used to run the service, which simplifies the use of the protocol across firewalls.
+
+NFS is based on the [Open Network Computing Remote Procedure Call](https://en.wikipedia.org/wiki/Sun_RPC) (`ONC-RPC`/`SUN-RPC`) protocol exposed on `TCP` and `UDP` ports `111`, which uses [External Data Representation](https://en.wikipedia.org/wiki/External_Data_Representation) (`XDR`) for the system-independent exchange of data. The NFS protocol has `no` mechanism for `authentication` or `authorization`. Instead, authentication is completely shifted to the RPC protocol's options. The authorization is derived from the available file system information. In this process, the server is responsible for translating the client's user information into the file system's format and converting the corresponding authorization details into the required UNIX syntax as accurately as possible.
+
+The most common authentication is via UNIX `UID`/`GID` and `group memberships`, which is why this syntax is most likely to be applied to the NFS protocol. One problem is that the client and server do not necessarily have to have the same mappings of UID/GID to users and groups, and the server does not need to do anything further. No further checks can be made on the part of the server. This is why NFS should only be used with this authentication method in trusted networks.
+
+## Default Configuration
+
+NFS is not difficult to configure because there are not as many options as FTP or SMB have. The `/etc/exports` file contains a table of physical filesystems on an NFS server accessible by the clients. The [NFS Exports Table](http://manpages.ubuntu.com/manpages/trusty/man5/exports.5.html) shows which options it accepts and thus indicates which options are available to us.
+
+#### Exports File
+
+crimsonguard@htb[/htb]`$ cat /etc/exports   # /etc/exports: the access control list for filesystems which may be exported #               to NFS clients.  See exports(5). # # Example for NFSv2 and NFSv3: # /srv/homes       hostname1(rw,sync,no_subtree_check) hostname2(ro,sync,no_subtree_check) # # Example for NFSv4: # /srv/nfs4        gss/krb5i(rw,sync,fsid=0,crossmnt,no_subtree_check) # /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)`
+
+The default `exports` file also contains some examples of configuring NFS shares. First, the folder is specified and made available to others, and then the rights they will have on this NFS share are connected to a host or a subnet. Finally, additional options can be added to the hosts or subnets.
+
+|**Option**|**Description**|
+|---|---|
+|`rw`|Read and write permissions.|
+|`ro`|Read only permissions.|
+|`sync`|Synchronous data transfer. (A bit slower)|
+|`async`|Asynchronous data transfer. (A bit faster)|
+|`secure`|Ports above 1024 will not be used.|
+|`insecure`|Ports above 1024 will be used.|
+|`no_subtree_check`|This option disables the checking of subdirectory trees.|
+|`root_squash`|Assigns all permissions to files of root UID/GID 0 to the UID/GID of anonymous, which prevents `root` from accessing files on an NFS mount.|
+
+Let us create such an entry for test purposes and play around with the settings.
+
+#### ExportFS
+
+```shell-session
+root@nfs:~# echo '/mnt/nfs  10.129.14.0/24(sync,no_subtree_check)' >> /etc/exports
+root@nfs:~# systemctl restart nfs-kernel-server 
+root@nfs:~# exportfs
+
+/mnt/nfs      	10.129.14.0/24
 ```
 
+We have shared the folder `/mnt/nfs` to the subnet `10.129.14.0/24` with the setting shown above. This means that all hosts on the network will be able to mount this NFS share and inspect the contents of this folder.
+
+## Dangerous Settings
+
+However, even with NFS, some settings can be dangerous for the company and its infrastructure. Here are some of them listed:
+
+|**Option**|**Description**|
+|---|---|
+|`rw`|Read and write permissions.|
+|`insecure`|Ports above 1024 will be used.|
+|`nohide`|If another file system was mounted below an exported directory, this directory is exported by its own exports entry.|
+|`no_root_squash`|All files created by root are kept with the UID/GID 0.|
+
+It is highly recommended to create a local VM and experiment with the settings. We will discover methods that will show us how the NFS server is configured. For this, we can create several folders and assign different options to each one. Then we can inspect them and see what settings can have what effect on the NFS share and its permissions and the enumeration process.
+
+We can take a look at the `insecure` option. This is dangerous because users can use ports above 1024. The first 1024 ports can only be used by root. This prevents the fact that no users can use sockets above port 1024 for the NFS service and interact with it.
+
+## Footprinting the Service
+
+When footprinting NFS, the TCP ports `111` and `2049` are essential. We can also get information about the NFS service and the host via RPC, as shown below in the example.
+
+#### Nmap
+
+crimsonguard@htb[/htb]`$ sudo nmap 10.129.14.128 -p111,2049 -sV -sC  Starting Nmap 7.80 ( https://nmap.org ) at 2021-09-19 17:12 CEST Nmap scan report for 10.129.14.128 Host is up (0.00018s latency).  PORT    STATE SERVICE VERSION 111/tcp open  rpcbind 2-4 (RPC #100000) | rpcinfo:  |   program version    port/proto  service |   100000  2,3,4        111/tcp   rpcbind |   100000  2,3,4        111/udp   rpcbind |   100000  3,4          111/tcp6  rpcbind |   100000  3,4          111/udp6  rpcbind |   100003  3           2049/udp   nfs |   100003  3           2049/udp6  nfs |   100003  3,4         2049/tcp   nfs |   100003  3,4         2049/tcp6  nfs |   100005  1,2,3      41982/udp6  mountd |   100005  1,2,3      45837/tcp   mountd |   100005  1,2,3      47217/tcp6  mountd |   100005  1,2,3      58830/udp   mountd |   100021  1,3,4      39542/udp   nlockmgr |   100021  1,3,4      44629/tcp   nlockmgr |   100021  1,3,4      45273/tcp6  nlockmgr |   100021  1,3,4      47524/udp6  nlockmgr |   100227  3           2049/tcp   nfs_acl |   100227  3           2049/tcp6  nfs_acl |   100227  3           2049/udp   nfs_acl |_  100227  3           2049/udp6  nfs_acl 2049/tcp open  nfs_acl 3 (RPC #100227) MAC Address: 00:00:00:00:00:00 (VMware)  Service detection performed. Please report any incorrect results at https://nmap.org/submit/ . Nmap done: 1 IP address (1 host up) scanned in 6.58 seconds`
+
+The `rpcinfo` NSE script retrieves a list of all currently running RPC services, their names and descriptions, and the ports they use. This lets us check whether the target share is connected to the network on all required ports. Also, for NFS, Nmap has some NSE scripts that can be used for the scans. These can then show us, for example, the `contents` of the share and its `stats`.
+
+crimsonguard@htb[/htb]`$ sudo nmap --script nfs* 10.129.14.128 -sV -p111,2049  Starting Nmap 7.80 ( https://nmap.org ) at 2021-09-19 17:37 CEST Nmap scan report for 10.129.14.128 Host is up (0.00021s latency).  PORT     STATE SERVICE VERSION 111/tcp  open  rpcbind 2-4 (RPC #100000) | nfs-ls: Volume /mnt/nfs |   access: Read Lookup NoModify NoExtend NoDelete NoExecute | PERMISSION  UID    GID    SIZE  TIME                 FILENAME | rwxrwxrwx   65534  65534  4096  2021-09-19T15:28:17  . | ??????????  ?      ?      ?     ?                    .. | rw-r--r--   0      0      1872  2021-09-19T15:27:42  id_rsa | rw-r--r--   0      0      348   2021-09-19T15:28:17  id_rsa.pub | rw-r--r--   0      0      0     2021-09-19T15:22:30  nfs.share |_ | nfs-showmount:  |_  /mnt/nfs 10.129.14.0/24 | nfs-statfs:  |   Filesystem  1K-blocks   Used       Available   Use%  Maxfilesize  Maxlink |_  /mnt/nfs    30313412.0  8074868.0  20675664.0  29%   16.0T        32000 | rpcinfo:  |   program version    port/proto  service |   100000  2,3,4        111/tcp   rpcbind |   100000  2,3,4        111/udp   rpcbind |   100000  3,4          111/tcp6  rpcbind |   100000  3,4          111/udp6  rpcbind |   100003  3           2049/udp   nfs |   100003  3           2049/udp6  nfs |   100003  3,4         2049/tcp   nfs |   100003  3,4         2049/tcp6  nfs |   100005  1,2,3      41982/udp6  mountd |   100005  1,2,3      45837/tcp   mountd |   100005  1,2,3      47217/tcp6  mountd |   100005  1,2,3      58830/udp   mountd |   100021  1,3,4      39542/udp   nlockmgr |   100021  1,3,4      44629/tcp   nlockmgr |   100021  1,3,4      45273/tcp6  nlockmgr |   100021  1,3,4      47524/udp6  nlockmgr |   100227  3           2049/tcp   nfs_acl |   100227  3           2049/tcp6  nfs_acl |   100227  3           2049/udp   nfs_acl |_  100227  3           2049/udp6  nfs_acl 2049/tcp open  nfs_acl 3 (RPC #100227) MAC Address: 00:00:00:00:00:00 (VMware)  Service detection performed. Please report any incorrect results at https://nmap.org/submit/ . Nmap done: 1 IP address (1 host up) scanned in 0.45 seconds`
+
+Once we have discovered such an NFS service, we can mount it on our local machine. For this, we can create a new empty folder to which the NFS share will be mounted. Once mounted, we can navigate it and view the contents just like our local system.
+
+#### Show Available NFS Shares
+
+crimsonguard@htb[/htb]`$ showmount -e 10.129.14.128  Export list for 10.129.14.128: /mnt/nfs 10.129.14.0/24`
+
+#### Mounting NFS Share
+
+crimsonguard@htb[/htb]`$ mkdir target-NFS $ sudo mount -t nfs 10.129.14.128:/ ./target-NFS/ -o nolock $ cd target-NFS $ tree .  . └── mnt     └── nfs         ├── id_rsa         ├── id_rsa.pub         └── nfs.share  2 directories, 3 files`
+
+There we will have the opportunity to access the rights and the usernames and groups to whom the shown and viewable files belong. Because once we have the usernames, group names, UIDs, and GUIDs, we can create them on our system and adapt them to the NFS share to view and modify the files.
+
+#### List Contents with Usernames & Group Names
+
+crimsonguard@htb[/htb]`$ ls -l mnt/nfs/  total 16 -rw-r--r-- 1 cry0l1t3 cry0l1t3 1872 Sep 25 00:55 cry0l1t3.priv -rw-r--r-- 1 cry0l1t3 cry0l1t3  348 Sep 25 00:55 cry0l1t3.pub -rw-r--r-- 1 root     root     1872 Sep 19 17:27 id_rsa -rw-r--r-- 1 root     root      348 Sep 19 17:28 id_rsa.pub -rw-r--r-- 1 root     root        0 Sep 19 17:22 nfs.share`
+
+#### List Contents with UIDs & GUIDs
+
+crimsonguard@htb[/htb]`$ ls -n mnt/nfs/  total 16 -rw-r--r-- 1 1000 1000 1872 Sep 25 00:55 cry0l1t3.priv -rw-r--r-- 1 1000 1000  348 Sep 25 00:55 cry0l1t3.pub -rw-r--r-- 1    0 1000 1221 Sep 19 18:21 backup.sh -rw-r--r-- 1    0    0 1872 Sep 19 17:27 id_rsa -rw-r--r-- 1    0    0  348 Sep 19 17:28 id_rsa.pub -rw-r--r-- 1    0    0    0 Sep 19 17:22 nfs.share`
+
+It is important to note that if the `root_squash` option is set, we cannot edit the `backup.sh` file even as `root`.
+
+We can also use NFS for further escalation. For example, if we have access to the system via SSH and want to read files from another folder that a specific user can read, we would need to upload a shell to the NFS share that has the `SUID` of that user and then run the shell via the SSH user.
+
+After we have done all the necessary steps and obtained the information we need, we can unmount the NFS share.
+
+#### Unmounting
+
+crimsonguard@htb[/htb]`$ cd .. $ sudo umount ./target-NFS`
+
+---
+## Questions
+
+Answer the question(s) below to complete the section
+
+Enumerate the NFS service and submit the contents of the flag.txt in the "nfs" share as the answer.
+- HTB{hjglmvtkjhlkfuhgi734zthrie7rjmdze}
+Enumerate the NFS service and submit the contents of the flag.txt in the "nfsshare" share as the answer.
+- HTB{8o7435zhtuih7fztdrzuhdhkfjcn7ghi4357ndcthzuc7rtfghu34}
+
+---
+
+# DNS
+
+`Domain Name System` (`DNS`) is an integral part of the Internet. For example, through domain names, such as [academy.hackthebox.com](https://academy.hackthebox.com/) or [www.hackthebox.com](https://www.hackthebox.com/), we can reach the web servers that the hosting provider has assigned one or more specific IP addresses. DNS is a system for resolving computer names into IP addresses, and it does not have a central database. Simplified, we can imagine it like a library with many different phone books. The information is distributed over many thousands of name servers. Globally distributed DNS servers translate domain names into IP addresses and thus control which server a user can reach via a particular domain. There are several types of DNS servers that are used worldwide:
+
+- DNS root server
+- Authoritative name server
+- Non-authoritative name server
+- Caching server
+- Forwarding server
+- Resolver
+
+|**Server Type**|**Description**|
+|---|---|
+|`DNS Root Server`|The root servers of the DNS are responsible for the top-level domains (`TLD`). As the last instance, they are only requested if the name server does not respond. Thus, a root server is a central interface between users and content on the Internet, as it links domain and IP address. The [Internet Corporation for Assigned Names and Numbers](https://www.icann.org/) (`ICANN`) coordinates the work of the root name servers. There are `13` such root servers around the globe.|
+|`Authoritative Nameserver`|Authoritative name servers hold authority for a particular zone. They only answer queries from their area of responsibility, and their information is binding. If an authoritative name server cannot answer a client's query, the root name server takes over at that point. Based on the country, company, etc., authoritative nameservers provide answers to recursive DNS nameservers, assisting in finding the specific web server(s).|
+|`Non-authoritative Nameserver`|Non-authoritative name servers are not responsible for a particular DNS zone. Instead, they collect information on specific DNS zones themselves, which is done using recursive or iterative DNS querying.|
+|`Caching DNS Server`|Caching DNS servers cache information from other name servers for a specified period. The authoritative name server determines the duration of this storage.|
+|`Forwarding Server`|Forwarding servers perform only one function: they forward DNS queries to another DNS server.|
+|`Resolver`|Resolvers are not authoritative DNS servers but perform name resolution locally in the computer or router.|
+
+DNS is mainly unencrypted. Devices on the local WLAN and Internet providers can therefore hack in and spy on DNS queries. Since this poses a privacy risk, there are now some solutions for DNS encryption. By default, IT security professionals apply `DNS over TLS` (`DoT`) or `DNS over HTTPS` (`DoH`) here. In addition, the network protocol `DNSCrypt` also encrypts the traffic between the computer and the name server.
+
+However, the DNS does not only link computer names and IP addresses. It also stores and outputs additional information about the services associated with a domain. A DNS query can therefore also be used, for example, to determine which computer serves as the e-mail server for the domain in question or what the domain's name servers are called.
+![[Pasted image 20260528080550.png]]
+Different `DNS records` are used for the DNS queries, which all have various tasks. Moreover, separate entries exist for different functions since we can set up mail servers and other servers for a domain.
+
+|**DNS Record**|**Description**|
+|---|---|
+|`A`|Returns an IPv4 address of the requested domain as a result.|
+|`AAAA`|Returns an IPv6 address of the requested domain.|
+|`MX`|Returns the responsible mail servers as a result.|
+|`NS`|Returns the DNS servers (nameservers) of the domain.|
+|`TXT`|This record can contain various information. The all-rounder can be used, e.g., to validate the Google Search Console or validate SSL certificates. In addition, SPF and DMARC entries are set to validate mail traffic and protect it from spam.|
+|`CNAME`|This record serves as an alias for another domain name. If you want the domain www.hackthebox.eu to point to the same IP as hackthebox.eu, you would create an A record for hackthebox.eu and a CNAME record for www.hackthebox.eu.|
+|`PTR`|The PTR record works the other way around (reverse lookup). It converts IP addresses into valid domain names.|
+|`SOA`|Provides information about the corresponding DNS zone and email address of the administrative contact.|
+
+The `SOA` record is located in a domain's zone file and specifies who is responsible for the operation of the domain and how DNS information for the domain is managed.
+
+crimsonguard@htb[/htb]`$ dig soa www.inlanefreight.com  ; <<>> DiG 9.16.27-Debian <<>> soa www.inlanefreight.com ;; global options: +cmd ;; Got answer: ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 15876 ;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1  ;; OPT PSEUDOSECTION: ; EDNS: version: 0, flags:; udp: 512 ;; QUESTION SECTION: ;www.inlanefreight.com.         IN      SOA  ;; AUTHORITY SECTION: inlanefreight.com.      900     IN      SOA     ns-161.awsdns-20.com. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400  ;; Query time: 16 msec ;; SERVER: 8.8.8.8#53(8.8.8.8) ;; WHEN: Thu Jan 05 12:56:10 GMT 2023 ;; MSG SIZE  rcvd: 128`
+
+The dot (.) is replaced by an at sign (@) in the email address. In this example, the email address of the administrator is `awsdns-hostmaster@amazon.com`.
+
+## Default Configuration
+
+There are many different configuration types for DNS. Therefore, we will only discuss the most important ones to illustrate better the functional principle from an administrative point of view. All DNS servers work with three different types of configuration files:
+
+1. local DNS configuration files
+2. zone files
+3. reverse name resolution files
+
+The DNS server [Bind9](https://www.isc.org/bind/) is very often used on Linux-based distributions. Its local configuration file (`named.conf`) is roughly divided into two sections, firstly the options section for general settings and secondly the zone entries for the individual domains. The local configuration files are usually:
+
+- `named.conf.local`
+- `named.conf.options`
+- `named.conf.log`
+
+It contains the associated RFC where we can customize the server to our needs and our domain structure with the individual zones for different domains. The configuration file `named.conf` is divided into several options that control the behavior of the name server. A distinction is made between `global options` and `zone options`.
+
+Global options are general and affect all zones. A zone option only affects the zone to which it is assigned. Options not listed in named.conf have default values. If an option is both global and zone-specific, then the zone option takes precedence.
+
+#### Local DNS Configuration
+
+```shell-session
+root@bind9:~# cat /etc/bind/named.conf.local
+
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+zone "domain.com" {
+    type master;
+    file "/etc/bind/db.domain.com";
+    allow-update { key rndc-key; };
+};
 ```
+
+In this file, we can define the different zones. These zones are divided into individual files, which in most cases are mainly intended for one domain only. Exceptions are ISP and public DNS servers. In addition, many different options extend or reduce the functionality. We can look these up on the [documentation](https://wiki.debian.org/Bind9) of Bind9.
+
+A `zone file` is a text file that describes a DNS zone with the BIND file format. In other words it is a point of delegation in the DNS tree. The BIND file format is the industry-preferred zone file format and is now well established in DNS server software. A zone file describes a zone completely. There must be precisely one `SOA` record and at least one `NS` record. The SOA resource record is usually located at the beginning of a zone file. The main goal of these global rules is to improve the readability of zone files. A syntax error usually results in the entire zone file being considered unusable. The name server behaves similarly as if this zone did not exist. It responds to DNS queries with a `SERVFAIL` error message.
+
+In short, here, all `forward records` are entered according to the BIND format. This allows the DNS server to identify which domain, hostname, and role the IP addresses belong to. In simple terms, this is the phone book where the DNS server looks up the addresses for the domains it is searching for.
+
+#### Zone Files
+
+```shell-session
+root@bind9:~# cat /etc/bind/db.domain.com
+
+;
+; BIND reverse data file for local loopback interface
+;
+$ORIGIN domain.com
+$TTL 86400
+@     IN     SOA    dns1.domain.com.     hostmaster.domain.com. (
+                    2001062501 ; serial
+                    21600      ; refresh after 6 hours
+                    3600       ; retry after 1 hour
+                    604800     ; expire after 1 week
+                    86400 )    ; minimum TTL of 1 day
+
+      IN     NS     ns1.domain.com.
+      IN     NS     ns2.domain.com.
+
+      IN     MX     10     mx.domain.com.
+      IN     MX     20     mx2.domain.com.
+
+             IN     A       10.129.14.5
+
+server1      IN     A       10.129.14.5
+server2      IN     A       10.129.14.7
+ns1          IN     A       10.129.14.2
+ns2          IN     A       10.129.14.3
+
+ftp          IN     CNAME   server1
+mx           IN     CNAME   server1
+mx2          IN     CNAME   server2
+www          IN     CNAME   server2
+```
+
+For the `Fully Qualified Domain Name` (`FQDN`) to be resolved from the IP address, the DNS server must have a reverse lookup file. In this file, the computer name (`FQDN`) is assigned to the last octet of an IP address, which corresponds to the respective host, using a PTR record. The PTR records are responsible for the reverse translation of IP addresses into names, as we have already seen in the above table.
+
+#### Reverse Name Resolution Zone Files
+
+```shell-session
+root@bind9:~# cat /etc/bind/db.10.129.14
+
+;
+; BIND reverse data file for local loopback interface
+;
+$ORIGIN 14.129.10.in-addr.arpa
+$TTL 86400
+@     IN     SOA    dns1.domain.com.     hostmaster.domain.com. (
+                    2001062501 ; serial
+                    21600      ; refresh after 6 hours
+                    3600       ; retry after 1 hour
+                    604800     ; expire after 1 week
+                    86400 )    ; minimum TTL of 1 day
+
+      IN     NS     ns1.domain.com.
+      IN     NS     ns2.domain.com.
+
+5    IN     PTR    server1.domain.com.
+7    IN     MX     mx.domain.com.
+...SNIP...
+```
+
+## Dangerous Settings
+
+There are many ways in which a DNS server can be attacked. For example, a list of vulnerabilities targeting the BIND9 server can be found at [CVEdetails](https://www.cvedetails.com/product/144/ISC-Bind.html?vendor_id=64). In addition, SecurityTrails provides a short [list](https://web.archive.org/web/20250329174745/https://securitytrails.com/blog/most-popular-types-dns-attacks) of the most popular attacks on DNS servers.
+
+Some of the settings we can see below lead to these vulnerabilities, among others. Because DNS can get very complicated and it is very easy for errors to creep into this service, forcing an administrator to work around the problem until they find an exact solution. This often leads to elements being released so that parts of the infrastructure function as planned and desired. In such cases, functionality has a higher priority than security, which leads to misconfigurations and vulnerabilities.
+
+|**Option**|**Description**|
+|---|---|
+|`allow-query`|Defines which hosts are allowed to send requests to the DNS server.|
+|`allow-recursion`|Defines which hosts are allowed to send recursive requests to the DNS server.|
+|`allow-transfer`|Defines which hosts are allowed to receive zone transfers from the DNS server.|
+|`zone-statistics`|Collects statistical data of zones.|
+
+## Footprinting the Service
+
+The footprinting at DNS servers is done as a result of the requests we send. So, first of all, the DNS server can be queried as to which other name servers are known. We do this using the NS record and the specification of the DNS server we want to query using the `@` character. This is because if there are other DNS servers, we can also use them and query the records. However, other DNS servers may be configured differently and, in addition, may be permanent for other zones.
+
+#### DIG - NS Query
+
+crimsonguard@htb[/htb]`$ dig ns inlanefreight.htb @10.129.14.128  ; <<>> DiG 9.16.1-Ubuntu <<>> ns inlanefreight.htb @10.129.14.128 ;; global options: +cmd ;; Got answer: ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 45010 ;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 2  ;; OPT PSEUDOSECTION: ; EDNS: version: 0, flags:; udp: 4096 ; COOKIE: ce4d8681b32abaea0100000061475f73842c401c391690c7 (good) ;; QUESTION SECTION: ;inlanefreight.htb.             IN      NS  ;; ANSWER SECTION: inlanefreight.htb.      604800  IN      NS      ns.inlanefreight.htb.  ;; ADDITIONAL SECTION: ns.inlanefreight.htb.   604800  IN      A       10.129.34.136  ;; Query time: 0 msec ;; SERVER: 10.129.14.128#53(10.129.14.128) ;; WHEN: So Sep 19 18:04:03 CEST 2021 ;; MSG SIZE  rcvd: 107`
+
+Sometimes it is also possible to query a DNS server's version using a class CHAOS query and type TXT. However, this entry must exist on the DNS server. For this, we could use the following command:
+
+#### DIG - Version Query
+
+crimsonguard@htb[/htb]`$ dig CH TXT version.bind 10.129.120.85  ; <<>> DiG 9.10.6 <<>> CH TXT version.bind ;; global options: +cmd ;; Got answer: ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 47786 ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1  ;; ANSWER SECTION: version.bind.       0       CH      TXT     "9.10.6-P1"  ;; ADDITIONAL SECTION: version.bind.       0       CH      TXT     "9.10.6-P1-Debian"  ;; Query time: 2 msec ;; SERVER: 10.129.120.85#53(10.129.120.85) ;; WHEN: Wed Jan 05 20:23:14 UTC 2023 ;; MSG SIZE  rcvd: 101`
+
+We can use the option `ANY` to view all available records. This will cause the server to show us all available entries that it is willing to disclose. It is important to note that not all entries from the zones will be shown.
+
+#### DIG - ANY Query
+
+crimsonguard@htb[/htb]`$ dig any inlanefreight.htb @10.129.14.128  ; <<>> DiG 9.16.1-Ubuntu <<>> any inlanefreight.htb @10.129.14.128 ;; global options: +cmd ;; Got answer: ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 7649 ;; flags: qr aa rd ra; QUERY: 1, ANSWER: 5, AUTHORITY: 0, ADDITIONAL: 2  ;; OPT PSEUDOSECTION: ; EDNS: version: 0, flags:; udp: 4096 ; COOKIE: 064b7e1f091b95120100000061476865a6026d01f87d10ca (good) ;; QUESTION SECTION: ;inlanefreight.htb.             IN      ANY  ;; ANSWER SECTION: inlanefreight.htb.      604800  IN      TXT     "v=spf1 include:mailgun.org include:_spf.google.com include:spf.protection.outlook.com include:_spf.atlassian.net ip4:10.129.124.8 ip4:10.129.127.2 ip4:10.129.42.106 ~all" inlanefreight.htb.      604800  IN      TXT     "atlassian-domain-verification=t1rKCy68JFszSdCKVpw64A1QksWdXuYFUeSXKU" inlanefreight.htb.      604800  IN      TXT     "MS=ms97310371" inlanefreight.htb.      604800  IN      SOA     inlanefreight.htb. root.inlanefreight.htb. 2 604800 86400 2419200 604800 inlanefreight.htb.      604800  IN      NS      ns.inlanefreight.htb.  ;; ADDITIONAL SECTION: ns.inlanefreight.htb.   604800  IN      A       10.129.34.136  ;; Query time: 0 msec ;; SERVER: 10.129.14.128#53(10.129.14.128) ;; WHEN: So Sep 19 18:42:13 CEST 2021 ;; MSG SIZE  rcvd: 437`
+
+`Zone transfer` refers to the transfer of zones to another server in DNS, which generally happens over TCP port 53. This procedure is abbreviated `Asynchronous Full Transfer Zone` (`AXFR`). Since a DNS failure usually has severe consequences for a company, the zone file is almost invariably kept identical on several name servers. When changes are made, it must be ensured that all servers have the same data. Synchronization between the servers involved is realized by zone transfer. Using a secret key `rndc-key`, which we have seen initially in the default configuration, the servers make sure that they communicate with their own master or slave. Zone transfer involves the mere transfer of files or records and the detection of discrepancies in the data sets of the servers involved.
+
+The original data of a zone is located on a DNS server, which is called the `primary` name server for this zone. However, to increase the reliability, realize a simple load distribution, or protect the primary from attacks, one or more additional servers are installed in practice in almost all cases, which are called `secondary` name servers for this zone. For some `Top-Level Domains` (`TLDs`), making zone files for the `Second Level Domains` accessible on at least two servers is mandatory.
+
+DNS entries are generally only created, modified, or deleted on the primary. This can be done by manually editing the relevant zone file or automatically by a dynamic update from a database. A DNS server that serves as a direct source for synchronizing a zone file is called a master. A DNS server that obtains zone data from a master is called a slave. A primary is always a master, while a secondary can be both a slave and a master.
+
+The slave fetches the `SOA` record of the relevant zone from the master at certain intervals, the so-called refresh time, usually one hour, and compares the serial numbers. If the serial number of the SOA record of the master is greater than that of the slave, the data sets no longer match.
+
+#### DIG - AXFR Zone Transfer
+
+crimsonguard@htb[/htb]`$ dig axfr inlanefreight.htb @10.129.14.128  ; <<>> DiG 9.16.1-Ubuntu <<>> axfr inlanefreight.htb @10.129.14.128 ;; global options: +cmd inlanefreight.htb.      604800  IN      SOA     inlanefreight.htb. root.inlanefreight.htb. 2 604800 86400 2419200 604800 inlanefreight.htb.      604800  IN      TXT     "MS=ms97310371" inlanefreight.htb.      604800  IN      TXT     "atlassian-domain-verification=t1rKCy68JFszSdCKVpw64A1QksWdXuYFUeSXKU" inlanefreight.htb.      604800  IN      TXT     "v=spf1 include:mailgun.org include:_spf.google.com include:spf.protection.outlook.com include:_spf.atlassian.net ip4:10.129.124.8 ip4:10.129.127.2 ip4:10.129.42.106 ~all" inlanefreight.htb.      604800  IN      NS      ns.inlanefreight.htb. app.inlanefreight.htb.  604800  IN      A       10.129.18.15 internal.inlanefreight.htb. 604800 IN   A       10.129.1.6 mail1.inlanefreight.htb. 604800 IN      A       10.129.18.201 ns.inlanefreight.htb.   604800  IN      A       10.129.34.136 inlanefreight.htb.      604800  IN      SOA     inlanefreight.htb. root.inlanefreight.htb. 2 604800 86400 2419200 604800 ;; Query time: 4 msec ;; SERVER: 10.129.14.128#53(10.129.14.128) ;; WHEN: So Sep 19 18:51:19 CEST 2021 ;; XFR size: 9 records (messages 1, bytes 520)`
+
+If the administrator used a subnet for the `allow-transfer` option for testing purposes or as a workaround solution or set it to `any`, everyone would query the entire zone file at the DNS server. In addition, other zones can be queried, which may even show internal IP addresses and hostnames.
+
+#### DIG - AXFR Zone Transfer - Internal
+
+crimsonguard@htb[/htb]`$ dig axfr internal.inlanefreight.htb @10.129.14.128  ; <<>> DiG 9.16.1-Ubuntu <<>> axfr internal.inlanefreight.htb @10.129.14.128 ;; global options: +cmd internal.inlanefreight.htb. 604800 IN   SOA     inlanefreight.htb. root.inlanefreight.htb. 2 604800 86400 2419200 604800 internal.inlanefreight.htb. 604800 IN   TXT     "MS=ms97310371" internal.inlanefreight.htb. 604800 IN   TXT     "atlassian-domain-verification=t1rKCy68JFszSdCKVpw64A1QksWdXuYFUeSXKU" internal.inlanefreight.htb. 604800 IN   TXT     "v=spf1 include:mailgun.org include:_spf.google.com include:spf.protection.outlook.com include:_spf.atlassian.net ip4:10.129.124.8 ip4:10.129.127.2 ip4:10.129.42.106 ~all" internal.inlanefreight.htb. 604800 IN   NS      ns.inlanefreight.htb. dc1.internal.inlanefreight.htb. 604800 IN A     10.129.34.16 dc2.internal.inlanefreight.htb. 604800 IN A     10.129.34.11 mail1.internal.inlanefreight.htb. 604800 IN A   10.129.18.200 ns.internal.inlanefreight.htb. 604800 IN A      10.129.34.136 vpn.internal.inlanefreight.htb. 604800 IN A     10.129.1.6 ws1.internal.inlanefreight.htb. 604800 IN A     10.129.1.34 ws2.internal.inlanefreight.htb. 604800 IN A     10.129.1.35 wsus.internal.inlanefreight.htb. 604800 IN A    10.129.18.2 internal.inlanefreight.htb. 604800 IN   SOA     inlanefreight.htb. root.inlanefreight.htb. 2 604800 86400 2419200 604800 ;; Query time: 0 msec ;; SERVER: 10.129.14.128#53(10.129.14.128) ;; WHEN: So Sep 19 18:53:11 CEST 2021 ;; XFR size: 15 records (messages 1, bytes 664)`
+
+The individual `A` records with the hostnames can also be found out with the help of a brute-force attack. To do this, we need a list of possible hostnames, which we use to send the requests in order. Such lists are provided, for example, by [SecLists](https://github.com/danielmiessler/SecLists/blob/master/Discovery/DNS/subdomains-top1million-5000.txt).
+
+An option would be to execute a `for-loop` in Bash that lists these entries and sends the corresponding query to the desired DNS server.
+
+#### Subdomain Brute Forcing
+
+crimsonguard@htb[/htb]`$ for sub in $(cat /opt/useful/seclists/Discovery/DNS/subdomains-top1million-110000.txt);do dig $sub.inlanefreight.htb @10.129.14.128 | grep -v ';\|SOA' | sed -r '/^\s*$/d' | grep $sub | tee -a subdomains.txt;done  ns.inlanefreight.htb.   604800  IN      A       10.129.34.136 mail1.inlanefreight.htb. 604800 IN      A       10.129.18.201 app.inlanefreight.htb.  604800  IN      A       10.129.18.15`
+
+Many different tools can be used for this, and most of them work in the same way. One of these tools is, for example [DNSenum](https://github.com/fwaeytens/dnsenum).
+
+crimsonguard@htb[/htb]`$ dnsenum --dnsserver 10.129.14.128 --enum -p 0 -s 0 -o subdomains.txt -f /opt/useful/seclists/Discovery/DNS/subdomains-top1million-110000.txt inlanefreight.htb  dnsenum VERSION:1.2.6  -----   inlanefreight.htb   -----   Host's addresses: __________________    Name Servers: ______________  ns.inlanefreight.htb.                    604800   IN    A        10.129.34.136   Mail (MX) Servers: ___________________    Trying Zone Transfers and getting Bind Versions: _________________________________________________  unresolvable name: ns.inlanefreight.htb at /usr/bin/dnsenum line 900 thread 1.  Trying Zone Transfer for inlanefreight.htb on ns.inlanefreight.htb ... AXFR record query failed: no nameservers   Brute forcing with /home/cry0l1t3/Pentesting/SecLists/Discovery/DNS/subdomains-top1million-110000.txt: _______________________________________________________________________________________________________  ns.inlanefreight.htb.                    604800   IN    A        10.129.34.136 mail1.inlanefreight.htb.                 604800   IN    A        10.129.18.201 app.inlanefreight.htb.                   604800   IN    A        10.129.18.15 ns.inlanefreight.htb.                    604800   IN    A        10.129.34.136  ...SNIP... done.`
+
+---
+TARGET
+
+Click Spawn Target to get Target IP
+
+Interact with the target DNS using its IP address and enumerate the FQDN of it for the "inlanefreight.htb" domain.
+- ns.inlanefreight.htb
+Identify if its possible to perform a zone transfer and submit the TXT record as the answer. (Format: HTB{...})
+- HTB{DN5_z0N3_7r4N5F3r_iskdufhcnlu34}
+What is the IPv4 address of the hostname DC1?
+- 10.129.34.16
+What is the FQDN of the host where the last octet ends with "x.x.x.203"?
+- win2k.dev.inlanefreight.htb
+
+---
+
+# SMTP
+
+The `Simple Mail Transfer Protocol` (`SMTP`) is a protocol for sending emails in an IP network. It can be used between an email client and an outgoing mail server or between two SMTP servers. SMTP is often combined with the IMAP or POP3 protocols, which can fetch emails and send emails. In principle, it is a client-server-based protocol, although SMTP can be used between a client and a server and between two SMTP servers. In this case, a server effectively acts as a client.
+
+By default, SMTP servers accept connection requests on port `25`. However, newer SMTP servers also use other ports such as TCP port `587`. This port is used to receive mail from authenticated users/servers, usually using the STARTTLS command to switch the existing plaintext connection to an encrypted connection. The authentication data is protected and no longer visible in plaintext over the network. At the beginning of the connection, authentication occurs when the client confirms its identity with a user name and password. The emails can then be transmitted. For this purpose, the client sends the server sender and recipient addresses, the email's content, and other information and parameters. After the email has been transmitted, the connection is terminated again. The email server then starts sending the email to another SMTP server.
+
+SMTP works unencrypted without further measures and transmits all commands, data, or authentication information in plain text. To prevent unauthorized reading of data, the SMTP is used in conjunction with SSL/TLS encryption. Under certain circumstances, a server uses a port other than the standard TCP port `25` for the encrypted connection, for example, TCP port `465`.
+
+An essential function of an SMTP server is preventing spam using authentication mechanisms that allow only authorized users to send e-mails. For this purpose, most modern SMTP servers support the protocol extension ESMTP with SMTP-Auth. After sending his e-mail, the SMTP client, also known as `Mail User Agent` (`MUA`), converts it into a header and a body and uploads both to the SMTP server. This has a so-called `Mail Transfer Agent` (`MTA`), the software basis for sending and receiving e-mails. The MTA checks the e-mail for size and spam and then stores it. To relieve the MTA, it is occasionally preceded by a `Mail Submission Agent` (`MSA`), which checks the validity, i.e., the origin of the e-mail. This `MSA` is also called `Relay` server. These are very important later on, as the so-called `Open Relay Attack` can be carried out on many SMTP servers due to incorrect configuration. We will discuss this attack and how to identify the weak point for it a little later. The MTA then searches the DNS for the IP address of the recipient mail server.
+
+On arrival at the destination SMTP server, the data packets are reassembled to form a complete e-mail. From there, the `Mail delivery agent` (`MDA`) transfers it to the recipient's mailbox.
+
+|Client (`MUA`)|`➞`|Submission Agent (`MSA`)|`➞`|Open Relay (`MTA`)|`➞`|Mail Delivery Agent (`MDA`)|`➞`|Mailbox (`POP3`/`IMAP`)|
+|---|---|---|---|---|---|---|---|---|
+
+But SMTP has two disadvantages inherent to the network protocol.
+
+1. The first is that sending an email using SMTP does not return a usable delivery confirmation. Although the specifications of the protocol provide for this type of notification, its formatting is not specified by default, so that usually only an English-language error message, including the header of the undelivered message, is returned.
+    
+2. Users are not authenticated when a connection is established, and the sender of an email is therefore unreliable. As a result, open SMTP relays are often misused to send spam en masse. The originators use arbitrary fake sender addresses for this purpose to not be traced (mail spoofing). Today, many different security techniques are used to prevent the misuse of SMTP servers. For example, suspicious emails are rejected or moved to quarantine (spam folder). For example, responsible for this are the identification protocol [DomainKeys](http://dkim.org/) (`DKIM`), the [Sender Policy Framework](https://dmarcian.com/what-is-spf/) (`SPF`).
+    
+
+For this purpose, an extension for SMTP has been developed called `Extended SMTP` (`ESMTP`). When people talk about SMTP in general, they usually mean ESMTP. ESMTP uses TLS, which is done after the `EHLO` command by sending `STARTTLS`. This initializes the SSL-protected SMTP connection, and from this moment on, the entire connection is encrypted, and therefore more or less secure. Now [AUTH PLAIN](https://www.samlogic.net/articles/smtp-commands-reference-auth.htm) extension for authentication can also be used safely.
+
+## Default Configuration
+
+Each SMTP server can be configured in many ways, as can all other services. However, there are differences because the SMTP server is only responsible for sending and forwarding emails.
+
+#### Default Configuration
+
+crimsonguard@htb[/htb]`$ cat /etc/postfix/main.cf | grep -v "#" | sed -r "/^\s*$/d"  smtpd_banner = ESMTP Server  biff = no append_dot_mydomain = no readme_directory = no compatibility_level = 2 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache myhostname = mail1.inlanefreight.htb alias_maps = hash:/etc/aliases alias_database = hash:/etc/aliases smtp_generic_maps = hash:/etc/postfix/generic mydestination = $myhostname, localhost  masquerade_domains = $myhostname mynetworks = 127.0.0.0/8 10.129.0.0/16 mailbox_size_limit = 0 recipient_delimiter = + smtp_bind_address = 0.0.0.0 inet_protocols = ipv4 smtpd_helo_restrictions = reject_invalid_hostname home_mailbox = /home/postfix`
+
+The sending and communication are also done by special commands that cause the SMTP server to do what the user requires.
+
+|**Command**|**Description**|
+|---|---|
+|`AUTH PLAIN`|AUTH is a service extension used to authenticate the client.|
+|`HELO`|The client logs in with its computer name and thus starts the session.|
+|`MAIL FROM`|The client names the email sender.|
+|`RCPT TO`|The client names the email recipient.|
+|`DATA`|The client initiates the transmission of the email.|
+|`RSET`|The client aborts the initiated transmission but keeps the connection between client and server.|
+|`VRFY`|The client checks if a mailbox is available for message transfer.|
+|`EXPN`|The client also checks if a mailbox is available for messaging with this command.|
+|`NOOP`|The client requests a response from the server to prevent disconnection due to time-out.|
+|`QUIT`|The client terminates the session.|
+
+To interact with the SMTP server, we can use the `telnet` tool to initialize a TCP connection with the SMTP server. The actual initialization of the session is done with the command mentioned above, `HELO` or `EHLO`.
+
+#### Telnet - HELO/EHLO
+
+crimsonguard@htb[/htb]`$ telnet 10.129.14.128 25  Trying 10.129.14.128... Connected to 10.129.14.128. Escape character is '^]'. 220 ESMTP Server    HELO mail1.inlanefreight.htb  250 mail1.inlanefreight.htb   EHLO mail1  250-mail1.inlanefreight.htb 250-PIPELINING 250-SIZE 10240000 250-ETRN 250-ENHANCEDSTATUSCODES 250-8BITMIME 250-DSN 250-SMTPUTF8 250 CHUNKING`
+
+The command `VRFY` can be used to enumerate existing users on the system. However, this does not always work. Depending on how the SMTP server is configured, the SMTP server may issue `code 252` and confirm the existence of a user that does not exist on the system. A list of all SMTP response codes can be found [here](https://serversmtp.com/smtp-error/).
+
+#### Telnet - VRFY
+
+crimsonguard@htb[/htb]`$ telnet 10.129.14.128 25  Trying 10.129.14.128... Connected to 10.129.14.128. Escape character is '^]'. 220 ESMTP Server   VRFY root  252 2.0.0 root   VRFY cry0l1t3  252 2.0.0 cry0l1t3   VRFY testuser  252 2.0.0 testuser   VRFY aaaaaaaaaaaaaaaaaaaaaaaaaaaa  252 2.0.0 aaaaaaaaaaaaaaaaaaaaaaaaaaaa`
+
+Therefore, one should never entirely rely on the results of automatic tools. After all, they execute pre-configured commands, but none of the functions explicitly state how the administrator configures the tested server.
+
+Sometimes we may have to work through a web proxy. We can also make this web proxy connect to the SMTP server. The command that we would send would then look something like this: `CONNECT 10.129.14.128:25 HTTP/1.0`
+
+All the commands we enter in the command line to send an email we know from every email client program like Thunderbird, Gmail, Outlook, and many others. We specify the `subject`, to whom the email should go, CC, BCC, and the information we want to share with others. Of course, the same works from the command line.
+
+#### Send an Email
+
+crimsonguard@htb[/htb]`$ telnet 10.129.14.128 25  Trying 10.129.14.128... Connected to 10.129.14.128. Escape character is '^]'. 220 ESMTP Server   EHLO inlanefreight.htb  250-mail1.inlanefreight.htb 250-PIPELINING 250-SIZE 10240000 250-ETRN 250-ENHANCEDSTATUSCODES 250-8BITMIME 250-DSN 250-SMTPUTF8 250 CHUNKING   MAIL FROM: <cry0l1t3@inlanefreight.htb>  250 2.1.0 Ok   RCPT TO: <mrb3n@inlanefreight.htb> NOTIFY=success,failure  250 2.1.5 Ok   DATA  354 End data with <CR><LF>.<CR><LF>  From: <cry0l1t3@inlanefreight.htb> To: <mrb3n@inlanefreight.htb> Subject: DB Date: Tue, 28 Sept 2021 16:32:51 +0200 Hey man, I am trying to access our XY-DB but the creds don't work.  Did you make any changes there? .  250 2.0.0 Ok: queued as 6E1CF1681AB   QUIT  221 2.0.0 Bye Connection closed by foreign host.`
+
+The mail header is the carrier of a large amount of interesting information in an email. Among other things, it provides information about the sender and recipient, the time of sending and arrival, the stations the email passed on its way, the content and format of the message, and the sender and recipient.
+
+Some of this information is mandatory, such as sender information and when the email was created. Other information is optional. However, the email header does not contain any information necessary for technical delivery. It is transmitted as part of the transmission protocol. Both sender and recipient can access the header of an email, although it is not visible at first glance. The structure of an email header is defined by [RFC 5322](https://datatracker.ietf.org/doc/html/rfc5322).
+
+## Dangerous Settings
+
+To prevent the sent emails from being filtered by spam filters and not reaching the recipient, the sender can use a relay server that the recipient trusts. It is an SMTP server that is known and verified by all others. As a rule, the sender must authenticate himself to the relay server before using it.
+
+Often, administrators have no overview of which IP ranges they have to allow. This results in a misconfiguration of the SMTP server that we will still often find in external and internal penetration tests. Therefore, they allow all IP addresses not to cause errors in the email traffic and thus not to disturb or unintentionally interrupt the communication with potential and current customers.
+
+#### Open Relay Configuration
+
+```shell-session
+mynetworks = 0.0.0.0/0
+```
+
+With this setting, this SMTP server can send fake emails and thus initialize communication between multiple parties. Another attack possibility would be to spoof the email and read it.
+
+## Footprinting the Service
+
+The default Nmap scripts include `smtp-commands`, which uses the `EHLO` command to list all possible commands that can be executed on the target SMTP server.
+
+#### Nmap
+
+crimsonguard@htb[/htb]`$ sudo nmap 10.129.14.128 -sC -sV -p25  Starting Nmap 7.80 ( https://nmap.org ) at 2021-09-27 17:56 CEST Nmap scan report for 10.129.14.128 Host is up (0.00025s latency).  PORT   STATE SERVICE VERSION 25/tcp open  smtp    Postfix smtpd |_smtp-commands: mail1.inlanefreight.htb, PIPELINING, SIZE 10240000, VRFY, ETRN, ENHANCEDSTATUSCODES, 8BITMIME, DSN, SMTPUTF8, CHUNKING,  MAC Address: 00:00:00:00:00:00 (VMware)  Service detection performed. Please report any incorrect results at https://nmap.org/submit/ . Nmap done: 1 IP address (1 host up) scanned in 14.09 seconds`
+
+However, we can also use the [smtp-open-relay](https://nmap.org/nsedoc/scripts/smtp-open-relay.html) NSE script to identify the target SMTP server as an open relay using 16 different tests. If we also print out the output of the scan in detail, we will also be able to see which tests the script is running.
+
+#### Nmap - Open Relay
+
+crimsonguard@htb[/htb]`$ sudo nmap 10.129.14.128 -p25 --script smtp-open-relay -v  Starting Nmap 7.80 ( https://nmap.org ) at 2021-09-30 02:29 CEST NSE: Loaded 1 scripts for scanning. NSE: Script Pre-scanning. Initiating NSE at 02:29 Completed NSE at 02:29, 0.00s elapsed Initiating ARP Ping Scan at 02:29 Scanning 10.129.14.128 [1 port] Completed ARP Ping Scan at 02:29, 0.06s elapsed (1 total hosts) Initiating Parallel DNS resolution of 1 host. at 02:29 Completed Parallel DNS resolution of 1 host. at 02:29, 0.03s elapsed Initiating SYN Stealth Scan at 02:29 Scanning 10.129.14.128 [1 port] Discovered open port 25/tcp on 10.129.14.128 Completed SYN Stealth Scan at 02:29, 0.06s elapsed (1 total ports) NSE: Script scanning 10.129.14.128. Initiating NSE at 02:29 Completed NSE at 02:29, 0.07s elapsed Nmap scan report for 10.129.14.128 Host is up (0.00020s latency).  PORT   STATE SERVICE 25/tcp open  smtp | smtp-open-relay: Server is an open relay (16/16 tests) |  MAIL FROM:<> -> RCPT TO:<relaytest@nmap.scanme.org> |  MAIL FROM:<antispam@nmap.scanme.org> -> RCPT TO:<relaytest@nmap.scanme.org> |  MAIL FROM:<antispam@ESMTP> -> RCPT TO:<relaytest@nmap.scanme.org> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<relaytest@nmap.scanme.org> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<relaytest%nmap.scanme.org@[10.129.14.128]> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<relaytest%nmap.scanme.org@ESMTP> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<"relaytest@nmap.scanme.org"> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<"relaytest%nmap.scanme.org"> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<relaytest@nmap.scanme.org@[10.129.14.128]> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<"relaytest@nmap.scanme.org"@[10.129.14.128]> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<relaytest@nmap.scanme.org@ESMTP> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<@[10.129.14.128]:relaytest@nmap.scanme.org> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<@ESMTP:relaytest@nmap.scanme.org> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<nmap.scanme.org!relaytest> |  MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<nmap.scanme.org!relaytest@[10.129.14.128]> |_ MAIL FROM:<antispam@[10.129.14.128]> -> RCPT TO:<nmap.scanme.org!relaytest@ESMTP> MAC Address: 00:00:00:00:00:00 (VMware)  NSE: Script Post-scanning. Initiating NSE at 02:29 Completed NSE at 02:29, 0.00s elapsed Read data files from: /usr/bin/../share/nmap Nmap done: 1 IP address (1 host up) scanned in 0.48 seconds            Raw packets sent: 2 (72B) | Rcvd: 2 (72B)`
+
+---
+## Questions
+
+Answer the question(s) below to complete the section
+
+Enumerate the SMTP service and submit the banner, including its version as the answer.
+- 
