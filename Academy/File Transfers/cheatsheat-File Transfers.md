@@ -4,6 +4,9 @@ https://lolbas-project.github.io/
 https://gtfobins.github.io/
 https://github.com/juliourena/plaintext/raw/master/hackthebox/certreq.exe
 
+#### Attacks
+https://github.com/Arrexel/phpbash
+https://github.com/pentestmonkey/php-reverse-shell
 
 | **Command**                                                                                                                                                                                                                                                                            | **Description**                                  |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
