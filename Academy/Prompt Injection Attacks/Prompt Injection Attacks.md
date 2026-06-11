@@ -347,3 +347,8 @@ As we can see, we successfully placed an order at a discounted rate by exploitin
 ## Questions
 
 Answer the question(s) below to complete the section
+
+Obtain the flag by leaking it from the system prompt in "Prompt Leak 1".
+```
+
+```
